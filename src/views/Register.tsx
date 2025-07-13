@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { Typography } from '@/components';
 import { useAuthStore } from '@/store';
+import { useLoadingWithTimeout } from '@/hooks';
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,10 @@ export const Register: React.FC = () => {
 
   const { register, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
+  const { showLoadingWithTimeout } = useLoadingWithTimeout({
+    minDuration: 2000,
+    defaultText: 'Creating your account...',
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,9 +41,14 @@ export const Register: React.FC = () => {
     }
 
     try {
-      // Remove confirmPassword before sending to API
-      const { confirmPassword, ...registrationData } = formData;
-      await register(registrationData);
+      await showLoadingWithTimeout(
+        async () => {
+          // Remove confirmPassword before sending to API
+          const { confirmPassword, ...registrationData } = formData;
+          await register(registrationData);
+        },
+        'Setting up your account...'
+      );
       
       // Registration successful, redirect to login
       navigate('/login', { 
@@ -50,6 +60,29 @@ export const Register: React.FC = () => {
       // Error is handled by the store
       console.error('Registration failed:', err);
     }
+  };
+
+  // Helper function to render error message safely
+  const renderError = (error: any) => {
+    if (typeof error === 'string') {
+      return error;
+    }
+    if (error?.message) {
+      return error.message;
+    }
+    if (error?.detail) {
+      if (typeof error.detail === 'string') {
+        return error.detail;
+      }
+      if (Array.isArray(error.detail)) {
+        return error.detail.map((err: any, index: number) => (
+          <div key={index}>
+            {typeof err === 'string' ? err : err.msg || JSON.stringify(err)}
+          </div>
+        ));
+      }
+    }
+    return 'An unexpected error occurred';
   };
 
   const passwordsMatch = formData.password === formData.confirmPassword;
@@ -73,7 +106,7 @@ export const Register: React.FC = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{error}</span>
+              <div>{renderError(error)}</div>
             </div>
           )}
 

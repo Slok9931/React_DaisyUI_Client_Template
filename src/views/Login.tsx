@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { Typography } from '@/components';
 import { useAuthStore } from '@/store';
+import { useLoadingWithTimeout } from '@/hooks';
 
 export const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,10 @@ export const Login: React.FC = () => {
   const { login, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showLoadingWithTimeout } = useLoadingWithTimeout({
+    minDuration: 2000,
+    defaultText: 'Signing you in...',
+  });
 
   const from = (location.state as any)?.from?.pathname || '/';
   const successMessage = (location.state as any)?.message;
@@ -32,7 +37,14 @@ export const Login: React.FC = () => {
     e.preventDefault();
     
     try {
-      await login(formData);
+      await showLoadingWithTimeout(
+        async () => {
+          // Your login logic
+          await login(formData);
+        },
+        'Authenticating...'
+      );
+      
       navigate(from, { replace: true });
     } catch (err) {
       // Error is handled by the store
