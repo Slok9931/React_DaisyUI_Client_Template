@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useTheme } from '@/hooks';
-import { useTypographyStore } from '@/store';
-import { Typography, Button, Tabs } from '@/components';
+import React, { useState } from "react";
+import { useTheme } from "@/hooks";
+import { useTypographyStore } from "@/store";
+import { Typography, Button, Tabs } from "@/components";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -22,7 +22,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   const [tempCustomization, setTempCustomization] = useState(customization);
 
-  const handleSliderChange = (key: keyof typeof customization, value: number) => {
+  const handleSliderChange = (
+    key: keyof typeof customization,
+    value: number
+  ) => {
     const newSettings = { ...tempCustomization, [key]: value };
     setTempCustomization(newSettings);
     updateCustomization(newSettings);
@@ -37,7 +40,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const handleResetToDefault = () => {
     // Reset typography to default
     const defaultSettings = {
-      fontFamily: 'Inter, system-ui, sans-serif',
+      fontFamily: "Inter, system-ui, sans-serif",
       fontScale: 1,
       fontWeightScale: 1,
       lineHeightScale: 1,
@@ -47,20 +50,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     setTempCustomization(defaultSettings);
     updateCustomization(defaultSettings);
     resetCustomization();
-    
+
     // Reset theme to dark
-    changeTheme('dark');
+    changeTheme("dark");
   };
 
-  const SliderControl = ({ 
-    label, 
-    value, 
-    onChange, 
-    min, 
-    max, 
+  const SliderControl = ({
+    label,
+    value,
+    onChange,
+    min,
+    max,
     step = 0.1,
-    unit = '',
-    description 
+    unit = "",
+    description,
   }: {
     label: string;
     value: number;
@@ -77,7 +80,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           {label}
         </Typography>
         <Typography variant="caption" className="text-primary">
-          {value.toFixed(step < 1 ? 1 : 0)}{unit}
+          {value.toFixed(step < 1 ? 1 : 0)}
+          {unit}
         </Typography>
       </div>
       <input
@@ -90,8 +94,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         className="range range-primary range-sm"
       />
       <div className="flex justify-between text-xs text-base-content/60">
-        <span>{min}{unit}</span>
-        <span>{max}{unit}</span>
+        <span>
+          {min}
+          {unit}
+        </span>
+        <span>
+          {max}
+          {unit}
+        </span>
       </div>
       {description && (
         <Typography variant="caption" className="text-base-content/60">
@@ -101,40 +111,65 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     </div>
   );
 
-  // Theme Tab Component
+  // Color Swatch Component
+  const ColorSwatch = ({ theme }: { theme: any }) => {
+    return (
+      <div
+        className="flex items-center gap-1 p-3 rounded-lg border"
+        data-theme={theme.name}
+      >
+        <div className="w-3 h-3 rounded-full bg-primary border border-base-content/20"></div>
+        <div className="w-3 h-3 rounded-full bg-secondary border border-base-content/20"></div>
+        <div className="w-3 h-3 rounded-full bg-accent border border-base-content/20"></div>
+        <div className="w-3 h-3 rounded-full bg-neutral border border-base-content/20"></div>
+      </div>
+    );
+  };
+
+  // Enhanced Theme Tab Component with Color Previews
   const ThemeTab = () => (
     <div className="space-y-6">
       <div>
-        <Typography variant="h6" className="mb-4">Choose Theme</Typography>
-        <div className="grid grid-cols-1 gap-2 h-full overflow-y-auto">
+        <Typography variant="h6" className="mb-4">
+          Choose Theme
+        </Typography>
+        <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto">
           {themes.map((theme) => (
             <div
               key={theme.name}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
+              className={`p-4 rounded-lg border cursor-pointer transition-all ${
                 currentTheme.name === theme.name
-                  ? 'border-primary bg-primary/10'
-                  : 'border-base-300 hover:border-primary/50'
+                  ? "border-primary bg-primary/10"
+                  : "border-base-300 hover:border-primary/50"
               }`}
               onClick={() => changeTheme(theme.name)}
             >
-              <div className="flex justify-between items-center">
-                <Typography variant="body2" className="font-medium">
-                  {theme.displayName}
-                </Typography>
-                <div className="flex items-center gap-2">
-                  {theme.isDark && (
-                    <span className="badge badge-neutral badge-sm">Dark</span>
-                  )}
-                  {currentTheme.name === theme.name && (
-                    <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2 justify-between">
+                    <Typography variant="body2" className="font-medium">
+                      {theme.displayName}
+                    </Typography>
+                    <div className="w-fit">
+                      <ColorSwatch theme={theme} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Theme Information */}
+      <div className="bg-base-200 p-4 rounded-lg">
+        <Typography variant="body2" className="font-medium mb-2">
+          Current Theme: {currentTheme.displayName}
+        </Typography>
+        <Typography variant="caption" className="text-base-content/60">
+          {currentTheme.isDark ? "Dark" : "Light"} theme • Colors update
+          instantly across the entire application
+        </Typography>
       </div>
     </div>
   );
@@ -143,15 +178,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const FontFamilyTab = () => (
     <div className="space-y-6">
       <div>
-        <Typography variant="h6" className="mb-4">Choose Font Family</Typography>
-        <div className="grid grid-cols-1 gap-2 h-full overflow-y-auto">
+        <Typography variant="h6" className="mb-4">
+          Choose Font Family
+        </Typography>
+        <div className="grid grid-cols-1 gap-2 max-h-[60vh] overflow-y-auto">
           {fontFamilies.map((font) => (
             <div
               key={font.name}
               className={`p-3 rounded-lg border cursor-pointer transition-all ${
                 customization.fontFamily === font.value
-                  ? 'border-primary bg-primary/10'
-                  : 'border-base-300 hover:border-primary/50'
+                  ? "border-primary bg-primary/10"
+                  : "border-base-300 hover:border-primary/50"
               }`}
               onClick={() => handleFontChange(font.value)}
             >
@@ -163,7 +200,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   {font.preview}
                 </Typography>
               </div>
-              <div 
+              <div
                 className="text-sm text-base-content/80"
                 style={{ fontFamily: font.value }}
               >
@@ -178,25 +215,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   // Typography Tab Component
   const TypographyTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 max-h-[60vh] overflow-y-auto">
       <div>
-        <Typography variant="h6" className="mb-4">Font Size & Weight</Typography>
+        <Typography variant="h6" className="mb-4">
+          Font Size & Weight
+        </Typography>
         <div className="space-y-4">
           <SliderControl
             label="Font Size Scale"
             value={customization.fontScale}
-            onChange={(value) => handleSliderChange('fontScale', value)}
+            onChange={(value) => handleSliderChange("fontScale", value)}
             min={0.5}
             max={2}
             step={0.1}
             unit="×"
             description="Scales all font sizes proportionally"
           />
-          
+
           <SliderControl
             label="Font Weight Scale"
             value={customization.fontWeightScale}
-            onChange={(value) => handleSliderChange('fontWeightScale', value)}
+            onChange={(value) => handleSliderChange("fontWeightScale", value)}
             min={0.5}
             max={1.5}
             step={0.1}
@@ -207,7 +246,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <SliderControl
             label="Line Height Scale"
             value={customization.lineHeightScale}
-            onChange={(value) => handleSliderChange('lineHeightScale', value)}
+            onChange={(value) => handleSliderChange("lineHeightScale", value)}
             min={0.8}
             max={1.8}
             step={0.1}
@@ -220,12 +259,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       <div className="divider"></div>
 
       <div>
-        <Typography variant="h6" className="mb-4">Spacing</Typography>
+        <Typography variant="h6" className="mb-4">
+          Spacing
+        </Typography>
         <div className="space-y-4">
           <SliderControl
             label="Letter Spacing"
             value={customization.letterSpacing}
-            onChange={(value) => handleSliderChange('letterSpacing', value)}
+            onChange={(value) => handleSliderChange("letterSpacing", value)}
             min={-0.05}
             max={0.1}
             step={0.01}
@@ -236,7 +277,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <SliderControl
             label="Word Spacing"
             value={customization.wordSpacing}
-            onChange={(value) => handleSliderChange('wordSpacing', value)}
+            onChange={(value) => handleSliderChange("wordSpacing", value)}
             min={-0.1}
             max={0.5}
             step={0.01}
@@ -250,9 +291,11 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   // Preview Tab Component
   const PreviewTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 max-h-[60vh] overflow-y-auto">
       <div>
-        <Typography variant="h6" className="mb-4">Live Preview</Typography>
+        <Typography variant="h6" className="mb-4">
+          Live Preview
+        </Typography>
         <div className="space-y-4 p-4 bg-base-200 rounded-lg">
           <Typography variant="h1" className="text-primary">
             Infinity Dashboard
@@ -273,18 +316,19 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             Consistent Design
           </Typography>
           <Typography variant="body1" className="text-base-content">
-            This is a sample paragraph to demonstrate how your typography settings 
-            affect the readability and appearance of your content. The quick brown 
-            fox jumps over the lazy dog.
+            This is a sample paragraph to demonstrate how your typography
+            settings affect the readability and appearance of your content. The
+            quick brown fox jumps over the lazy dog.
           </Typography>
           <Typography variant="body2" className="text-base-content/80">
-            Secondary text appears smaller and is perfect for supporting information, 
-            captions, and metadata.
+            Secondary text appears smaller and is perfect for supporting
+            information, captions, and metadata.
           </Typography>
           <Typography variant="caption" className="text-base-content/60">
-            Caption text is the smallest variant and is used for fine print and labels.
+            Caption text is the smallest variant and is used for fine print and
+            labels.
           </Typography>
-          
+
           {/* Color Preview Section */}
           <div className="divider">Color Variations</div>
           <div className="grid grid-cols-2 gap-3">
@@ -292,7 +336,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <Typography variant="body2" className="text-primary font-medium">
                 Primary Text
               </Typography>
-              <Typography variant="body2" className="text-secondary font-medium">
+              <Typography
+                variant="body2"
+                className="text-secondary font-medium"
+              >
                 Secondary Text
               </Typography>
               <Typography variant="body2" className="text-accent font-medium">
@@ -311,7 +358,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </Typography>
             </div>
           </div>
-          
+
           {/* Different States */}
           <div className="divider">Text States</div>
           <div className="space-y-2">
@@ -348,65 +395,91 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   // Define tabs configuration
   const tabsConfig = [
     {
-      id: 'themes',
-      label: 'Themes',
-      content: <ThemeTab />
+      id: "themes",
+      label: "Themes",
+      content: <ThemeTab />,
     },
     {
-      id: 'fonts',
-      label: 'Font Family',
-      content: <FontFamilyTab />
+      id: "fonts",
+      label: "Font Family",
+      content: <FontFamilyTab />,
     },
     {
-      id: 'typography',
-      label: 'Typography',
-      content: <TypographyTab />
+      id: "typography",
+      label: "Typography",
+      content: <TypographyTab />,
     },
     {
-      id: 'preview',
-      label: 'Preview',
-      content: <PreviewTab />
-    }
+      id: "preview",
+      label: "Preview",
+      content: <PreviewTab />,
+    },
   ];
 
   return (
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity"
           onClick={onClose}
         />
       )}
 
       {/* Side Panel */}
-      <div className={`
-        fixed top-0 right-0 h-full w-full md:w-[35%] bg-base-100 shadow-xl z-50
+      <div
+        className={`
+        fixed top-0 right-0 h-screen w-full md:w-[35%] bg-base-100 shadow-xl z-50
         transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-      `}>
+        ${isOpen ? "translate-x-0" : "translate-x-full"}
+      `}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-base-300">
+        <div className="flex items-center justify-between p-4 border-b border-base-300 h-16 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg
+              className="w-5 h-5 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
-            <Typography variant="h5" className="font-semibold">Settings</Typography>
+            <Typography variant="h5" className="font-semibold">
+              Settings
+            </Typography>
           </div>
-          <button
-            onClick={onClose}
-            className="btn btn-ghost btn-sm btn-circle"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex flex-col h-[calc(100%-70px)]">
-          <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex flex-col h-[calc(100vh-64px)]">
+          <div className="flex-1 overflow-y-auto p-4 min-h-0">
             <Tabs
               tabs={tabsConfig}
               defaultTab="themes"
@@ -415,18 +488,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             />
           </div>
 
-          <div className="p-4 border-t border-base-300">
+          {/* Footer - Always visible */}
+          <div className="p-4 border-t border-base-300 flex-shrink-0">
             <Button
               variant="primary"
               onClick={handleResetToDefault}
               className="w-full"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Reset All Settings
             </Button>
-            <Typography variant="caption" className="text-base-content/60 text-center block mt-2">
+            <Typography
+              variant="caption"
+              className="text-base-content/60 text-center block mt-2"
+            >
               Resets theme to Dark and typography to defaults
             </Typography>
           </div>
