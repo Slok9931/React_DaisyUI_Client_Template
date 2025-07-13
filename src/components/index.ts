@@ -6,8 +6,8 @@ export * from './PrivateNavbar';
 export * from './Sidebar';
 export * from './SplashScreen';
 export * from './InfinityLogo';
-export * from './TypographySettings';
-export * from './TypographyCustomizer';
+export * from './SettingsPanel';
+export * from './SettingsButton';
 
 // UI Components
 export * from './ui/Button';

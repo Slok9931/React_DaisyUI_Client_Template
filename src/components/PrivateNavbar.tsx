@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuthStore } from '@/store';
-import { ThemeSelector, Avatar, Typography } from '@/components';
+import { Avatar, Typography, SettingsButton } from '@/components';
 
 interface PrivateNavbarProps {
   onToggleSidebar?: () => void;
@@ -15,7 +15,7 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
   const { user } = useAuthStore();
 
   return (
-    <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 ${className}`}>
+    <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 sticky top-0 z-40 ${className}`}>
       {/* Navbar Start */}
       <div className="navbar-start">
         <button
@@ -137,8 +137,8 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
             </ul>
           </div>
 
-          {/* Theme Selector */}
-          <ThemeSelector />
+          {/* Settings Button */}
+          <SettingsButton />
 
           {/* User Avatar */}
           <div className="dropdown dropdown-end">

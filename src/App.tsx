@@ -41,7 +41,7 @@ function App() {
   // Show main app with fade-in animation
   return (
     <div className={`
-      min-h-screen transition-all duration-1000 ease-out
+      transition-all duration-1000 ease-out
       ${splashCompleted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
     `}>
       <AppRoutes />

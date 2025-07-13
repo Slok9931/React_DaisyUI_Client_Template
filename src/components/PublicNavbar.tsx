@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuthStore } from '@/store';
-import { ThemeSelector, Avatar, Button, Typography, InfinityLogo, TypographySettings } from '@/components';
+import { Avatar, Button, Typography, InfinityLogo, SettingsButton } from '@/components';
 
 interface NavItem {
   label: string;
@@ -16,7 +16,6 @@ interface NavbarProps {
   title?: string;
   logo?: React.ReactNode;
   items?: NavItem[];
-  showThemeSelector?: boolean;
   className?: string;
 }
 
@@ -24,7 +23,6 @@ export const PublicNavbar: React.FC<NavbarProps> = ({
   title = 'Infinity',
   logo,
   items = [],
-  showThemeSelector = true,
   className = '',
 }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -45,6 +43,7 @@ export const PublicNavbar: React.FC<NavbarProps> = ({
   };
 
   const renderNavItem = (item: NavItem, index: number) => {
+    // Handle dropdown items
     if (item.children && item.children.length > 0) {
       return (
         <div key={index} className="dropdown dropdown-end">
@@ -145,7 +144,7 @@ export const PublicNavbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <div className={`navbar bg-base-100 shadow-lg ${className}`}>
+    <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 sticky top-0 z-40 ${className}`}>
       {/* Navbar Start */}
       <div className="navbar-start">
         {/* Mobile Menu Button */}
@@ -246,17 +245,10 @@ export const PublicNavbar: React.FC<NavbarProps> = ({
 
       {/* Navbar End */}
       <div className="navbar-end">
-        {/* Typography Settings */}
+        {/* Settings Button */}
         <div className="mr-2">
-          <TypographySettings />
+          <SettingsButton />
         </div>
-        
-        {/* Theme Selector */}
-        {showThemeSelector && (
-          <div className="mr-2">
-            <ThemeSelector />
-          </div>
-        )}
 
         {/* User Menu or Login Button */}
         {isAuthenticated && user ? (
