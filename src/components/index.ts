@@ -1,7 +1,6 @@
 export * from './Typography';
 export * from './ThemeSelector';
 export * from './FullPageLoader';
-export * from './PublicNavbar';
 export * from './PrivateNavbar';
 export * from './Sidebar';
 export * from './SplashScreen';

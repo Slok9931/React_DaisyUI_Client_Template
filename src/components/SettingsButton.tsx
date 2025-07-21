@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SettingsPanel } from '@/components';
 
-export const SettingsButton: React.FC = () => {
+export const SettingsButton: React.FC<{ side?: 'left' | 'right' }> = ({ side = 'right' }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -35,6 +35,7 @@ export const SettingsButton: React.FC = () => {
       <SettingsPanel
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        side={side}
       />
     </>
   );

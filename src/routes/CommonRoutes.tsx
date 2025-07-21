@@ -1,22 +1,19 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { PrivateRoute, PublicRoute } from '@/routes';
-import { PublicLayout, PrivateLayout } from '@/layouts';
-import { ThemeDemo, Login, Register } from '@/views';
+import { PrivateLayout } from '@/layouts';
+import { ThemeDemo, AuthPages } from '@/views';
 
 export const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Public routes with public layout */}
         <Route 
           path="/login" 
           element={
             <PublicRoute>
-              <PublicLayout>
-                <Login />
-              </PublicLayout>
+              <AuthPages />
             </PublicRoute>
           } 
         />
@@ -24,14 +21,14 @@ export const AppRoutes: React.FC = () => {
           path="/register" 
           element={
             <PublicRoute>
-              <PublicLayout>
-                <Register />
-              </PublicLayout>
+              <AuthPages />
             </PublicRoute>
           } 
         />
-        
-        {/* Private routes with private layout (sidebar + navbar) */}
+        <Route 
+          path="/auth" 
+          element={<Navigate to="/login" replace />} 
+        />
         <Route 
           path="/" 
           element={
@@ -42,25 +39,23 @@ export const AppRoutes: React.FC = () => {
             </PrivateRoute>
           } 
         />
-        
-        {/* 404 */}
         <Route 
           path="*" 
           element={
-            <PublicLayout>
-              <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-6xl font-bold text-error mb-4">404</h1>
-                  <p className="text-xl mb-4">Page not found in the infinite universe</p>
-                  <button 
-                    onClick={() => window.location.href = '/'}
-                    className="btn btn-primary"
-                  >
-                    Return to Infinity
-                  </button>
-                </div>
+            <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
+              <div className="text-center">
+                <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
+                <p className="text-xl text-base-content/70 mb-8">
+                  Page not found in the infinite universe
+                </p>
+                <button 
+                  onClick={() => window.location.href = '/'}
+                  className="btn btn-primary"
+                >
+                  Return to Infinity
+                </button>
               </div>
-            </PublicLayout>
+            </div>
           } 
         />
       </Routes>

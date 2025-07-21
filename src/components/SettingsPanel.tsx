@@ -8,10 +8,9 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const SettingsPanel: React.FC<
+  SettingsPanelProps & { side?: "left" | "right" }
+> = ({ isOpen, onClose, side = "right" }) => {
   const { currentTheme, themes, changeTheme } = useTheme();
   const {
     customization,
@@ -429,10 +428,18 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       {/* Side Panel */}
       <div
         className={`
-        fixed top-0 right-0 h-screen w-full md:w-[35%] bg-base-100 shadow-xl z-50
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "translate-x-full"}
-      `}
+          fixed top-0 ${
+            side === "right" ? "right-0" : "left-0"
+          } h-screen w-full md:w-[65%] bg-base-100 shadow-xl z-50
+          transform transition-transform duration-300 ease-in-out
+          ${
+            isOpen
+              ? "translate-x-0"
+              : side === "right"
+              ? "translate-x-full"
+              : "-translate-x-full"
+          }
+        `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-base-300 h-16 flex-shrink-0">
