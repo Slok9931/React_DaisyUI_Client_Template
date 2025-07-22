@@ -125,53 +125,73 @@ export const SettingsPanel: React.FC<
     );
   };
 
-  // Enhanced Theme Tab Component with Color Previews
-  const ThemeTab = () => (
-    <div className="space-y-6">
-      <div>
-        <Typography variant="h6" className="mb-4">
-          Choose Theme
-        </Typography>
-        <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto">
-          {themes.map((theme) => (
-            <div
-              key={theme.name}
-              className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                currentTheme.name === theme.name
-                  ? "border-primary bg-primary/10"
-                  : "border-base-300 hover:border-primary/50"
-              }`}
-              onClick={() => changeTheme(theme.name)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2 justify-between">
-                    <Typography variant="body2" className="font-medium">
-                      {theme.displayName}
-                    </Typography>
-                    <div className="w-fit">
-                      <ColorSwatch theme={theme} />
+  const themeListRef = React.useRef<HTMLDivElement>(null);
+
+  // Enhanced Theme Tab Component without auto-scroll
+  const ThemeTab = () => {
+    // Preserve scroll position when theme changes
+    const handleThemeSelect = (themeName: string) => {
+      const currentScrollTop = themeListRef.current?.scrollTop || 0;
+      changeTheme(themeName);
+
+      // Restore scroll position after theme change
+      requestAnimationFrame(() => {
+        if (themeListRef.current) {
+          themeListRef.current.scrollTop = currentScrollTop;
+        }
+      });
+    };
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <Typography variant="h6" className="mb-4">
+            Choose Theme
+          </Typography>
+          <div
+            className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto"
+            ref={themeListRef}
+          >
+            {themes.map((theme) => (
+              <div
+                key={theme.name}
+                className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                  currentTheme.name === theme.name
+                    ? "border-primary bg-primary/10"
+                    : "border-base-300 hover:border-primary/50"
+                }`}
+                onClick={() => handleThemeSelect(theme.name)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2 justify-between">
+                      <Typography variant="body2" className="font-medium">
+                        {theme.displayName}
+                      </Typography>
+                      <div className="w-fit">
+                        <ColorSwatch theme={theme} />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Theme Information */}
+        <div className="bg-base-200 p-4 rounded-lg">
+          <Typography variant="body2" className="font-medium mb-2">
+            Current Theme: {currentTheme.displayName}
+          </Typography>
+          <Typography variant="caption" className="text-base-content/60">
+            {currentTheme.isDark ? "Dark" : "Light"} theme • Colors update
+            instantly across the entire application
+          </Typography>
         </div>
       </div>
-
-      {/* Theme Information */}
-      <div className="bg-base-200 p-4 rounded-lg">
-        <Typography variant="body2" className="font-medium mb-2">
-          Current Theme: {currentTheme.displayName}
-        </Typography>
-        <Typography variant="caption" className="text-base-content/60">
-          {currentTheme.isDark ? "Dark" : "Light"} theme • Colors update
-          instantly across the entire application
-        </Typography>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Font Family Tab Component
   const FontFamilyTab = () => (
@@ -212,81 +232,100 @@ export const SettingsPanel: React.FC<
     </div>
   );
 
-  // Typography Tab Component
-  const TypographyTab = () => (
-    <div className="space-y-6 max-h-[60vh] overflow-y-auto">
-      <div>
-        <Typography variant="h6" className="mb-4">
-          Font Size & Weight
-        </Typography>
-        <div className="space-y-4">
-          <SliderControl
-            label="Font Size Scale"
-            value={customization.fontScale}
-            onChange={(value) => handleSliderChange("fontScale", value)}
-            min={0.5}
-            max={2}
-            step={0.1}
-            unit="×"
-            description="Scales all font sizes proportionally"
-          />
+  const typographyTabRef = React.useRef<HTMLDivElement>(null);
 
-          <SliderControl
-            label="Font Weight Scale"
-            value={customization.fontWeightScale}
-            onChange={(value) => handleSliderChange("fontWeightScale", value)}
-            min={0.5}
-            max={1.5}
-            step={0.1}
-            unit="×"
-            description="Adjusts the boldness of all text"
-          />
+  const TypographyTab = () => {
+    const handleSliderChangeWithScroll = (
+      key: keyof typeof customization,
+      value: number
+    ) => {
+      const currentScrollTop = typographyTabRef.current?.scrollTop || 0;
+      handleSliderChange(key, value);
+      requestAnimationFrame(() => {
+        if (typographyTabRef.current) {
+          typographyTabRef.current.scrollTop = currentScrollTop;
+        }
+      });
+    };
 
-          <SliderControl
-            label="Line Height Scale"
-            value={customization.lineHeightScale}
-            onChange={(value) => handleSliderChange("lineHeightScale", value)}
-            min={0.8}
-            max={1.8}
-            step={0.1}
-            unit="×"
-            description="Controls space between lines"
-          />
+    return (
+      <div
+        className="space-y-6 max-h-[60vh] overflow-y-auto"
+        ref={typographyTabRef}
+      >
+        <div>
+          <Typography variant="h6" className="mb-4">
+            Font Size & Weight
+          </Typography>
+          <div className="space-y-4">
+            <SliderControl
+              label="Font Size Scale"
+              value={customization.fontScale}
+              onChange={(value) => handleSliderChangeWithScroll("fontScale", value)}
+              min={0.5}
+              max={2}
+              step={0.1}
+              unit="×"
+              description="Scales all font sizes proportionally"
+            />
+
+            <SliderControl
+              label="Font Weight Scale"
+              value={customization.fontWeightScale}
+              onChange={(value) => handleSliderChangeWithScroll("fontWeightScale", value)}
+              min={0.5}
+              max={1.5}
+              step={0.1}
+              unit="×"
+              description="Adjusts the boldness of all text"
+            />
+
+            <SliderControl
+              label="Line Height Scale"
+              value={customization.lineHeightScale}
+              onChange={(value) => handleSliderChangeWithScroll("lineHeightScale", value)}
+              min={0.8}
+              max={1.8}
+              step={0.1}
+              unit="×"
+              description="Controls space between lines"
+            />
+          </div>
+        </div>
+
+        <div className="divider"></div>
+
+        <div>
+          <Typography variant="h6" className="mb-4">
+            Spacing
+          </Typography>
+          <div className="space-y-4">
+            <SliderControl
+              label="Letter Spacing"
+              value={customization.letterSpacing}
+              onChange={(value) => handleSliderChangeWithScroll("letterSpacing", value)}
+              min={-0.05}
+              max={0.1}
+              step={0.01}
+              unit="em"
+              description="Space between individual letters"
+            />
+
+            <SliderControl
+              label="Word Spacing"
+              value={customization.wordSpacing}
+              onChange={(value) => handleSliderChangeWithScroll("wordSpacing", value)}
+              min={-0.1}
+              max={0.5}
+              step={0.01}
+              unit="em"
+              description="Space between words"
+            />
+          </div>
         </div>
       </div>
-
-      <div className="divider"></div>
-
-      <div>
-        <Typography variant="h6" className="mb-4">
-          Spacing
-        </Typography>
-        <div className="space-y-4">
-          <SliderControl
-            label="Letter Spacing"
-            value={customization.letterSpacing}
-            onChange={(value) => handleSliderChange("letterSpacing", value)}
-            min={-0.05}
-            max={0.1}
-            step={0.01}
-            unit="em"
-            description="Space between individual letters"
-          />
-
-          <SliderControl
-            label="Word Spacing"
-            value={customization.wordSpacing}
-            onChange={(value) => handleSliderChange("wordSpacing", value)}
-            min={-0.1}
-            max={0.5}
-            step={0.01}
-            unit="em"
-            description="Space between words"
-          />
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Preview Tab Component
   const PreviewTab = () => (

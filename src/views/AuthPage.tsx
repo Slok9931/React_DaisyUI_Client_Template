@@ -59,7 +59,7 @@ export const AuthPages = () => {
         }`}
       >
         <div
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+          className={`hidden md:block absolute inset-0 transition-all duration-700 ease-in-out ${
             isLogin ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
           } bg-gradient-to-br from-primary to-primary-focus overflow-hidden`}
         >
@@ -97,7 +97,7 @@ export const AuthPages = () => {
         </div>
 
         <div
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+          className={`hidden md:block absolute inset-0 transition-all duration-700 ease-in-out ${
             !isLogin
               ? "translate-x-0 opacity-100"
               : "-translate-x-full opacity-0"
