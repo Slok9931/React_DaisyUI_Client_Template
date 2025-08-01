@@ -8,38 +8,51 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   onComplete,
-  duration = 5000,
+  duration = 3000,
 }) => {
   const [progress, setProgress] = useState(0);
-  const [textVisible, setTextVisible] = useState(false);
-  const [logoAnimated, setLogoAnimated] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
+
+  const loadingSteps = [
+    "Initializing Infinity...",
+    "Loading Core Systems...",
+    "Preparing Dashboard...",
+    "Almost Ready..."
+  ];
 
   useEffect(() => {
     // Animation timeline
+    const stepDuration = duration / loadingSteps.length;
+    
     const timeline = [
-      { delay: 0, action: () => setTextVisible(true) },
-      { delay: 1000, action: () => setLogoAnimated(true) },
       { delay: duration - 500, action: () => setFadeOut(true) },
       { delay: duration, action: onComplete },
     ];
 
     const timeouts: NodeJS.Timeout[] = [];
 
+    // Step progression
+    loadingSteps.forEach((_, index) => {
+      timeouts.push(setTimeout(() => {
+        setCurrentStep(index);
+      }, index * stepDuration));
+    });
+
     timeline.forEach(({ delay, action }) => {
       timeouts.push(setTimeout(action, delay));
     });
 
-    // Progress bar animation
+    // Smooth progress bar animation
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + (100 / (duration / 50));
+        return prev + (100 / (duration / 16)); // 60fps
       });
-    }, 50);
+    }, 16);
 
     return () => {
       timeouts.forEach(clearTimeout);
@@ -49,103 +62,206 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
   return (
     <div className={`
-      fixed inset-0 z-[9999] bg-gradient-to-br from-primary via-secondary to-accent
-      flex items-center justify-center transition-all duration-500
-      ${fadeOut ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}
+      fixed inset-0 z-[9999] bg-gradient-to-br from-base-100 via-base-200 to-base-100
+      flex items-center justify-center transition-all duration-500 overflow-hidden
+      ${fadeOut ? 'opacity-0' : 'opacity-100'}
     `}>
-      {/* Background Animation */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
-        <div className="absolute top-32 right-20 w-12 h-12 bg-white/10 rounded-full animate-pulse animation-delay-1000"></div>
-        <div className="absolute bottom-20 left-20 w-16 h-16 bg-white/10 rounded-full animate-pulse animation-delay-2000"></div>
-        <div className="absolute bottom-32 right-32 w-8 h-8 bg-white/10 rounded-full animate-pulse animation-delay-3000"></div>
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float-1"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float-2"></div>
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-float-3"></div>
         
-        {/* Floating infinity symbols */}
-        <div className="absolute top-1/4 left-1/4 opacity-20 animate-float">
-          <InfinityLogo size={30} />
+        {/* Geometric Patterns */}
+        <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="hexagons" width="60" height="52" patternUnits="userSpaceOnUse">
+              <polygon 
+                points="30,4 52,16 52,36 30,48 8,36 8,16" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="0.5"
+                className="text-primary animate-pulse-slow"
+              />
+            </pattern>
+            <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle 
+                cx="10" 
+                cy="10" 
+                r="1" 
+                fill="currentColor" 
+                className="text-secondary"
+                opacity="0.3"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hexagons)" />
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+
+        {/* Animated Lines */}
+        <div className="absolute inset-0">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-gradient-to-r from-transparent via-primary/20 to-transparent h-px"
+              style={{
+                top: `${10 + i * 7}%`,
+                left: `-50%`,
+                right: `-50%`,
+                transform: `rotate(${i * 15}deg)`,
+                animation: `slide-line ${3 + i * 0.2}s infinite linear`,
+                animationDelay: `${i * 0.3}s`,
+              }}
+            />
+          ))}
         </div>
-        <div className="absolute top-3/4 right-1/4 opacity-20 animate-float-reverse">
-          <InfinityLogo size={20} />
+
+        {/* Floating Particles */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-primary/30 rounded-full animate-float-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${4 + Math.random() * 6}s`,
+              }}
+            />
+          ))}
         </div>
-        <div className="absolute top-1/2 left-1/6 opacity-20 animate-float-slow">
-          <InfinityLogo size={25} />
+
+        {/* Subtle Grid Overlay */}
+        <div className="absolute inset-0 opacity-3">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path 
+                  d="M 40 0 L 0 0 0 40" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="0.5" 
+                  className="text-base-content"
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 text-center space-y-8">
-        {/* Infinity Logo */}
-        <div className={`
-          transform transition-all duration-1000 ease-out
-          ${logoAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-180'}
-        `}>
+      <div className="relative z-10 text-center space-y-12 max-w-md mx-auto px-6">
+        {/* Logo Section */}
+        <div className="space-y-6">
+          {/* Logo with enhanced glow */}
           <div className="relative">
-            {/* Glow effect */}
-            <div className="absolute inset-0 blur-xl opacity-50">
-              <InfinityLogo size={120} className="text-white" />
+            {/* Multiple glow layers */}
+            <div className="absolute inset-0 blur-3xl opacity-30 animate-pulse-glow">
+              <InfinityLogo size={80} className="text-primary mx-auto" />
             </div>
-            {/* Main logo */}
-            <InfinityLogo size={120} className="relative z-10" />
+            <div className="absolute inset-0 blur-xl opacity-20 animate-pulse-glow-2">
+              <InfinityLogo size={80} className="text-secondary mx-auto" />
+            </div>
+            <div className="relative animate-logo-spin">
+              <InfinityLogo size={80} className="text-primary mx-auto drop-shadow-2xl" />
+            </div>
+            
+            {/* Rotating Ring */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 border border-primary/20 rounded-full animate-spin-slow"></div>
+            </div>
+          </div>
+
+          {/* Brand Name with enhanced styling */}
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl font-light text-base-content tracking-wider relative">
+              <span className="relative z-10">Infinity</span>
+              <div className="absolute inset-0 blur-sm text-primary/30 animate-text-glow">
+                Infinity
+              </div>
+            </h1>
+            <div className="w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto animate-gradient-x"></div>
+            <p className="text-base-content/60 text-sm font-medium tracking-wide">
+              DASHBOARD
+            </p>
           </div>
         </div>
 
-        {/* Text Animation */}
-        <div className="space-y-4">
-          <h1 className={`
-            text-6xl md:text-8xl font-bold text-white
-            transform transition-all duration-1000 ease-out
-            ${textVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
-          `}>
-            <span className="inline-block animate-text-wave">I</span>
-            <span className="inline-block animate-text-wave animation-delay-100">n</span>
-            <span className="inline-block animate-text-wave animation-delay-200">f</span>
-            <span className="inline-block animate-text-wave animation-delay-300">i</span>
-            <span className="inline-block animate-text-wave animation-delay-400">n</span>
-            <span className="inline-block animate-text-wave animation-delay-500">i</span>
-            <span className="inline-block animate-text-wave animation-delay-600">t</span>
-            <span className="inline-block animate-text-wave animation-delay-700">y</span>
-          </h1>
-          
-          <p className={`
-            text-xl md:text-2xl text-white/80 font-light
-            transform transition-all duration-1000 ease-out delay-500
-            ${textVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `}>
-            Endless Possibilities Await
-          </p>
-        </div>
+        {/* Loading Section */}
+        <div className="space-y-6">
+          {/* Loading Text */}
+          <div className="h-6">
+            <p className="text-base-content/80 text-sm font-medium animate-fade-in">
+              {loadingSteps[currentStep]}
+            </p>
+          </div>
 
-        {/* Progress Bar */}
-        <div className="w-80 mx-auto">
-          <div className="relative">
-            <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
+          {/* Enhanced Progress Bar */}
+          <div className="space-y-3">
+            <div className="relative w-full bg-base-200/50 backdrop-blur-sm rounded-full h-2 overflow-hidden border border-base-300/30">
               <div 
-                className="bg-white h-2 rounded-full transition-all duration-100 ease-out"
+                className="bg-gradient-to-r from-primary via-accent to-secondary h-2 rounded-full transition-all duration-100 ease-out relative"
+                style={{ width: `${progress}%` }}
+              >
+                {/* Multiple shine effects */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shine"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine-2"></div>
+              </div>
+              
+              {/* Glow effect */}
+              <div 
+                className="absolute top-0 left-0 h-2 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-full blur-sm opacity-60"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="absolute -top-1 left-0 w-full h-4 bg-gradient-to-r from-transparent via-white/50 to-transparent blur-sm"></div>
+            
+            {/* Progress Percentage */}
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-base-content/50 font-medium">Loading</span>
+              <span className="text-base-content/50 font-mono bg-base-200/50 backdrop-blur-sm px-2 py-1 rounded-full">
+                {Math.round(progress)}%
+              </span>
+            </div>
           </div>
-          <p className="text-white/60 text-sm mt-2 font-medium">
-            {Math.round(progress)}%
-          </p>
+        </div>
+
+        {/* Enhanced Loading Dots */}
+        <div className="flex justify-center space-x-2">
+          {[0, 1, 2].map((dot) => (
+            <div
+              key={dot}
+              className="relative"
+            >
+              <div
+                className="w-3 h-3 bg-primary/60 rounded-full animate-bounce-enhanced shadow-lg"
+                style={{
+                  animationDelay: `${dot * 0.2}s`,
+                  animationDuration: '1.4s',
+                }}
+              />
+              <div
+                className="absolute inset-0 w-3 h-3 bg-primary/30 rounded-full blur-sm animate-bounce-enhanced"
+                style={{
+                  animationDelay: `${dot * 0.2}s`,
+                  animationDuration: '1.4s',
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Particle Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full animate-twinkle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 3}s`,
-            }}
-          />
-        ))}
+      {/* Enhanced Footer */}
+      <div className="absolute bottom-8 left-0 right-0 text-center">
+        <div className="backdrop-blur-sm bg-base-100/30 mx-auto max-w-fit px-4 py-2 rounded-full border border-base-300/20">
+          <p className="text-base-content/40 text-xs font-medium tracking-wide">
+            Powered by Infinity Technologies
+          </p>
+        </div>
       </div>
     </div>
   );
