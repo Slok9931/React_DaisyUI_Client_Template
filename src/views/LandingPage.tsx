@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  ArrowRight, 
   Shield, 
   Users, 
   Database, 
@@ -12,30 +11,27 @@ import {
   Palette,
   Eye,
   Infinity,
-  Sparkles,
   Layout,
   Layers,
-  CircleDot,
   Rainbow,
-  Wand2
+  Scroll
 } from 'lucide-react';
 import { themes } from '@/themes';
 
-
 export default function InfinityDashboardLanding() {
-  const [currentTheme, setCurrentTheme] = useState('light');
+  const [currentTheme, setCurrentTheme] = useState('valentine');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', currentTheme);
   }, [currentTheme]);
 
   return (
-    <div className="min-h-screen bg-base-100 overflow-x-hidden">
+    <div className="min-h-screen bg-base-100 overflow-x-hidden" data-theme={currentTheme}>
       {/* Hero Section */}
       <HeroSection />
 
-      {/* New Interactive Theme Showcase */}
-      <InteractiveThemeShowcase onThemeChange={setCurrentTheme} />
+      {/* Scroll-Sensitive Theme Showcase */}
+      <ScrollSensitiveThemeShowcase onThemeChange={setCurrentTheme} />
 
       {/* Features Overview */}
       <FeaturesSection />
@@ -54,8 +50,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0">
         {/* Gradient Orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse"></div>
         
         {/* Geometric Patterns */}
         <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +73,7 @@ const HeroSection = () => {
       <div className="hero-content text-center relative z-10 max-w-6xl mx-auto px-4 py-20">
         <div className="space-y-12">
           {/* Logo and Brand */}
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-6">
             <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 blur-2xl opacity-30">
@@ -89,19 +85,19 @@ const HeroSection = () => {
             
             <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Infinity Dashboard
+                Unlimited themes
               </h1>
               <h2 className="text-2xl md:text-3xl text-base-content/80 font-light">
-                Dynamic • Customizable • Enterprise-Ready
+                with zero effort
               </h2>
             </div>
           </div>
 
           {/* Key Features Pills */}
-          <div className="flex flex-wrap justify-center gap-4 animate-fade-in animation-delay-200">
+          <div className="flex flex-wrap justify-center gap-4">
             {[
               "30+ Themes", 
-              "Dynamic RBAC", 
+              "Scroll-Driven", 
               "Typography Control", 
               "Real-time Updates",
               "Enterprise Security",
@@ -114,48 +110,29 @@ const HeroSection = () => {
           </div>
 
           {/* Main Description */}
-          <div className="max-w-4xl mx-auto space-y-6 animate-fade-in animation-delay-400">
-            <h3 className="text-xl md:text-2xl text-base-content/90 leading-relaxed">
-              A comprehensive React + FastAPI application featuring dynamic theming, 
-              advanced typography controls, and enterprise-grade Role-Based Access Control (RBAC).
-            </h3>
-            
-            <p className="text-lg text-base-content/70 max-w-3xl mx-auto">
-              Built with modern technologies and best practices, Infinity Dashboard provides 
-              everything you need for scalable, secure, and beautiful web applications.
+          <div className="max-w-4xl mx-auto space-y-6">
+            <p className="text-base-content/80 mx-auto max-w-lg font-sans text-sm font-light">
+              daisyUI adds a set of customizable color names to Tailwind CSS and these new colors use CSS variables for the values. Using daisyUI color names, you get Dark Mode and even more themes without adding a new class name.
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in animation-delay-600">
-            <button className="btn btn-primary btn-lg group">
-              <span>Explore Dashboard</span>
-              <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </button>
-            
-            <button className="btn btn-secondary btn-outline btn-lg">
-              <Shield size={20} className="mr-2" />
-              Sign In
-            </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a className="btn btn-wide btn-primary">
+              See all themes
+            </a>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto animate-fade-in animation-delay-800">
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-primary">30+</div>
-              <div className="text-base-content/60">Themes</div>
+          {/* Scroll Indicator */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2 text-base-content/60">
+              <Scroll className="w-5 h-5" />
+              <span className="text-sm">Scroll to experience theme magic</span>
             </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-secondary">50+</div>
-              <div className="text-base-content/60">Components</div>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-accent">100%</div>
-              <div className="text-base-content/60">Responsive</div>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-info">∞</div>
-              <div className="text-base-content/60">Possibilities</div>
+            <div className="animate-bounce">
+              <div className="w-6 h-10 border-2 border-base-content/30 rounded-full flex justify-center">
+                <div className="w-1 h-3 bg-base-content/60 rounded-full mt-2 animate-pulse"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -164,296 +141,301 @@ const HeroSection = () => {
   );
 };
 
-// New Interactive Theme Showcase Component
-const InteractiveThemeShowcase = ({ onThemeChange } : any) => {
+// Scroll-Sensitive Theme Showcase Component (DaisyUI Style)
+const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
-  const [isAutoMode, setIsAutoMode] = useState(false);
-  const [showThemeGrid, setShowThemeGrid] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrollMode, setIsScrollMode] = useState(true);
+  const [isActive, setIsActive] = useState(false);
+  const [isThemeScrolling, setIsThemeScrolling] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
-  // Auto-cycle through themes
+  // Intersection Observer to detect if section is in viewport
   useEffect(() => {
-    if (!isAutoMode) return;
-    
-    const interval = setInterval(() => {
-      setCurrentThemeIndex(prev => {
-        const nextIndex = (prev + 1) % themes.length;
-        onThemeChange(themes[nextIndex].name);
-        return nextIndex;
-      });
-    }, 2000);
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setIsThemeScrolling(true);
+          setCurrentThemeIndex(0);
+          setScrollProgress(0);
+        } else {
+          setIsThemeScrolling(false);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => {
+      if (sectionRef.current) observer.unobserve(sectionRef.current);
+    };
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [isAutoMode, onThemeChange]);
+  // Handle scroll-based theme changing with scroll lock
+  useEffect(() => {
+    if (!isScrollMode || !isActive) return;
 
-  const handleThemeSelect = (themeIndex : any) => {
+    let wheelTimeout: NodeJS.Timeout;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!isThemeScrolling) return;
+
+      e.preventDefault();
+      
+      clearTimeout(wheelTimeout);
+      
+      const direction = e.deltaY > 0 ? 1 : -1;
+      
+      wheelTimeout = setTimeout(() => {
+        setCurrentThemeIndex(prev => {
+          const newIndex = Math.max(0, Math.min(themes.length - 1, prev + direction));
+          
+          // If we've reached the last theme and scrolling down, allow page scroll
+          if (newIndex === themes.length - 1 && direction > 0) {
+            setIsThemeScrolling(false);
+            // Small delay to allow smooth transition
+            setTimeout(() => {
+              if (sectionRef.current) {
+                sectionRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
+              }
+            }, 100);
+          }
+          
+          // If we're at first theme and scrolling up, allow page scroll
+          if (newIndex === 0 && direction < 0) {
+            setIsThemeScrolling(false);
+          }
+          
+          const progress = newIndex / (themes.length - 1);
+          setScrollProgress(progress);
+          onThemeChange(themes[newIndex].name);
+          
+          return newIndex;
+        });
+      }, 50);
+    };
+
+    // Prevent default scroll behavior when theme scrolling is active
+    const handleScroll = (e: Event) => {
+      if (isThemeScrolling) {
+        e.preventDefault();
+      }
+    };
+
+    if (isThemeScrolling) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('scroll', handleScroll, { passive: false });
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(wheelTimeout);
+    };
+  }, [isScrollMode, isActive, isThemeScrolling, onThemeChange]);
+
+  const handleThemeSelect = (themeIndex: any) => {
     setCurrentThemeIndex(themeIndex);
     onThemeChange(themes[themeIndex].name);
   };
 
   return (
-    <section className="py-20 bg-base-200 relative">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
-            <Rainbow className="w-10 h-10 text-primary" />
-            Interactive Theme Studio
-            <Sparkles className="w-8 h-8 text-secondary animate-pulse" />
-          </h2>
-          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
-            Experience our revolutionary theme system with real-time previews, automatic cycling, 
-            and instant customization controls.
-          </p>
-        </div>
+    <section 
+      ref={sectionRef} 
+      className={`min-h-screen bg-base-100 relative ${isThemeScrolling ? 'fixed inset-0 z-40' : ''}`}
+    >
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-base-300 z-50">
+        <div
+          className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
+          style={{ width: `${scrollProgress * 100}%` }}
+        ></div>
+      </div>
 
-        {/* Fixed Theme Preview Card */}
-        <div className="flex justify-center mb-12">
-          <div className="card bg-base-100 shadow-2xl border border-base-300 w-full max-w-5xl relative overflow-hidden">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl"></div>
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary/5 rounded-full blur-2xl"></div>
+      {/* Theme Scrolling Indicator */}
+      {isThemeScrolling && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-base-100 border border-base-300 rounded-full px-4 py-2 shadow-xl">
+            <div className="flex items-center gap-2 text-sm">
+              <Scroll className="w-4 h-4 text-primary animate-pulse" />
+              <span>Scroll to change themes ({currentThemeIndex + 1}/{themes.length})</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`${isThemeScrolling ? 'h-screen overflow-hidden flex items-center justify-center' : 'min-h-screen'}`}>
+        <div className="col-start-1 row-start-1 flex items-center justify-center gap-6 p-6">
+          <div className="border-base-200 flex w-full items-stretch justify-center gap-6 rounded-2xl border p-6 max-w-7xl">
             
-            <div className="card-body p-8 relative z-10">
-              {/* Theme Header */}
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <CircleDot className="w-6 h-6 text-primary animate-pulse" />
-                  <h3 className="text-3xl font-bold text-primary">
-                    {themes[currentThemeIndex]?.displayName}
-                  </h3>
-                  <CircleDot className="w-6 h-6 text-primary animate-pulse" />
+            {/* Left Sidebar - Menu */}
+            <div className="hidden flex-col gap-6 xl:flex">
+              <div className="flex gap-6">
+                {/* Icon Menu */}
+                <div className="rounded-box bg-base-200 h-full">
+                  <ul className="menu">
+                    <li className="menu-title">
+                      <Layers className="w-5 h-5" />
+                    </li>
+                    <li><button className="active"><Layout className="w-5 h-5" /></button></li>
+                    <li><button><Shield className="w-5 h-5" /></button></li>
+                    <li><button><Users className="w-5 h-5" /></button></li>
+                    <li><button><Database className="w-5 h-5" /></button></li>
+                    <li><button><Settings className="w-5 h-5" /></button></li>
+                  </ul>
                 </div>
-                <div className="flex justify-center gap-2">
-                  <span className={`badge ${themes[currentThemeIndex]?.isDark ? "badge-secondary" : "badge-primary"}`}>
-                    {themes[currentThemeIndex]?.isDark ? "Dark Theme" : "Light Theme"}
-                  </span>
-                  <span className="badge badge-ghost">
-                    {currentThemeIndex + 1} of {themes.length}
-                  </span>
+
+                {/* Main Menu */}
+                <div className="rounded-box bg-base-200 h-full w-60 shrink-0">
+                  <ul className="menu w-full">
+                    <li className="menu-title">Theme Control</li>
+                    <li><button className="active"><Layout className="w-5 h-5" /> Dashboard</button></li>
+                    <li><button><Palette className="w-5 h-5" /> Themes</button></li>
+                    <li><button><Eye className="w-5 h-5" /> Preview</button></li>
+                    <li><button><Settings className="w-5 h-5" /> Settings</button></li>
+                    <li>
+                      <button>
+                        <Rainbow className="w-5 h-5" /> 
+                        Colors 
+                        <span className="badge badge-info">{themes.length}</span>
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-8">
-                {/* Color Palette Display */}
-                <div className="space-y-6">
-                  <h4 className="text-lg font-semibold flex items-center gap-2">
-                    <Palette className="w-5 h-5" />
-                    Color Palette
-                  </h4>
-                  
-                  {/* Main Colors */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div className="w-full h-16 bg-primary rounded-lg shadow-lg relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10"></div>
-                        <div className="absolute bottom-2 left-2 text-primary-content text-xs font-medium">
-                          Primary
-                        </div>
-                      </div>
-                      <div className="w-full h-16 bg-secondary rounded-lg shadow-lg relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10"></div>
-                        <div className="absolute bottom-2 left-2 text-secondary-content text-xs font-medium">
-                          Secondary
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="w-full h-16 bg-accent rounded-lg shadow-lg relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10"></div>
-                        <div className="absolute bottom-2 left-2 text-accent-content text-xs font-medium">
-                          Accent
-                        </div>
-                      </div>
-                      <div className="w-full h-16 bg-neutral rounded-lg shadow-lg relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10"></div>
-                        <div className="absolute bottom-2 left-2 text-neutral-content text-xs font-medium">
-                          Neutral
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Status Colors */}
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="w-full h-8 bg-success rounded shadow flex items-center justify-center">
-                      <span className="text-success-content text-xs font-medium">Success</span>
-                    </div>
-                    <div className="w-full h-8 bg-warning rounded shadow flex items-center justify-center">
-                      <span className="text-warning-content text-xs font-medium">Warning</span>
-                    </div>
-                    <div className="w-full h-8 bg-error rounded shadow flex items-center justify-center">
-                      <span className="text-error-content text-xs font-medium">Error</span>
-                    </div>
-                    <div className="w-full h-8 bg-info rounded shadow flex items-center justify-center">
-                      <span className="text-info-content text-xs font-medium">Info</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interactive Components Preview */}
-                <div className="space-y-6">
-                  <h4 className="text-lg font-semibold flex items-center gap-2">
-                    <Layout className="w-5 h-5" />
-                    Component Preview
-                  </h4>
-                  
-                  {/* Buttons */}
-                  <div className="space-y-3">
-                    <div className="flex gap-2 flex-wrap">
-                      <button className="btn btn-primary btn-sm">Primary</button>
-                      <button className="btn btn-secondary btn-sm">Secondary</button>
-                      <button className="btn btn-accent btn-sm">Accent</button>
-                      <button className="btn btn-ghost btn-sm">Ghost</button>
-                    </div>
-                    
-                    {/* Progress and Loading */}
-                    <div className="space-y-2">
-                      <progress className="progress progress-primary w-full" value="70" max="100"></progress>
-                      <div className="flex items-center gap-2">
-                        <span className="loading loading-spinner loading-sm text-primary"></span>
-                        <span className="text-sm">Loading components...</span>
-                      </div>
-                    </div>
-
-                    {/* Form Elements */}
-                    <div className="space-y-2">
-                      <input type="text" placeholder="Sample input" className="input input-bordered input-sm w-full" />
-                      <select className="select select-bordered select-sm w-full">
-                        <option>Sample dropdown</option>
-                        <option>Option 1</option>
-                        <option>Option 2</option>
-                      </select>
-                    </div>
-
-                    {/* Badges and Alerts */}
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="badge badge-primary">Primary</span>
-                      <span className="badge badge-secondary">Secondary</span>
-                      <span className="badge badge-accent">Accent</span>
-                      <span className="badge badge-ghost">Ghost</span>
-                    </div>
-                  </div>
-                </div>
+              {/* Button Grid */}
+              <div className="rounded-box bg-base-200 grid grow grid-cols-2 gap-4 p-6">
+                <button className="btn btn-neutral">Neutral</button>
+                <button className="btn btn-primary">Primary</button>
+                <button className="btn btn-secondary">Secondary</button>
+                <button className="btn btn-accent">Accent</button>
+                <button className="btn btn-info">Info</button>
+                <button className="btn btn-success">Success</button>
+                <button className="btn btn-warning">Warning</button>
+                <button className="btn btn-error">Error</button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Theme Controls */}
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Control Panel */}
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <button 
-                    className={`btn btn-sm ${isAutoMode ? 'btn-error' : 'btn-success'}`}
-                    onClick={() => setIsAutoMode(!isAutoMode)}
-                  >
-                    <Wand2 size={16} className="mr-2" />
-                    {isAutoMode ? 'Stop Auto' : 'Auto Mode'}
-                  </button>
-                  
-                  <button 
-                    className="btn btn-sm btn-ghost"
-                    onClick={() => setShowThemeGrid(!showThemeGrid)}
-                  >
-                    <Layers size={16} className="mr-2" />
-                    {showThemeGrid ? 'Hide Grid' : 'Show All'}
+            {/* Center Content */}
+            <div className="flex grow flex-col gap-6">
+              {/* Top Navigation */}
+              <div className="navbar bg-base-200 rounded-box">
+                <div className="grow">
+                  <button className="btn btn-ghost btn-circle avatar">
+                    <div className="w-10 rounded-full bg-primary flex items-center justify-center">
+                      <span className="text-primary-content font-bold">U</span>
+                    </div>
                   </button>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <button 
-                    className="btn btn-sm btn-ghost"
-                    onClick={() => handleThemeSelect((currentThemeIndex - 1 + themes.length) % themes.length)}
-                    disabled={isAutoMode}
-                  >
-                    ←
-                  </button>
-                  <span className="text-sm px-3 py-1 bg-base-200 rounded">
-                    {currentThemeIndex + 1} / {themes.length}
-                  </span>
-                  <button 
-                    className="btn btn-sm btn-ghost"
-                    onClick={() => handleThemeSelect((currentThemeIndex + 1) % themes.length)}
-                    disabled={isAutoMode}
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-
-              {isAutoMode && (
-                <div className="mt-4">
-                  <div className="flex items-center gap-2 text-sm text-base-content/70">
-                    <div className="loading loading-dots loading-sm"></div>
-                    <span>Auto-cycling through themes every 2 seconds...</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Theme Grid */}
-          {showThemeGrid && (
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
-                <h3 className="card-title justify-center mb-4">All Available Themes</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-60 overflow-y-auto">
-                  {themes.map((theme, index) => (
-                    <button
-                      key={theme.name}
-                      className={`btn btn-sm justify-start ${
-                        index === currentThemeIndex 
-                          ? 'btn-primary' 
-                          : 'btn-ghost'
-                      }`}
-                      onClick={() => handleThemeSelect(index)}
-                      disabled={isAutoMode}
-                    >
-                      <div className={`w-3 h-3 rounded-full mr-2 ${
-                        theme.isDark ? 'bg-secondary' : 'bg-primary'
-                      }`}></div>
-                      <span className="text-xs truncate">{theme.displayName}</span>
+                <ul className="menu menu-sm menu-horizontal rounded-box">
+                  <li>
+                    <button>
+                      <Layout className="h-5 w-5" />
+                      Themes 
+                      <span className="badge badge-sm">{themes.length}+</span>
                     </button>
+                  </li>
+                  <li>
+                    <button>
+                      Updates 
+                      <span className="badge badge-sm badge-warning">NEW</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      Stats 
+                      <span className="badge badge-xs badge-info"></span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="rounded-box flex grow flex-col px-6 pt-12 pb-8 text-center">
+                <div className="font-title text-[clamp(1.5rem,6vw,3rem)] leading-none font-black">
+                  {themes[currentThemeIndex]?.displayName} Theme
+                </div>
+                <p className="font-title font-light md:text-3xl lg:text-4xl">
+                  Theme {currentThemeIndex + 1} of {themes.length}
+                </p>
+                <div className="h-4"></div>
+                <p className="text-base-content/80 mx-auto max-w-lg font-sans text-sm font-light">
+                  {isThemeScrolling 
+                    ? "Scroll your mouse wheel to cycle through themes. The page won't scroll until you finish viewing all themes."
+                    : "Theme switching complete! Regular scrolling is now enabled."
+                  }
+                </p>
+                <div className="h-4"></div>
+                <div>
+                  <div className="btn btn-wide btn-primary">
+                    Current: {themes[currentThemeIndex]?.displayName}
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Elements Showcase */}
+              <div className="card bg-base-200">
+                <div className="card-body">
+                  <div className="flex h-full items-center justify-between gap-6">
+                    <input type="checkbox" className="toggle pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="toggle toggle-primary pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="toggle toggle-secondary pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="toggle toggle-accent pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="checkbox pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="checkbox checkbox-primary pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="checkbox checkbox-secondary pointer-events-none" defaultChecked />
+                    <input type="checkbox" className="checkbox checkbox-accent pointer-events-none" defaultChecked />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Sidebar - Color Palette */}
+            <div className="rounded-box bg-base-200 card h-full w-80 shrink-0">
+              <div className="card-body">
+                <div className="card-title mb-4 text-sm">Semantic colors</div>
+                <div className="grid grid-cols-4 gap-4">
+                  {[
+                    { name: 'primary', class: 'bg-primary' },
+                    { name: 'secondary', class: 'bg-secondary' },
+                    { name: 'accent', class: 'bg-accent' },
+                    { name: 'neutral', class: 'bg-neutral' },
+                    { name: 'primary content', class: 'bg-primary-content' },
+                    { name: 'secondary content', class: 'bg-secondary-content' },
+                    { name: 'accent content', class: 'bg-accent-content' },
+                    { name: 'neutral content', class: 'bg-neutral-content' },
+                    { name: 'base 100', class: 'bg-base-100' },
+                    { name: 'base 200', class: 'bg-base-200' },
+                    { name: 'base 300', class: 'bg-base-300' },
+                    { name: 'base content', class: 'bg-base-content' },
+                    { name: 'info', class: 'bg-info' },
+                    { name: 'success', class: 'bg-success' },
+                    { name: 'warning', class: 'bg-warning' },
+                    { name: 'error', class: 'bg-error' },
+                    { name: 'info content', class: 'bg-info-content' },
+                    { name: 'success content', class: 'bg-success-content' },
+                    { name: 'warning content', class: 'bg-warning-content' },
+                    { name: 'error content', class: 'bg-error-content' }
+                  ].map((color, index) => (
+                    <div key={index} className="flex flex-col items-center gap-1">
+                      <div className={`${color.class} rounded-btn aspect-square w-10 transition-all duration-500`}></div>
+                      <div className="text-base-content/60 text-center text-[.6rem]">
+                        {color.name}
+                      </div>
+                    </div>
                   ))}
                 </div>
+                <div className="mt-6">
+                  <div className="btn btn-block">
+                    Learn more about colors
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Feature Cards */}
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
-          <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="card-body text-center space-y-4">
-              <Eye className="w-12 h-12 text-primary mx-auto" />
-              <h3 className="card-title justify-center">Real-time Preview</h3>
-              <p className="text-base-content/70">
-                See theme changes instantly across all components without any delay or page refresh.
-              </p>
-            </div>
-          </div>
-
-          <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="card-body text-center space-y-4">
-              <Settings className="w-12 h-12 text-secondary mx-auto" />
-              <h3 className="card-title justify-center">Auto-Cycling Mode</h3>
-              <p className="text-base-content/70">
-                Let the system automatically cycle through themes to showcase the full range of possibilities.
-              </p>
-            </div>
-          </div>
-
-          <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="card-body text-center space-y-4">
-              <Sparkles className="w-12 h-12 text-accent mx-auto" />
-              <h3 className="card-title justify-center">30+ Themes</h3>
-              <p className="text-base-content/70">
-                From professional corporate themes to vibrant creative palettes, find the perfect look for your application.
-              </p>
             </div>
           </div>
         </div>
@@ -548,14 +530,14 @@ const FooterSection = () => {
               <h3 className="text-xl font-bold">Infinity</h3>
             </div>
             <p className="text-sm text-base-content/70">
-              Enterprise-grade dashboard with dynamic theming and advanced RBAC system.
+              Enterprise-grade dashboard with scroll-driven theming and advanced RBAC system.
             </p>
           </div>
 
           <div className="space-y-4">
             <h3 className="font-semibold">Features</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-base-content/70 hover:text-primary">Dynamic Themes</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary">Scroll-Driven Themes</a></li>
               <li><a href="#" className="text-base-content/70 hover:text-primary">RBAC System</a></li>
               <li><a href="#" className="text-base-content/70 hover:text-primary">Typography Control</a></li>
               <li><a href="#" className="text-base-content/70 hover:text-primary">API Documentation</a></li>
@@ -592,7 +574,7 @@ const FooterSection = () => {
 
         <div className="text-center">
           <p className="text-sm text-base-content/60">
-            © 2024 Infinity Dashboard. Built with ❤️ using React, FastAPI, and modern web technologies.
+            © 2024 Infinity Dashboard. Built with ❤️ using React, FastAPI, and scroll-driven magic.
           </p>
         </div>
       </div>
