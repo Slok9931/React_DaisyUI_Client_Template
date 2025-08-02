@@ -160,12 +160,8 @@ body {
 }
 
 @keyframes float-slow {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(90deg);
-  }
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-20px, -20px) scale(1.05); }
 }
 
 @keyframes twinkle {
@@ -192,6 +188,18 @@ body {
 @keyframes fade-in {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Enhanced Auth Page Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes rotate-y-6 {
+  0% { transform: perspective(1000px) rotateY(0deg); }
+  100% { transform: perspective(1000px) rotateY(6deg); }
 }
 
 /* Animation utilities */
@@ -227,6 +235,14 @@ body {
   animation: fade-in 0.5s ease-out;
 }
 
+.animate-pulse-gentle {
+  animation: pulse-gentle 3s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
 /* Animation delays */
 .animation-delay-100 { animation-delay: 0.1s; }
 .animation-delay-200 { animation-delay: 0.2s; }
@@ -238,3 +254,14 @@ body {
 .animation-delay-1000 { animation-delay: 1s; }
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-3000 { animation-delay: 3s; }
+
+/* 3D Transform utilities */
+.rotate-y-0 { transform: perspective(1000px) rotateY(0deg); }
+.rotate-y-6 { transform: perspective(1000px) rotateY(6deg); }
+.-rotate-y-6 { transform: perspective(1000px) rotateY(-6deg); }
+
+/* Custom transitions */
+.transition-3d {
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}

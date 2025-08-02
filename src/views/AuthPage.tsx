@@ -3,17 +3,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Eye,
   EyeOff,
-  Shield,
-  Zap,
-  Users,
+  ArrowRight,
   UserPlus,
-  Rocket,
+  Building2,
+  Users,
   Award,
-  Globe,
+  Shield,
 } from "lucide-react";
-import { Typography } from "@/components";
+import { 
+  Typography, 
+  Input, 
+  Button, 
+  Alert,
+  Divider,
+  Card,
+  CardBody,
+  SettingsButton,
+  InfinityLogo,
+  useToast
+} from "@/components";
 import { useAuthStore } from "@/store";
-import { SettingsButton } from "@/components";
 
 const useLoadingWithTimeout = (_: any) => ({
   showLoadingWithTimeout: async (fn: any, _: any) => {
@@ -35,75 +44,216 @@ export const AuthPages = () => {
       navigate(targetPath);
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 100);
+      }, 300);
     }, 150);
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex relative overflow-hidden">
-      <div
-        className={`absolute inset-0 bg-gradient-to-r transition-all duration-700 ease-in-out ${
-          isLogin
-            ? "from-primary/10 to-transparent"
-            : "from-transparent to-secondary/10"
-        }`}
-      />
+    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* --- Infinity Splash Background --- */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float-1"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float-2"></div>
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-float-3"></div>
+        
+        {/* Geometric Patterns */}
+        <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="hexagons" width="60" height="52" patternUnits="userSpaceOnUse">
+              <polygon 
+                points="30,4 52,16 52,36 30,48 8,36 8,16" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="0.5"
+                className="text-primary animate-pulse-slow"
+              />
+            </pattern>
+            <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle 
+                cx="10" 
+                cy="10" 
+                r="1" 
+                fill="currentColor" 
+                className="text-secondary"
+                opacity="0.3"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hexagons)" />
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
 
-      <div
-        className={`relative w-full lg:w-1/2 transition-all duration-700 ease-in-out ${
-          isTransitioning
-            ? isLogin
-              ? "-translate-x-4 opacity-90"
-              : "translate-x-4 opacity-90"
-            : "translate-x-0 opacity-100"
-        }`}
-      >
-        <div
-          className={`hidden md:block absolute inset-0 transition-all duration-700 ease-in-out ${
-            isLogin ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-          } bg-gradient-to-br from-primary to-primary-focus overflow-hidden`}
-        >
-          <LoginBranding />
+        {/* Animated Lines */}
+        <div className="absolute inset-0">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-gradient-to-r from-transparent via-primary/20 to-transparent h-px"
+              style={{
+                top: `${10 + i * 7}%`,
+                left: `-50%`,
+                right: `-50%`,
+                transform: `rotate(${i * 15}deg)`,
+                animation: `slide-line ${3 + i * 0.2}s infinite linear`,
+                animationDelay: `${i * 0.3}s`,
+              }}
+            />
+          ))}
         </div>
 
-        <div
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-            !isLogin
-              ? "translate-x-0 opacity-100 pointer-events-auto"
-              : "translate-x-full opacity-0 pointer-events-none"
-          }`}
-        >
-          <RegisterForm onNavigate={handlePageTransition} />
+        {/* Floating Particles */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-primary/30 rounded-full animate-float-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${4 + Math.random() * 6}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Subtle Grid Overlay */}
+        <div className="absolute inset-0 opacity-3">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path 
+                  d="M 40 0 L 0 0 0 40" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="0.5" 
+                  className="text-base-content"
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
         </div>
       </div>
 
-      <div
-        className={`relative hidden lg:flex lg:w-1/2 transition-all duration-700 ease-in-out ${
-          isTransitioning
-            ? isLogin
-              ? "translate-x-4 opacity-90"
-              : "-translate-x-4 opacity-90"
-            : "translate-x-0 opacity-100"
-        }`}
-      >
-        <div
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-            isLogin
-              ? "translate-x-0 opacity-100 pointer-events-auto"
-              : "-translate-x-full opacity-0 pointer-events-none"
-          }`}
-        >
-          <LoginForm onNavigate={handlePageTransition} />
+      {/* Settings Button */}
+      <div className="absolute top-6 right-6 z-30">
+        <SettingsButton side="right" />
+      </div>
+
+      {/* Main Container */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 items-center">
+        {/* Left Side - Branding */}
+        <div className="hidden lg:flex flex-col justify-center items-start space-y-8 p-8">
+          {/* Logo */}
+          <div className="flex items-center space-x-4">
+            <InfinityLogo size={64} />
+            <div>
+              <Typography variant="h1" className="text-4xl font-bold text-base-content">
+                Infinity
+              </Typography>
+              <Typography variant="body1" className="text-base-content/60">
+                Enterprise Dashboard
+              </Typography>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-6 max-w-md">
+            <Typography variant="h2" className="text-2xl font-semibold text-base-content">
+              Professional Dashboard Solution
+            </Typography>
+            
+            <div className="space-y-4">
+              {[
+                { icon: Building2, title: "Enterprise Ready", desc: "Built for business scale" },
+                { icon: Users, title: "Team Collaboration", desc: "Seamless team management" },
+                { icon: Award, title: "Premium Quality", desc: "Industry-leading standards" },
+              ].map((feature, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-base-300 rounded-xl flex items-center justify-center">
+                    <feature.icon size={24} className="text-primary" />
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="font-semibold text-base-content">
+                      {feature.title}
+                    </Typography>
+                    <Typography variant="body2" className="text-base-content/60 text-sm">
+                      {feature.desc}
+                    </Typography>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-base-300">
+              {[
+                { number: "50K+", label: "Active Users" },
+                { number: "99.9%", label: "Uptime" },
+                { number: "24/7", label: "Support" },
+              ].map((stat, index) => (
+                <div key={index} className="text-center">
+                  <Typography variant="h2" className="text-2xl font-bold text-primary">
+                    {stat.number}
+                  </Typography>
+                  <Typography variant="body2" className="text-base-content/60 text-xs">
+                    {stat.label}
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div
-          className={`hidden md:block absolute inset-0 transition-all duration-700 ease-in-out ${
-            !isLogin
-              ? "translate-x-0 opacity-100"
-              : "-translate-x-full opacity-0"
-          } bg-gradient-to-bl from-secondary to-secondary-focus overflow-hidden`}
-        >
-          <RegisterBranding />
+        {/* Right Side - Auth Card */}
+        <div className="flex justify-center lg:justify-end">
+          <div className="w-full max-w-md">
+            <Card
+              className={`
+                transition-all duration-500 ease-out
+                ${isTransitioning ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
+              `}
+              bordered
+            >
+              <CardBody className="p-8">
+                {/* Mobile Logo */}
+                <div className="lg:hidden flex justify-center mb-6">
+                  <InfinityLogo size={80} />
+                </div>
+
+                {/* Form Transition Container */}
+                <div className="relative min-h-[550px]">
+                  {/* Login Form */}
+                  <div
+                    className={`
+                      absolute inset-0 transition-all duration-500 ease-out
+                      ${isLogin
+                        ? 'translate-x-0 opacity-100 pointer-events-auto'
+                        : 'translate-x-8 opacity-0 pointer-events-none'
+                      }
+                    `}
+                  >
+                    <LoginForm onNavigate={handlePageTransition} />
+                  </div>
+
+                  {/* Register Form */}
+                  <div
+                    className={`
+                      absolute inset-0 transition-all duration-500 ease-out
+                      ${!isLogin
+                        ? 'translate-x-0 opacity-100 pointer-events-auto'
+                        : '-translate-x-8 opacity-0 pointer-events-none'
+                      }
+                    `}
+                  >
+                    <RegisterForm onNavigate={handlePageTransition} />
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
@@ -114,6 +264,7 @@ const LoginForm = ({ onNavigate }: any) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
+  const { addToast } = useToast();
   const { showLoadingWithTimeout } = useLoadingWithTimeout({
     minDuration: 2000,
     defaultText: "Signing you in...",
@@ -130,114 +281,114 @@ const LoginForm = ({ onNavigate }: any) => {
     try {
       await showLoadingWithTimeout(async () => {
         await login(formData);
+        addToast({
+          message: "Successfully signed in to Infinity!",
+          variant: "success"
+        });
       }, "Authenticating...");
     } catch (err) {
       console.error("Login failed:", err);
+      addToast({
+        message: "Authentication failed. Please try again.",
+        variant: "error"
+      });
     }
   };
 
   return (
-    <div className="flex items-center justify-center p-4 lg:p-12 h-full">
-      <div className="w-full max-w-md relative">
-        {/* Settings Button at top right of form card */}
-        <div className="absolute -top-36 -right-32 z-20">
-          <SettingsButton side="right" />
-        </div>
+    <div className="space-y-6">
+      {/* Form Header */}
+      <div className="text-center space-y-2">
+        <Typography variant="h2" className="text-2xl font-bold text-base-content">
+          Sign In to Infinity
+        </Typography>
+        <Typography variant="body1" className="text-base-content/60">
+          Access your professional dashboard
+        </Typography>
+      </div>
 
-        <div className="mb-8 text-center lg:text-left">
-          <Typography
-            variant="h2"
-            className="text-3xl font-bold text-base-content mb-2"
-          >
-            Welcome Back
-          </Typography>
-          <Typography variant="body1" className="text-base-content/70">
-            Sign in to your account to continue
-          </Typography>
-        </div>
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="error" onClose={clearError}>
+          Authentication failed. Please try again.
+        </Alert>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Username</span>
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Enter your username"
-              className="input input-bordered w-full h-12 focus:input-primary"
-              required
-              disabled={isLoading}
-              autoComplete="username"
-            />
-          </div>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Username"
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
+          placeholder="Enter your username"
+          required
+          disabled={isLoading}
+          autoComplete="username"
+        />
 
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Password</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                className="input input-bordered w-full h-12 pr-12 focus:input-primary"
-                required
-                disabled={isLoading}
-                autoComplete="current-password"
-              />
+        <div className="space-y-2">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Enter your password"
+            required
+            disabled={isLoading}
+            autoComplete="current-password"
+            endIcon={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/60 hover:text-base-content transition-colors"
+                className="text-base-content/60 hover:text-primary transition-colors"
                 disabled={isLoading}
                 tabIndex={-1}
               >
                 {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
-            </div>
-            <div className="label">
-              <span className="label-text-alt"></span>
-              <button
-                type="button"
-                className="label-text-alt link link-primary"
-              >
-                Forgot password?
-              </button>
-            </div>
-          </div>
-
-          <div className="form-control">
-            <button
-              type="submit"
-              className={`btn btn-primary h-12 text-base ${
-                isLoading ? "loading" : ""
-              }`}
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing In..." : "Sign In"}
+            }
+          />
+          <div className="flex justify-end">
+            <button type="button" className="text-sm text-primary hover:text-primary-focus font-medium">
+              Forgot password?
             </button>
           </div>
-        </form>
-
-        <div className="divider my-8">OR</div>
-
-        <div className="text-center">
-          <Typography variant="body2" className="text-base-content/70">
-            Don't have an account?{" "}
-            <button
-              onClick={() => onNavigate("/register")}
-              className="link link-primary font-semibold hover:underline transition-all duration-200 hover:scale-105"
-            >
-              Create one now
-            </button>
-          </Typography>
         </div>
-      </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          loading={isLoading}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            "Signing In..."
+          ) : (
+            <>
+              Sign In
+              <ArrowRight size={18} className="ml-2" />
+            </>
+          )}
+        </Button>
+      </form>
+
+      <Divider>New to INFINITY?</Divider>
+
+      <Button
+        variant="primary"
+        outline
+        size="lg"
+        block
+        onClick={() => onNavigate("/register")}
+      >
+        <UserPlus size={18} className="mr-2" />
+        Create Account
+      </Button>
     </div>
   );
 };
@@ -252,6 +403,7 @@ const RegisterForm = ({ onNavigate }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading, error, clearError } = useAuthStore();
+  const { addToast } = useToast();
   const { showLoadingWithTimeout } = useLoadingWithTimeout({
     minDuration: 2000,
     defaultText: "Creating your account...",
@@ -265,16 +417,30 @@ const RegisterForm = ({ onNavigate }: any) => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) return;
+    if (formData.password !== formData.confirmPassword) {
+      addToast({
+        message: "Passwords do not match",
+        variant: "error"
+      });
+      return;
+    }
 
     try {
       await showLoadingWithTimeout(async () => {
         const { confirmPassword, ...registrationData } = formData;
         await register(registrationData);
+        addToast({
+          message: "Account created successfully! Welcome to Infinity.",
+          variant: "success"
+        });
       }, "Setting up your account...");
       onNavigate("/login");
     } catch (err) {
       console.error("Registration failed:", err);
+      addToast({
+        message: "Registration failed. Please try again.",
+        variant: "error"
+      });
     }
   };
 
@@ -282,368 +448,130 @@ const RegisterForm = ({ onNavigate }: any) => {
   const showPasswordError = formData.confirmPassword && !passwordsMatch;
 
   return (
-    <div className="flex items-center justify-center p-4 lg:p-12 h-full">
-      <div className="w-full max-w-md relative">
-        {/* Settings Button at top right of form card */}
-        <div className="absolute -top-18 -left-32 z-20">
-          <SettingsButton side="left" />
-        </div>
-
-        <div className="mb-8 text-center lg:text-left">
-          <Typography
-            variant="h2"
-            className="text-3xl font-bold text-base-content mb-2"
-          >
-            Join Us Today
-          </Typography>
-          <Typography variant="body1" className="text-base-content/70">
-            Create your account and start your journey
-          </Typography>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Username *</span>
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Choose a username"
-              className="input input-bordered w-full h-12 focus:input-secondary"
-              required
-              disabled={isLoading}
-              autoComplete="username"
-            />
-          </div>
-
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Email *</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Enter your email"
-              className="input input-bordered w-full h-12 focus:input-secondary"
-              required
-              disabled={isLoading}
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Password *</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Create a password"
-                className="input input-bordered w-full h-12 pr-12 focus:input-secondary"
-                required
-                disabled={isLoading}
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/60 hover:text-base-content transition-colors"
-                disabled={isLoading}
-                tabIndex={-1}
-              >
-                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-              </button>
-            </div>
-          </div>
-
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-medium">Confirm Password *</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Confirm your password"
-                className={`input input-bordered w-full h-12 pr-12 focus:input-secondary ${
-                  showPasswordError ? "input-error" : ""
-                }`}
-                required
-                disabled={isLoading}
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/60 hover:text-base-content transition-colors"
-                disabled={isLoading}
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-              </button>
-            </div>
-            {showPasswordError && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  Passwords do not match
-                </span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
-            <button
-              type="submit"
-              className={`btn btn-secondary h-12 text-base ${
-                isLoading ? "loading" : ""
-              }`}
-              disabled={Boolean(isLoading || showPasswordError)}
-            >
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </button>
-          </div>
-        </form>
-
-        <div className="divider my-8">OR</div>
-
-        <div className="text-center">
-          <Typography variant="body2" className="text-base-content/70">
-            Already have an account?{" "}
-            <button
-              onClick={() => onNavigate("/login")}
-              className="link link-secondary font-semibold hover:underline transition-all duration-200 hover:scale-105"
-            >
-              Sign in here
-            </button>
-          </Typography>
-        </div>
+    <div className="space-y-6">
+      {/* Form Header */}
+      <div className="text-center space-y-2">
+        <Typography variant="h2" className="text-2xl font-bold text-base-content">
+          Join Infinity
+        </Typography>
+        <Typography variant="body1" className="text-base-content/60">
+          Create your professional dashboard account
+        </Typography>
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="error" onClose={clearError}>
+          Registration failed. Please try again.
+        </Alert>
+      )}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Username"
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
+          placeholder="Choose a username"
+          required
+          disabled={isLoading}
+          autoComplete="username"
+        />
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          placeholder="Enter your email"
+          required
+          disabled={isLoading}
+          autoComplete="email"
+        />
+
+        <Input
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          placeholder="Create a password"
+          required
+          disabled={isLoading}
+          autoComplete="new-password"
+          endIcon={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-base-content/60 hover:text-primary transition-colors"
+              disabled={isLoading}
+              tabIndex={-1}
+            >
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+            </button>
+          }
+        />
+
+        <Input
+          label="Confirm Password"
+          type={showConfirmPassword ? "text" : "password"}
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleInputChange}
+          placeholder="Confirm your password"
+          required
+          disabled={isLoading}
+          autoComplete="new-password"
+          error={showPasswordError ? "Passwords do not match" : undefined}
+          endIcon={
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="text-base-content/60 hover:text-primary transition-colors"
+              disabled={isLoading}
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+            </button>
+          }
+        />
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          loading={isLoading}
+          disabled={Boolean(isLoading || showPasswordError)}
+        >
+          {isLoading ? (
+            "Creating Account..."
+          ) : (
+            <>
+              Create Infinity Account
+              <ArrowRight size={18} className="ml-2" />
+            </>
+          )}
+        </Button>
+      </form>
+
+      <Divider>Already have an account?</Divider>
+
+      <Button
+        variant="primary"
+        outline
+        size="lg"
+        block
+        onClick={() => onNavigate("/login")}
+      >
+        <Shield size={18} className="mr-2" />
+        Sign In
+      </Button>
     </div>
   );
 };
-
-const LoginBranding = () => (
-  <>
-    {/* Background Pattern */}
-    <div className="absolute inset-0 opacity-10">
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern
-            id="grid"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 40 0 L 0 0 0 40"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-      </svg>
-    </div>
-
-    {/* Content */}
-    <div className="relative z-10 flex flex-col justify-center items-center text-primary-content p-12">
-      {/* Logo/Brand */}
-      <div className="mb-12 text-center">
-        <div className="w-24 h-24 mx-auto mb-6 bg-primary-content/20 rounded-full flex items-center justify-center backdrop-blur-sm transform transition-transform duration-500 hover:scale-110">
-          <Shield size={48} className="text-primary-content" />
-        </div>
-        <Typography
-          variant="h1"
-          className="text-4xl font-bold mb-2 transform transition-all duration-500 hover:scale-105"
-        >
-          YourBrand
-        </Typography>
-        <Typography variant="body1" className="text-xl opacity-90">
-          Secure • Reliable • Innovative
-        </Typography>
-      </div>
-
-      {/* Features */}
-      <div className="space-y-6 max-w-md">
-        {[
-          {
-            icon: Zap,
-            title: "Lightning Fast",
-            desc: "Experience blazing fast performance with our optimized platform",
-          },
-          {
-            icon: Shield,
-            title: "Enterprise Security",
-            desc: "Your data is protected with bank-level security measures",
-          },
-          {
-            icon: Users,
-            title: "Team Collaboration",
-            desc: "Work seamlessly with your team from anywhere in the world",
-          },
-        ].map((feature, index) => (
-          <div
-            key={index}
-            className="flex items-start space-x-4 transform transition-all duration-500 hover:translate-x-2"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="w-10 h-10 bg-primary-content/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-              <feature.icon size={20} className="text-primary-content" />
-            </div>
-            <div>
-              <Typography variant="h3" className="text-lg font-semibold mb-1">
-                {feature.title}
-              </Typography>
-              <Typography variant="body2" className="opacity-80">
-                {feature.desc}
-              </Typography>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Quote/Testimonial */}
-      <div className="mt-12 text-center max-w-lg transform transition-all duration-500 hover:scale-105">
-        <Typography variant="body1" className="text-lg italic opacity-90 mb-4">
-          "This platform has transformed how we work. The security and ease of
-          use is unmatched."
-        </Typography>
-        <Typography variant="body2" className="opacity-80">
-          — Sarah Johnson, Tech Lead
-        </Typography>
-      </div>
-    </div>
-  </>
-);
-
-const RegisterBranding = () => (
-  <>
-    {/* Background Pattern */}
-    <div className="absolute inset-0 opacity-10">
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern
-            id="hexagon"
-            width="60"
-            height="60"
-            patternUnits="userSpaceOnUse"
-          >
-            <polygon
-              points="30,5 50,15 50,35 30,45 10,35 10,15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#hexagon)" />
-      </svg>
-    </div>
-
-    {/* Content */}
-    <div className="relative z-10 flex flex-col justify-center items-center text-secondary-content p-12">
-      {/* Logo/Brand */}
-      <div className="mb-12 text-center">
-        <div className="w-24 h-24 mx-auto mb-6 bg-secondary-content/20 rounded-full flex items-center justify-center backdrop-blur-sm transform transition-transform duration-500 hover:scale-110">
-          <UserPlus size={48} className="text-secondary-content" />
-        </div>
-        <Typography
-          variant="h1"
-          className="text-4xl font-bold mb-2 transform transition-all duration-500 hover:scale-105"
-        >
-          Start Your Journey
-        </Typography>
-        <Typography variant="body1" className="text-xl opacity-90">
-          Join thousands of satisfied users
-        </Typography>
-      </div>
-
-      {/* Benefits */}
-      <div className="space-y-6 max-w-md">
-        {[
-          {
-            icon: Rocket,
-            title: "Quick Setup",
-            desc: "Get started in minutes with our streamlined onboarding process",
-          },
-          {
-            icon: Award,
-            title: "Premium Features",
-            desc: "Access all premium features with your free account",
-          },
-          {
-            icon: Globe,
-            title: "Global Community",
-            desc: "Connect with users from around the world in our community",
-          },
-        ].map((benefit, index) => (
-          <div
-            key={index}
-            className="flex items-start space-x-4 transform transition-all duration-500 hover:translate-x-2"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="w-10 h-10 bg-secondary-content/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-              <benefit.icon size={20} className="text-secondary-content" />
-            </div>
-            <div>
-              <Typography variant="h3" className="text-lg font-semibold mb-1">
-                {benefit.title}
-              </Typography>
-              <Typography variant="body2" className="opacity-80">
-                {benefit.desc}
-              </Typography>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Statistics */}
-      <div className="mt-12 grid grid-cols-3 gap-8 text-center">
-        {[
-          { number: "10K+", label: "Active Users" },
-          { number: "99%", label: "Satisfaction" },
-          { number: "24/7", label: "Support" },
-        ].map((stat, index) => (
-          <div
-            key={index}
-            className="transform transition-all duration-500 hover:scale-110"
-            style={{ animationDelay: `${index * 150}ms` }}
-          >
-            {index > 0 && (
-              <div className="w-px h-8 bg-secondary-content/30 mx-auto mb-2"></div>
-            )}
-            <Typography variant="h2" className="text-2xl font-bold mb-1">
-              {stat.number}
-            </Typography>
-            <Typography variant="body2" className="opacity-80 text-sm">
-              {stat.label}
-            </Typography>
-          </div>
-        ))}
-      </div>
-
-      {/* Call to action */}
-      <div className="mt-12 text-center max-w-lg transform transition-all duration-500 hover:scale-105">
-        <Typography variant="body1" className="text-lg opacity-90 mb-2">
-          Ready to transform your workflow?
-        </Typography>
-        <Typography variant="body2" className="opacity-80">
-          Join our community and experience the difference today.
-        </Typography>
-      </div>
-    </div>
-  </>
-);
 
 export default AuthPages;

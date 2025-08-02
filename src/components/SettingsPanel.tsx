@@ -469,7 +469,7 @@ export const SettingsPanel: React.FC<
         className={`
           fixed top-0 ${
             side === "right" ? "right-0" : "left-0"
-          } h-screen w-full md:w-[65%] bg-base-100 shadow-xl z-50
+          } h-screen w-full md:w-[45%] bg-base-100 shadow-xl z-50
           transform transition-transform duration-300 ease-in-out
           ${
             isOpen
