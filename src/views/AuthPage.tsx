@@ -49,8 +49,7 @@ export const AuthPages = () => {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* --- Infinity Splash Background --- */}
+    <div className="h-screen bg-base-200 flex items-center w-screen justify-center p-4 relative overflow-hidden overflow-x-hidden">
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Gradient Orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float-1"></div>
@@ -137,8 +136,7 @@ export const AuthPages = () => {
         </div>
       </div>
 
-      {/* Settings Button */}
-      <div className="absolute top-6 right-6 z-30">
+      <div className="fixed top-6 right-6 z-30">
         <SettingsButton side="right" />
       </div>
 

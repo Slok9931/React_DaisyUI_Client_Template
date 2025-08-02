@@ -40,3 +40,4 @@ export const SettingsButton: React.FC<{ side?: 'left' | 'right' }> = ({ side = '
     </>
   );
 };
+
