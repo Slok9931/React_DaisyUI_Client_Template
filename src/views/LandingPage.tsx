@@ -150,12 +150,13 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
   const [isThemeScrolling, setIsThemeScrolling] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
 
-  // Intersection Observer to detect if section is in viewport
+  // Intersection Observer to detect if section is fully in viewport
   useEffect(() => {
     const observer = new window.IntersectionObserver(
       ([entry]) => {
-        setIsActive(entry.isIntersecting);
-        if (entry.isIntersecting) {
+        // Only activate when the entire component is fully visible
+        setIsActive(entry.intersectionRatio >= 0.95);
+        if (entry.intersectionRatio >= 0.95) {
           setIsThemeScrolling(true);
           setCurrentThemeIndex(0);
           setScrollProgress(0);
@@ -163,7 +164,7 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
           setIsThemeScrolling(false);
         }
       },
-      { threshold: 0.3 }
+      { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0] }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => {
@@ -423,7 +424,7 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                     { name: 'error content', class: 'bg-error-content' }
                   ].map((color, index) => (
                     <div key={index} className="flex flex-col items-center gap-1">
-                      <div className={`${color.class} rounded-btn aspect-square w-10 transition-all duration-500`}></div>
+                      <div className={`${color.class} aspect-square w-10 transition-all duration-500`}></div>
                       <div className="text-base-content/60 text-center text-[.6rem]">
                         {color.name}
                       </div>
