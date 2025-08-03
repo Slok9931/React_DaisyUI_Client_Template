@@ -2,35 +2,63 @@ import { useState, useEffect, useRef } from 'react';
 import { 
   Shield, 
   Users, 
-  Database, 
-  Zap, 
+  Database,
   Settings,
   Star,
   Github,
   ExternalLink,
   Palette,
   Eye,
-  Infinity,
   Layout,
   Layers,
   Rainbow,
   Scroll,
-  User
+  User,
+  FileText,
+  CheckCircle,
+  Code,
+  Activity,
+  BookOpen,
+  Download,
+  Play,
+  Brush,
+  Smartphone,
+  TabletSmartphone,
+  Laptop,
+  MousePointer,
+  Type,
+  Grid,
+  Component
 } from 'lucide-react';
 import { themes } from '@/themes';
+import { InfinityLogo } from '@/components';
 
 export default function InfinityDashboardLanding() {
-
   return (
     <div className="min-h-screen bg-base-100 overflow-x-hidden">
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Scroll-Sensitive Theme Showcase */}
+      {/* Dashboard Features */}
+      <DashboardFeaturesSection />
+
+      {/* Scroll-Sensitive Theme Showcase - Keep as is */}
       <ScrollSensitiveThemeShowcase />
 
-      {/* Features Overview */}
-      <FeaturesSection />
+      {/* UI Components Library */}
+      <UIComponentsSection />
+
+      {/* Admin Features */}
+      <AdminFeaturesSection />
+
+      {/* Responsive Design */}
+      <ResponsiveDesignSection />
+
+      {/* Customization Features */}
+      <CustomizationSection />
+
+      {/* Getting Started */}
+      <GettingStartedSection />
 
       {/* Footer */}
       <FooterSection />
@@ -38,7 +66,7 @@ export default function InfinityDashboardLanding() {
   );
 }
 
-// Hero Section Component
+// Enhanced Hero Section for Dashboard
 const HeroSection = () => {
   return (
     <section className="min-h-screen relative overflow-hidden bg-gradient-to-br from-base-100 via-base-200 to-base-300">
@@ -72,32 +100,31 @@ const HeroSection = () => {
           <div className="space-y-6">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute inset-0 blur-2xl opacity-30">
-                  <Infinity size={120} className="text-primary" />
-                </div>
-                <Infinity size={120} className="relative text-primary drop-shadow-2xl" />
+                <InfinityLogo size={120} />
               </div>
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Unlimited themes
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Infinity Dashboard
               </h1>
-              <h2 className="text-2xl md:text-3xl text-base-content/80 font-light">
-                with zero effort
+              <h2 className="text-xl md:text-2xl text-base-content/80 font-light">
+                Dynamic theming admin panel with 30+ themes & comprehensive UI library
               </h2>
             </div>
           </div>
 
-          {/* Key Features Pills */}
+          {/* Key Value Props */}
           <div className="flex flex-wrap justify-center gap-4">
             {[
-              "30+ Themes", 
-              "Scroll-Driven", 
-              "Typography Control", 
-              "Real-time Updates",
-              "Enterprise Security",
-              "Mobile Responsive"
+              "🎨 30+ Beautiful Themes",
+              "🌗 Light & Dark Modes", 
+              "⚡ Real-time Theme Switching",
+              "📱 Fully Responsive",
+              "🧩 50+ UI Components",
+              "🎛️ Advanced Settings Panel",
+              "🔧 Customizable Typography",
+              "✨ Smooth Animations"
             ].map((feature, index) => (
               <span key={index} className="badge badge-ghost badge-lg px-4 py-2 text-sm font-medium">
                 {feature}
@@ -107,23 +134,55 @@ const HeroSection = () => {
 
           {/* Main Description */}
           <div className="max-w-4xl mx-auto space-y-6">
-            <p className="text-base-content/80 mx-auto max-w-lg font-sans text-sm font-light">
-              daisyUI adds a set of customizable color names to Tailwind CSS and these new colors use CSS variables for the values. Using daisyUI color names, you get Dark Mode and even more themes without adding a new class name.
+            <p className="text-lg text-base-content/80 mx-auto max-w-3xl">
+              A powerful admin dashboard built with <strong>React</strong>, <strong>TypeScript</strong>, and <strong>Tailwind CSS</strong> featuring dynamic theming, comprehensive UI components, and an intuitive settings panel.
+            </p>
+            <p className="text-base-content/70 mx-auto max-w-2xl">
+              Experience seamless theme switching, responsive design, and a complete component library - everything you need for modern web applications.
             </p>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a className="btn btn-wide btn-primary">
-              See all themes
+            <a className="btn btn-primary btn-lg gap-2">
+              <Play className="w-5 h-5" />
+              Try Dashboard
             </a>
+            <a className="btn btn-outline btn-lg gap-2">
+              <Github className="w-5 h-5" />
+              View Source
+            </a>
+            <a className="btn btn-ghost btn-lg gap-2">
+              <BookOpen className="w-5 h-5" />
+              Components Docs
+            </a>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">30+</div>
+              <div className="text-sm text-base-content/70">Themes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-secondary">50+</div>
+              <div className="text-sm text-base-content/70">UI Components</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-accent">100%</div>
+              <div className="text-sm text-base-content/70">Responsive</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-info">TypeScript</div>
+              <div className="text-sm text-base-content/70">Ready</div>
+            </div>
           </div>
 
           {/* Scroll Indicator */}
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2 text-base-content/60">
               <Scroll className="w-5 h-5" />
-              <span className="text-sm">Scroll to experience theme magic</span>
+              <span className="text-sm">Scroll to experience live theme switching</span>
             </div>
             <div className="animate-bounce">
               <div className="w-6 h-10 border-2 border-base-content/30 rounded-full flex justify-center">
@@ -137,7 +196,7 @@ const HeroSection = () => {
   );
 };
 
-// Scroll-Sensitive Theme Showcase Component (DaisyUI Style)
+// Keep your existing ScrollSensitiveThemeShowcase component exactly as is
 const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -414,44 +473,48 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
   );
 };
 
-// Features Section
-const FeaturesSection = () => {
+// Dashboard Features Section
+const DashboardFeaturesSection = () => {
   const features = [
     {
-      icon: Shield,
-      title: "Enterprise Security",
-      description: "JWT authentication, password hashing, rate limiting, and comprehensive security headers.",
-      highlights: ["JWT Tokens", "bcrypt Hashing", "Rate Limiting", "CORS Protection"]
+      icon: Palette,
+      title: "Dynamic Theming",
+      description: "Switch between 30+ beautiful themes with real-time preview and instant application.",
+      highlights: ["Live Preview", "30+ Themes", "Light & Dark", "Instant Switch"],
+      color: "text-purple-500"
     },
     {
-      icon: Users,
-      title: "Dynamic RBAC System", 
-      description: "Create roles and permissions on-demand without hardcoding. Full user lifecycle management.",
-      highlights: ["Dynamic Roles", "Granular Permissions", "User Management", "Role Inheritance"]
+      icon: Settings,
+      title: "Advanced Settings Panel", 
+      description: "Comprehensive settings panel with theme customization, typography controls, and preferences.",
+      highlights: ["Theme Selector", "Font Controls", "Live Preview", "Export Settings"],
+      color: "text-blue-500"
     },
     {
-      icon: Database,
-      title: "Advanced Database",
-      description: "PostgreSQL with SQLAlchemy ORM, migrations, connection pooling, and audit trails.",
-      highlights: ["PostgreSQL", "Migrations", "Connection Pooling", "Audit Logs"]
+      icon: Layout,
+      title: "Responsive Layout",
+      description: "Fully responsive dashboard that works perfectly on desktop, tablet, and mobile devices.",
+      highlights: ["Mobile First", "Adaptive Design", "Touch Friendly", "Cross Browser"],
+      color: "text-green-500"
     },
     {
-      icon: Zap,
-      title: "Performance Optimized",
-      description: "Optimized Docker builds, caching, health checks, and production-ready configurations.",
-      highlights: ["Docker Ready", "Health Checks", "Caching", "Monitoring"]
+      icon: Component,
+      title: "Component Library",
+      description: "50+ pre-built UI components with TypeScript support and comprehensive documentation.",
+      highlights: ["50+ Components", "TypeScript", "Documented", "Customizable"],
+      color: "text-orange-500"
     }
   ];
 
   return (
-    <section className="py-20 bg-base-100">
+    <section className="py-20 bg-base-200">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
-            🚀 Comprehensive Feature Set
+            🎨 Dashboard Features
           </h2>
           <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
-            Everything you need for building modern, scalable, and secure web applications
+            A modern admin dashboard with powerful theming capabilities and comprehensive UI components
           </p>
         </div>
 
@@ -461,7 +524,7 @@ const FeaturesSection = () => {
               <div className="card-body space-y-4">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <feature.icon className="w-6 h-6 text-primary" />
+                    <feature.icon className={`w-6 h-6 ${feature.color}`} />
                   </div>
                   <h3 className="card-title text-lg">
                     {feature.title}
@@ -488,64 +551,543 @@ const FeaturesSection = () => {
   );
 };
 
-// Footer Section  
+// UI Components Section
+const UIComponentsSection = () => {
+  const componentCategories = [
+    {
+      title: "Form Components",
+      icon: FileText,
+      components: ["Button", "Input", "Select", "Textarea", "Checkbox", "Radio", "Toggle", "Range", "Rating", "File Input"],
+      description: "Complete form controls with validation"
+    },
+    {
+      title: "Layout Components",
+      icon: Layout,
+      components: ["Card", "Modal", "Drawer", "Collapse", "Tabs", "Accordion", "Divider", "Hero", "Stats"],
+      description: "Structure your content beautifully"
+    },
+    {
+      title: "Navigation Components",
+      icon: MousePointer,
+      components: ["Menu", "Navbar", "Sidebar", "Breadcrumbs", "Pagination", "Steps", "Dropdown"],
+      description: "Guide users through your application"
+    },
+    {
+      title: "Data Display",
+      icon: Grid,
+      components: ["Alert", "Badge", "Avatar", "Tooltip", "Progress", "Loading", "Countdown", "Table"],
+      description: "Present information effectively"
+    },
+    {
+      title: "Feedback Components",
+      icon: Activity,
+      components: ["Toast", "Skeleton", "Progress Bar", "Spinner", "Alert Dialog", "Confirmation"],
+      description: "Communicate status and actions"
+    },
+    {
+      title: "Typography & Text",
+      icon: Type,
+      components: ["Typography", "Text Styles", "Headings", "Labels", "Captions", "Code Blocks"],
+      description: "Beautiful text presentation"
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <Component className="w-16 h-16 text-primary" />
+          </div>
+          <h2 className="text-4xl font-bold mb-4">
+            🧩 Comprehensive UI Library
+          </h2>
+          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
+            50+ carefully designed components built with TypeScript, fully documented, and ready to use
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {componentCategories.map((category, index) => (
+            <div key={index} className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <category.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="card-title text-lg">{category.title}</h3>
+                </div>
+                
+                <p className="text-base-content/70 mb-4 text-sm">{category.description}</p>
+                
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {category.components.slice(0, 6).map((component, idx) => (
+                    <span key={idx} className="badge badge-ghost text-xs">
+                      {component}
+                    </span>
+                  ))}
+                  {category.components.length > 6 && (
+                    <span className="badge badge-primary text-xs">
+                      +{category.components.length - 6} more
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex justify-between items-center text-xs text-base-content/60">
+                  <span>{category.components.length} components</span>
+                  <span className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3 text-success" />
+                    TypeScript
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <div className="flex flex-wrap justify-center gap-4">
+            <button className="btn btn-primary gap-2">
+              <BookOpen className="w-4 h-4" />
+              Component Documentation
+            </button>
+            <button className="btn btn-outline gap-2">
+              <Code className="w-4 h-4" />
+              View Source Code
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Admin Features Section
+const AdminFeaturesSection = () => {
+  const adminFeatures = [
+    {
+      title: "User Management",
+      icon: Users,
+      description: "Complete user administration with roles and permissions",
+      features: ["User List", "Role Assignment", "Permission Control", "Bulk Actions"]
+    },
+    {
+      title: "Dashboard Analytics",
+      icon: Activity,
+      description: "Real-time analytics and monitoring dashboard",
+      features: ["Live Charts", "Performance Metrics", "User Statistics", "System Health"]
+    },
+    {
+      title: "Settings Management",
+      icon: Settings,
+      description: "Comprehensive application settings and configuration",
+      features: ["Theme Settings", "System Config", "User Preferences", "API Settings"]
+    },
+    {
+      title: "Content Management",
+      icon: FileText,
+      description: "Manage application content and resources",
+      features: ["File Upload", "Media Library", "Content Editor", "Version Control"]
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-base-200">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <Shield className="w-16 h-16 text-primary" />
+          </div>
+          <h2 className="text-4xl font-bold mb-4">
+            🛡️ Admin Panel Features
+          </h2>
+          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
+            Powerful administration tools built for modern web applications
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {adminFeatures.map((feature, index) => (
+            <div key={index} className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-4">
+                  <feature.icon className="w-8 h-8 text-primary" />
+                  <h3 className="card-title text-lg">{feature.title}</h3>
+                </div>
+                <p className="text-base-content/70 mb-4">{feature.description}</p>
+                <ul className="space-y-1">
+                  {feature.features.map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Responsive Design Section
+const ResponsiveDesignSection = () => {
+  return (
+    <section className="py-20 bg-base-100">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold mb-4">
+            📱 Responsive Design
+          </h2>
+          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
+            Perfect experience across all devices - desktop, tablet, and mobile
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8 items-center">
+          <div className="space-y-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Smartphone className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Mobile First</h3>
+                <p className="text-base-content/70">Designed with mobile devices in mind, ensuring perfect usability on small screens.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <TabletSmartphone className="w-6 h-6 text-secondary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Tablet Optimized</h3>
+                <p className="text-base-content/70">Adaptive layouts that make full use of tablet screen real estate.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Laptop className="w-6 h-6 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Desktop Ready</h3>
+                <p className="text-base-content/70">Full-featured desktop experience with advanced layouts and interactions.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center lg:col-span-2">
+            <div className="relative">
+              {/* Desktop */}
+              <div className="bg-base-200 p-6 rounded-lg shadow-xl">
+                <div className="bg-base-100 rounded border h-64 w-80 relative overflow-hidden">
+                  <div className="h-8 bg-primary/20 flex items-center px-3 gap-2">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 rounded-full bg-error"></div>
+                      <div className="w-2 h-2 rounded-full bg-warning"></div>
+                      <div className="w-2 h-2 rounded-full bg-success"></div>
+                    </div>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 bg-primary/30 rounded w-3/4"></div>
+                    <div className="h-3 bg-base-200 rounded w-1/2"></div>
+                    <div className="h-3 bg-base-200 rounded w-2/3"></div>
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <div className="h-12 bg-secondary/30 rounded"></div>
+                      <div className="h-12 bg-accent/30 rounded"></div>
+                      <div className="h-12 bg-info/30 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tablet */}
+              <div className="absolute -bottom-4 -right-4 bg-base-200 p-4 rounded-lg shadow-lg">
+                <div className="bg-base-100 rounded border h-32 w-24 relative overflow-hidden">
+                  <div className="p-2 space-y-1">
+                    <div className="h-2 bg-primary/30 rounded w-3/4"></div>
+                    <div className="h-1 bg-base-200 rounded w-1/2"></div>
+                    <div className="h-1 bg-base-200 rounded w-2/3"></div>
+                    <div className="grid grid-cols-2 gap-1 mt-2">
+                      <div className="h-6 bg-secondary/30 rounded"></div>
+                      <div className="h-6 bg-accent/30 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile */}
+              <div className="absolute -bottom-8 -left-4 bg-base-200 p-3 rounded-lg shadow-lg">
+                <div className="bg-base-100 rounded border h-24 w-14 relative overflow-hidden">
+                  <div className="p-1 space-y-1">
+                    <div className="h-1 bg-primary/30 rounded w-3/4"></div>
+                    <div className="h-1 bg-base-200 rounded w-1/2"></div>
+                    <div className="space-y-1 mt-1">
+                      <div className="h-3 bg-secondary/30 rounded"></div>
+                      <div className="h-3 bg-accent/30 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Customization Section
+const CustomizationSection = () => {
+  return (
+    <section className="py-20 bg-gradient-to-br from-accent/5 to-info/5">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <Brush className="w-16 h-16 text-primary" />
+          </div>
+          <h2 className="text-4xl font-bold mb-4">
+            🎛️ Advanced Customization
+          </h2>
+          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
+            Fine-tune every aspect of your dashboard with our powerful customization tools
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Type className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Typography Control</h3>
+                  <p className="text-base-content/70">Customize font families, sizes, weights, and spacing with real-time preview.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Palette className="w-6 h-6 text-secondary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Color Customization</h3>
+                  <p className="text-base-content/70">Modify theme colors, create custom palettes, and preview changes instantly.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Settings className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Layout Settings</h3>
+                  <p className="text-base-content/70">Adjust sidebar behavior, navigation styles, and component spacing.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button className="btn btn-primary gap-2">
+                <Eye className="w-4 h-4" />
+                Live Preview
+              </button>
+              <button className="btn btn-outline gap-2">
+                <Download className="w-4 h-4" />
+                Export Settings
+              </button>
+            </div>
+          </div>
+
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title mb-4">Settings Panel Features</h3>
+              <div className="space-y-4">
+                {[
+                  { feature: "Theme Selector", description: "Choose from 30+ themes" },
+                  { feature: "Font Family", description: "10+ font options available" },
+                  { feature: "Typography Scale", description: "Adjust text sizes globally" },
+                  { feature: "Color Swatches", description: "Real-time color preview" },
+                  { feature: "Export/Import", description: "Save and share settings" },
+                  { feature: "Reset Options", description: "Quick reset to defaults" }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                    <div>
+                      <span className="font-medium text-sm">{item.feature}</span>
+                      <p className="text-xs text-base-content/60">{item.description}</p>
+                    </div>
+                    <CheckCircle className="w-4 h-4 text-success" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Getting Started Section
+const GettingStartedSection = () => {
+  const steps = [
+    {
+      step: "1",
+      title: "Clone Repository",
+      description: "Get the dashboard source code",
+      code: "\tgit clone <repository-url>\n\tcd infinity-dashboard"
+    },
+    {
+      step: "2", 
+      title: "Install Dependencies",
+      description: "Set up the development environment",
+      code: "\tnpm install\n\t# or yarn install"
+    },
+    {
+      step: "3",
+      title: "Start Development",
+      description: "Launch the development server",
+      code: "\tnpm run dev\n\t# or yarn dev"
+    },
+    {
+      step: "4",
+      title: "Customize & Build",
+      description: "Make it yours and deploy",
+      code: "\tnpm run build\n\tnpm run deploy"
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-base-200">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold mb-4">
+            🚀 Get Started Today
+          </h2>
+          <p className="text-xl text-base-content/70 max-w-3xl mx-auto">
+            Set up your dashboard in minutes and start building amazing applications
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step, index) => (
+            <div key={index} className="card bg-base-100 shadow-lg">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-content font-bold">
+                    {step.step}
+                  </div>
+                  <h3 className="card-title text-lg">{step.title}</h3>
+                </div>
+                <p className="text-base-content/70 mb-4">{step.description}</p>
+                <div className="mockup-code">
+                  <pre className="text-xs"><code>{step.code}</code></pre>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <div className="flex flex-wrap justify-center gap-4">
+            <button className="btn btn-primary btn-lg gap-2">
+              <Play className="w-5 h-5" />
+              Try Dashboard
+            </button>
+            <button className="btn btn-outline btn-lg gap-2">
+              <Github className="w-5 h-5" />
+              View Source
+            </button>
+            <button className="btn btn-ghost btn-lg gap-2">
+              <BookOpen className="w-5 h-5" />
+              Documentation
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Enhanced Footer Section for Dashboard
 const FooterSection = () => {
   return (
-    <footer className="bg-base-300 py-12">
+    <footer className="bg-base-300 py-16">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+        <div className="grid md:grid-cols-5 gap-8">
+          <div className="md:col-span-2 space-y-4">
             <div className="flex items-center space-x-2">
-              <Infinity size={32} />
-              <h3 className="text-xl font-bold">Infinity</h3>
+              <InfinityLogo size={32} />
+              <h3 className="text-2xl font-bold">Infinity Dashboard</h3>
             </div>
-            <p className="text-sm text-base-content/70">
-              Enterprise-grade dashboard with scroll-driven theming and advanced RBAC system.
+            <p className="text-base-content/70 max-w-md">
+              A modern, dynamic theming admin dashboard with 30+ themes, comprehensive UI components, and advanced customization options.
             </p>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold">Features</h3>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-base-content/70 hover:text-primary">Scroll-Driven Themes</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">RBAC System</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">Typography Control</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">API Documentation</a></li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold">Resources</h3>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/docs" className="text-base-content/70 hover:text-primary">API Docs</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">GitHub</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">Documentation</a></li>
-              <li><a href="#" className="text-base-content/70 hover:text-primary">Examples</a></li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold">Connect</h3>
             <div className="flex space-x-3">
-              <a href="#" className="text-base-content/70 hover:text-primary">
+              <a href="#" className="btn btn-ghost btn-sm">
                 <Github size={20} />
               </a>
-              <a href="#" className="text-base-content/70 hover:text-primary">
+              <a href="#" className="btn btn-ghost btn-sm">
                 <Star size={20} />
               </a>
-              <a href="#" className="text-base-content/70 hover:text-primary">
+              <a href="#" className="btn btn-ghost btn-sm">
                 <ExternalLink size={20} />
               </a>
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg">Features</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">30+ Themes</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Settings Panel</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">UI Components</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Responsive Design</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">TypeScript Support</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg">Components</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Form Elements</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Layout Components</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Navigation</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Data Display</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Feedback Components</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg">Tech Stack</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">React 18</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">TypeScript</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Tailwind CSS</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">DaisyUI</a></li>
+              <li><a href="#" className="text-base-content/70 hover:text-primary transition-colors">Vite</a></li>
+            </ul>
           </div>
         </div>
 
         <div className="divider my-8"></div>
 
-        <div className="text-center">
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-base-content/60">
-            © 2024 Infinity Dashboard. Built with ❤️ using React, FastAPI, and scroll-driven magic.
+            © 2024 Infinity Dashboard. Built with ❤️ using React, TypeScript, and modern development practices.
           </p>
+          <div className="flex items-center gap-4 mt-4 md:mt-0">
+            <span className="text-sm text-base-content/60">Made with</span>
+            <div className="flex items-center gap-2">
+              <span className="badge badge-primary badge-sm">React</span>
+              <span className="badge badge-secondary badge-sm">TypeScript</span>
+              <span className="badge badge-accent badge-sm">Tailwind</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
