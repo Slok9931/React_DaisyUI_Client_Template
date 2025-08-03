@@ -8,11 +8,11 @@ export const SettingsButton: React.FC<{ side?: 'left' | 'right' }> = ({ side = '
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="btn btn-ghost btn-circle btn-sm group"
+        className="btn btn-primary btn-circle btn-lg shadow-lg hover:shadow-xl group settings-spin"
         title="Settings"
       >
         <svg 
-          className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'group-hover:rotate-90'}`}
+          className="w-6 h-6 animate-spin"
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"

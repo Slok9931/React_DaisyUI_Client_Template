@@ -35,7 +35,7 @@ import { InfinityLogo } from '@/components';
 
 export default function InfinityDashboardLanding() {
   return (
-    <div className="min-h-screen bg-base-100 overflow-x-hidden">
+    <div className="min-h-screen bg-base-100 overflow-x-hidden relative">
       {/* Hero Section */}
       <HeroSection />
 
@@ -62,6 +62,7 @@ export default function InfinityDashboardLanding() {
 
       {/* Footer */}
       <FooterSection />
+
     </div>
   );
 }
@@ -144,7 +145,7 @@ const HeroSection = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a className="btn btn-primary btn-lg gap-2">
+            <a href="/login" className="btn btn-primary btn-lg gap-2">
               <Play className="w-5 h-5" />
               Try Dashboard
             </a>

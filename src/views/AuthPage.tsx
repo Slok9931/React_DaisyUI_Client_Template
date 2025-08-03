@@ -18,11 +18,12 @@ import {
   Divider,
   Card,
   CardBody,
-  SettingsButton,
   InfinityLogo,
   useToast
 } from "@/components";
 import { useAuthStore } from "@/store";
+import { useTheme } from "@/hooks";
+import { themes } from "@/themes";
 
 const useLoadingWithTimeout = (_: any) => ({
   showLoadingWithTimeout: async (fn: any, _: any) => {
@@ -36,7 +37,23 @@ export const AuthPages = () => {
   const isLogin = location.pathname === "/login";
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handlePageTransition = (targetPath: any) => {
+  const changeTheme = useTheme(state => state.changeTheme);
+  const currentTheme = useTheme(state => state.currentTheme);
+  
+  const themeOptions = [
+    themes.find(t => t.name === "dark"), 
+    themes.find(t => t.name === "forest"),
+    themes.find(t => t.name === "coffee"),
+    themes.find(t => t.name === "bumblebee"),
+  ].filter(Boolean);
+
+  const handleTheme = (e:any, themeName:any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    changeTheme(themeName);
+  };
+
+  const handlePageTransition = (targetPath:any) => {
     if (location.pathname === targetPath) return;
 
     setIsTransitioning(true);
@@ -135,11 +152,6 @@ export const AuthPages = () => {
           </svg>
         </div>
       </div>
-
-      <div className="fixed top-6 right-6 z-30">
-        <SettingsButton side="right" />
-      </div>
-
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 items-center">
         {/* Left Side - Branding */}
@@ -185,22 +197,40 @@ export const AuthPages = () => {
               ))}
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-base-300">
-              {[
-                { number: "50K+", label: "Active Users" },
-                { number: "99.9%", label: "Uptime" },
-                { number: "24/7", label: "Support" },
-              ].map((stat, index) => (
-                <div key={index} className="text-center">
-                  <Typography variant="h2" className="text-2xl font-bold text-primary">
-                    {stat.number}
-                  </Typography>
-                  <Typography variant="body2" className="text-base-content/60 text-xs">
-                    {stat.label}
-                  </Typography>
-                </div>
+            {/* Theme Buttons - Fixed with proper event handling and z-index */}
+            <div className="grid grid-cols-2 gap-3 mt-8 pt-8 border-t border-base-300 relative z-50">
+              <Typography variant="body2" className="col-span-2 text-base-content/80 font-medium mb-2">
+                Choose Theme:
+              </Typography>
+              {themeOptions.map((theme) => (
+                <button
+                  key={theme!.name}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 relative z-50 ${
+                    currentTheme.name === theme!.name
+                      ? "border-primary bg-primary/20 shadow-md"
+                      : "border-base-300 hover:border-primary/50 hover:bg-base-100"
+                  }`}
+                  onClick={(e) => handleTheme(e, theme!.name)}
+                  type="button"
+                >
+                  <div className="flex items-center justify-between">
+                    <Typography variant="body2" className="font-medium capitalize">
+                      {theme!.displayName}
+                    </Typography>
+                    <div className="flex gap-1 bg-transparent" data-theme={theme!.name}>
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      <div className="w-2 h-2 rounded-full bg-secondary"></div>
+                      <div className="w-2 h-2 rounded-full bg-accent"></div>
+                    </div>
+                  </div>
+                </button>
               ))}
+            </div>
+            
+            <div className="mt-3 text-center">
+              <Typography variant="caption" className="text-base-content/60 text-xs">
+                To explore all 30+ beautiful themes, please login to Infinity.
+              </Typography>
             </div>
           </div>
         </div>
@@ -268,13 +298,13 @@ const LoginForm = ({ onNavigate }: any) => {
     defaultText: "Signing you in...",
   });
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) clearError();
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     try {
       await showLoadingWithTimeout(async () => {
@@ -407,13 +437,13 @@ const RegisterForm = ({ onNavigate }: any) => {
     defaultText: "Creating your account...",
   });
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) clearError();
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       addToast({
