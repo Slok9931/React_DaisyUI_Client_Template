@@ -14,24 +14,20 @@ import {
   Layout,
   Layers,
   Rainbow,
-  Scroll
+  Scroll,
+  User
 } from 'lucide-react';
 import { themes } from '@/themes';
 
 export default function InfinityDashboardLanding() {
-  const [currentTheme, setCurrentTheme] = useState('valentine');
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-  }, [currentTheme]);
 
   return (
-    <div className="min-h-screen bg-base-100 overflow-x-hidden" data-theme={currentTheme}>
+    <div className="min-h-screen bg-base-100 overflow-x-hidden">
       {/* Hero Section */}
       <HeroSection />
 
       {/* Scroll-Sensitive Theme Showcase */}
-      <ScrollSensitiveThemeShowcase onThemeChange={setCurrentTheme} />
+      <ScrollSensitiveThemeShowcase />
 
       {/* Features Overview */}
       <FeaturesSection />
@@ -144,11 +140,10 @@ const HeroSection = () => {
 // Scroll-Sensitive Theme Showcase Component (DaisyUI Style)
 const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isScrollMode, setIsScrollMode] = useState(true);
   const [isActive, setIsActive] = useState(false);
   const [isThemeScrolling, setIsThemeScrolling] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const scrollDeltaRef = useRef(0);
 
   // Intersection Observer to detect if section is fully in viewport
   useEffect(() => {
@@ -159,7 +154,6 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
         if (entry.intersectionRatio >= 0.95) {
           setIsThemeScrolling(true);
           setCurrentThemeIndex(0);
-          setScrollProgress(0);
         } else {
           setIsThemeScrolling(false);
         }
@@ -174,53 +168,52 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
 
   // Handle scroll-based theme changing with scroll lock
   useEffect(() => {
-    if (!isScrollMode || !isActive) return;
+    if (!isActive) return;
 
-    let wheelTimeout: NodeJS.Timeout;
+    const DELTA_PER_THEME = 80; // Adjust this value for sensitivity (higher = slower)
 
     const handleWheel = (e: WheelEvent) => {
       if (!isThemeScrolling) return;
 
       e.preventDefault();
-      
-      clearTimeout(wheelTimeout);
-      
-      const direction = e.deltaY > 0 ? 1 : -1;
-      
-      wheelTimeout = setTimeout(() => {
+
+      scrollDeltaRef.current += e.deltaY;
+
+      // Forward scroll (down) - move to next theme
+      while (scrollDeltaRef.current >= DELTA_PER_THEME) {
         setCurrentThemeIndex(prev => {
-          const newIndex = Math.max(0, Math.min(themes.length - 1, prev + direction));
+          const newIndex = prev + 1;
           
-          // If we've reached the last theme and scrolling down, allow page scroll
-          if (newIndex === themes.length - 1 && direction > 0) {
+          // If we've reached beyond the last theme, exit theme scrolling
+          if (newIndex >= themes.length) {
             setIsThemeScrolling(false);
-            // Small delay to allow smooth transition
-            setTimeout(() => {
-              if (sectionRef.current) {
-                sectionRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
-              }
-            }, 100);
+            document.body.style.overflow = 'auto';
+            return prev; // Keep the last theme
           }
-          
-          // If we're at first theme and scrolling up, allow page scroll
-          if (newIndex === 0 && direction < 0) {
-            setIsThemeScrolling(false);
-          }
-          
-          const progress = newIndex / (themes.length - 1);
-          setScrollProgress(progress);
-          onThemeChange(themes[newIndex].name);
-          
           return newIndex;
         });
-      }, 50);
+        scrollDeltaRef.current -= DELTA_PER_THEME;
+      }
+
+      // Backward scroll (up) - move to previous theme
+      while (scrollDeltaRef.current <= -DELTA_PER_THEME) {
+        setCurrentThemeIndex(prev => {
+          const newIndex = prev - 1;
+          
+          // If we've gone before the first theme, exit theme scrolling
+          if (newIndex < 0) {
+            setIsThemeScrolling(false);
+            document.body.style.overflow = 'auto';
+            return prev; // Keep the first theme
+          }
+          return newIndex;
+        });
+        scrollDeltaRef.current += DELTA_PER_THEME;
+      }
     };
 
-    // Prevent default scroll behavior when theme scrolling is active
     const handleScroll = (e: Event) => {
-      if (isThemeScrolling) {
-        e.preventDefault();
-      }
+      if (isThemeScrolling) e.preventDefault();
     };
 
     if (isThemeScrolling) {
@@ -235,43 +228,19 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
       document.body.style.overflow = 'auto';
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('scroll', handleScroll);
-      clearTimeout(wheelTimeout);
+      scrollDeltaRef.current = 0;
     };
-  }, [isScrollMode, isActive, isThemeScrolling, onThemeChange]);
-
-  const handleThemeSelect = (themeIndex: any) => {
-    setCurrentThemeIndex(themeIndex);
-    onThemeChange(themes[themeIndex].name);
-  };
+  }, [isActive, isThemeScrolling, currentThemeIndex, onThemeChange]);
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
+      data-theme={themes[currentThemeIndex].name}
       className={`min-h-screen bg-base-100 relative ${isThemeScrolling ? 'fixed inset-0 z-40' : ''}`}
     >
-      {/* Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-base-300 z-50">
-        <div
-          className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
-          style={{ width: `${scrollProgress * 100}%` }}
-        ></div>
-      </div>
-
-      {/* Theme Scrolling Indicator */}
-      {isThemeScrolling && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-          <div className="bg-base-100 border border-base-300 rounded-full px-4 py-2 shadow-xl">
-            <div className="flex items-center gap-2 text-sm">
-              <Scroll className="w-4 h-4 text-primary animate-pulse" />
-              <span>Scroll to change themes ({currentThemeIndex + 1}/{themes.length})</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className={`${isThemeScrolling ? 'h-screen overflow-hidden flex items-center justify-center' : 'min-h-screen'}`}>
-        <div className="col-start-1 row-start-1 flex items-center justify-center gap-6 p-6">
-          <div className="border-base-200 flex w-full items-stretch justify-center gap-6 rounded-2xl border p-6 max-w-7xl">
+      <div className={`${isThemeScrolling ? 'overflow-hidden flex items-center justify-center' : 'min-h-screen'}`}>
+        <div className="col-start-1 row-start-1 flex items-center justify-center gap-6">
+          <div className="border-base-200 flex w-full items-stretch justify-center mt-24 gap-6 rounded-2xl border p-6 max-w-7xl">
             
             {/* Left Sidebar - Menu */}
             <div className="hidden flex-col gap-6 xl:flex">
@@ -329,7 +298,7 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                 <div className="grow">
                   <button className="btn btn-ghost btn-circle avatar">
                     <div className="w-10 rounded-full bg-primary flex items-center justify-center">
-                      <span className="text-primary-content font-bold">U</span>
+                      <span className="text-primary-content flex items-center justify-center mt-2 font-bold"><User className="w-5 h-5" /></span>
                     </div>
                   </button>
                 </div>
@@ -338,19 +307,19 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                     <button>
                       <Layout className="h-5 w-5" />
                       Themes 
-                      <span className="badge badge-sm">{themes.length}+</span>
+                      <span className="badge badge-sm hidden md:flex">{themes.length}+</span>
                     </button>
                   </li>
                   <li>
                     <button>
                       Updates 
-                      <span className="badge badge-sm badge-warning">NEW</span>
+                      <span className="badge badge-sm badge-warning hidden md:flex">NEW</span>
                     </button>
                   </li>
                   <li>
                     <button>
                       Stats 
-                      <span className="badge badge-xs badge-info"></span>
+                      <span className="badge badge-xs badge-info hidden md:flex"></span>
                     </button>
                   </li>
                 </ul>
@@ -382,7 +351,7 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
               {/* Form Elements Showcase */}
               <div className="card bg-base-200">
                 <div className="card-body">
-                  <div className="flex h-full items-center justify-between gap-6">
+                  <div className="flex h-full items-center justify-center flex-wrap gap-6">
                     <input type="checkbox" className="toggle pointer-events-none" defaultChecked />
                     <input type="checkbox" className="toggle toggle-primary pointer-events-none" defaultChecked />
                     <input type="checkbox" className="toggle toggle-secondary pointer-events-none" defaultChecked />
@@ -397,7 +366,7 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
             </div>
 
             {/* Right Sidebar - Color Palette */}
-            <div className="rounded-box bg-base-200 card h-full w-80 shrink-0">
+            <div className="hidden xl:flex rounded-box bg-base-200 card h-full w-80 shrink-0">
               <div className="card-body">
                 <div className="card-title mb-4 text-sm">Semantic colors</div>
                 <div className="grid grid-cols-4 gap-4">
