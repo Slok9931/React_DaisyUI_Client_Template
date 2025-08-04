@@ -32,7 +32,7 @@ export const AppRoutes: React.FC = () => {
           element={<Navigate to="/login" replace />} 
         />
         <Route 
-          path="/" 
+          path="/dashboard" 
           element={
             <PrivateRoute>
               <PrivateLayout>

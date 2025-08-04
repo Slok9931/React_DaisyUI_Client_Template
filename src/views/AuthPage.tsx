@@ -314,6 +314,7 @@ const LoginForm = ({ onNavigate }: any) => {
           variant: "success"
         });
       }, "Authenticating...");
+      onNavigate("/dashboard");
     } catch (err) {
       console.error("Login failed:", err);
       addToast({
@@ -417,6 +418,17 @@ const LoginForm = ({ onNavigate }: any) => {
         <UserPlus size={18} className="mr-2" />
         Create Account
       </Button>
+      <div className="mt-4 p-4 bg-base-200 rounded-xl">
+        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+          Username : <strong>superadmin</strong> | Password : <strong>superadmin123</strong>
+        </Typography>
+        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+          Username : <strong>admin</strong> | Password : <strong>admin123</strong>
+        </Typography>
+        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+          Username : <strong>user</strong> | Password : <strong>user123</strong>
+        </Typography>
+      </div>
     </div>
   );
 };
@@ -598,6 +610,18 @@ const RegisterForm = ({ onNavigate }: any) => {
         <Shield size={18} className="mr-2" />
         Sign In
       </Button>
+      <div className="mt-4 p-4 bg-transparent">
+        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+          By creating an account, you agree to our{" "}
+          <a href="/terms" className="text-primary hover:underline">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" className="text-primary hover:underline">
+            Privacy Policy
+          </a>.
+        </Typography>
+      </div>
     </div>
   );
 };

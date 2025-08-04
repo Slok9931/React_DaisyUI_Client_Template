@@ -8,7 +8,7 @@ export const SettingsButton: React.FC<{ side?: 'left' | 'right' }> = ({ side = '
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="btn btn-primary btn-circle btn-lg shadow-lg hover:shadow-xl group settings-spin"
+        className="settings-spin hover:cursor-pointer"
         title="Settings"
       >
         <svg 
