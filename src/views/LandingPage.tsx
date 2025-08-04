@@ -784,7 +784,7 @@ const ResponsiveDesignSection = () => {
             <div className="relative">
               {/* Desktop */}
               <div className="bg-base-200 p-6 rounded-lg shadow-xl">
-                <div className="bg-base-100 rounded border h-64 w-80 relative overflow-hidden">
+                <div className="bg-base-100 rounded border h-48 w-64 md:h-64 md:w-80 relative overflow-hidden">
                   <div className="h-8 bg-primary/20 flex items-center px-3 gap-2">
                     <div className="flex gap-1">
                       <div className="w-2 h-2 rounded-full bg-error"></div>
@@ -807,7 +807,7 @@ const ResponsiveDesignSection = () => {
 
               {/* Tablet */}
               <div className="absolute -bottom-4 -right-4 bg-base-200 p-4 rounded-lg shadow-lg">
-                <div className="bg-base-100 rounded border h-32 w-24 relative overflow-hidden">
+                <div className="bg-base-100 rounded border h-24 w-16 md:h-32 md:w-24 relative overflow-hidden">
                   <div className="p-2 space-y-1">
                     <div className="h-2 bg-primary/30 rounded w-3/4"></div>
                     <div className="h-1 bg-base-200 rounded w-1/2"></div>
@@ -815,6 +815,7 @@ const ResponsiveDesignSection = () => {
                     <div className="grid grid-cols-2 gap-1 mt-2">
                       <div className="h-6 bg-secondary/30 rounded"></div>
                       <div className="h-6 bg-accent/30 rounded"></div>
+                      <div className="h-6 bg-info/30 rounded"></div>
                     </div>
                   </div>
                 </div>
@@ -822,13 +823,14 @@ const ResponsiveDesignSection = () => {
 
               {/* Mobile */}
               <div className="absolute -bottom-8 -left-4 bg-base-200 p-3 rounded-lg shadow-lg">
-                <div className="bg-base-100 rounded border h-24 w-14 relative overflow-hidden">
+                <div className="bg-base-100 rounded border h-18 w-12 md:h-24 md:w-14 relative overflow-hidden">
                   <div className="p-1 space-y-1">
                     <div className="h-1 bg-primary/30 rounded w-3/4"></div>
                     <div className="h-1 bg-base-200 rounded w-1/2"></div>
                     <div className="space-y-1 mt-1">
                       <div className="h-3 bg-secondary/30 rounded"></div>
                       <div className="h-3 bg-accent/30 rounded"></div>
+                      <div className="h-3 bg-info/30 rounded"></div>
                     </div>
                   </div>
                 </div>
@@ -1079,7 +1081,7 @@ const FooterSection = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-base-content/60">
-            © 2024 Infinity Dashboard. Built with ❤️ using React, TypeScript, and modern development practices.
+            © 2025 Infinity Dashboard. Built with ❤️ using React, TypeScript, and modern development practices.
           </p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <span className="text-sm text-base-content/60">Made with</span>
