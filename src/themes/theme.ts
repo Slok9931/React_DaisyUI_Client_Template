@@ -30,6 +30,12 @@ export const themes: Theme[] = [
   { name: 'night', displayName: 'Night', isDark: true },
   { name: 'coffee', displayName: 'Coffee', isDark: true },
   { name: 'winter', displayName: 'Winter', isDark: false },
+  { name: 'dim', displayName: 'Dim', isDark: true },
+  { name: 'nord', displayName: 'Nord', isDark: false },
+  { name: 'sunset', displayName: 'Sunset', isDark: true },
+  { name: 'caramellete', displayName: 'Caramellete', isDark: false },
+  { name: 'abyss', displayName: 'Abyss', isDark: true },
+  { name: 'silk', displayName: 'Silk', isDark: false },
 ];
 
 export const applyTheme = (themeName: string): void => {
