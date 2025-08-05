@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PrivateNavbar, ProfileTab, Sidebar, Typography } from '@/components';
-import { Palette, Pencil, Type, Eye, User } from 'lucide-react';
+import { Palette, Pencil, Type, Eye, User, Maximize } from 'lucide-react';
 import {
   ThemeTab,
   FontFamilyTab,
   TypographyTab,
   PreviewTab,
+  Tooltip, useToast,
+  PrivateNavbar, ProfileTab, Sidebar, Typography
 } from '@/components';
 
 interface PrivateLayoutProps {
@@ -21,6 +22,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(true);
   const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'typography' | 'preview' | 'profile'>('themes');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!leftSidebarCollapsed && !rightSidebarCollapsed) {
@@ -28,7 +32,34 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
     }
   }, [leftSidebarCollapsed, rightSidebarCollapsed]);
 
-  // Tab content mapping
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+        addToast({ message: 'Entered fullscreen mode', variant: 'info' });
+      }).catch(() => {
+        addToast({ message: 'Error attempting to enable fullscreen', variant: 'error' });
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+        addToast({ message: 'Exited fullscreen mode', variant: 'info' });
+      }).catch(() => {
+        addToast({ message: 'Error attempting to exit fullscreen', variant: 'error' });
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   const tabContent: Record<typeof activeTab, React.ReactNode> = {
     profile: <ProfileTab />,
     themes: <ThemeTab />,
@@ -49,7 +80,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           setRightSidebarCollapsed(false);
         } else {
           setRightSidebarCollapsed(true);
+          setLeftSidebarCollapsed(false);
         }
+        addToast({ message: 'Profile tab opened', variant: 'info' });
       },
       active: activeTab === 'profile' && !rightSidebarCollapsed,
     },
@@ -60,11 +93,13 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: () => {
         setActiveTab('themes');
         if (rightSidebarCollapsed) {
-          setLeftSidebarCollapsed(true); // Close left sidebar
-          setRightSidebarCollapsed(false); // Open right sidebar
+          setLeftSidebarCollapsed(true);
+          setRightSidebarCollapsed(false);
         } else {
-          setRightSidebarCollapsed(true); // Close right sidebar
+          setRightSidebarCollapsed(true);
+          setLeftSidebarCollapsed(false);
         }
+        addToast({ message: 'Themes tab opened', variant: 'info' });
       },
       active: activeTab === 'themes' && !rightSidebarCollapsed,
     },
@@ -75,11 +110,13 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: () => {
         setActiveTab('fonts');
         if (rightSidebarCollapsed) {
-          setLeftSidebarCollapsed(true); // Close left sidebar
-          setRightSidebarCollapsed(false); // Open right sidebar
+          setLeftSidebarCollapsed(true);
+          setRightSidebarCollapsed(false);
         } else {
-          setRightSidebarCollapsed(true); // Close right sidebar
+          setRightSidebarCollapsed(true);
+          setLeftSidebarCollapsed(false);
         }
+        addToast({ message: 'Font Family tab opened', variant: 'info' });
       },
       active: activeTab === 'fonts' && !rightSidebarCollapsed,
     },
@@ -90,11 +127,13 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: () => {
         setActiveTab('typography');
         if (rightSidebarCollapsed) {
-          setLeftSidebarCollapsed(true); // Close left sidebar
-          setRightSidebarCollapsed(false); // Open right sidebar
+          setLeftSidebarCollapsed(true);
+          setRightSidebarCollapsed(false);
         } else {
-          setRightSidebarCollapsed(true); // Close right sidebar
+          setRightSidebarCollapsed(true);
+          setLeftSidebarCollapsed(false);
         }
+        addToast({ message: 'Typography tab opened', variant: 'info' });
       },
       active: activeTab === 'typography' && !rightSidebarCollapsed,
     },
@@ -105,13 +144,22 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: () => {
         setActiveTab('preview');
         if (rightSidebarCollapsed) {
-          setLeftSidebarCollapsed(true); // Close left sidebar
-          setRightSidebarCollapsed(false); // Open right sidebar
+          setLeftSidebarCollapsed(true);
+          setRightSidebarCollapsed(false);
         } else {
-          setRightSidebarCollapsed(true); // Close right sidebar
+          setRightSidebarCollapsed(true);
+          setLeftSidebarCollapsed(false);
         }
+        addToast({ message: 'Preview tab opened', variant: 'info' });
       },
       active: activeTab === 'preview' && !rightSidebarCollapsed,
+    },
+    {
+      id: 'fullscreen',
+      icon: <Maximize className="w-5 h-5" />,
+      label: isFullscreen ? 'Exit Fullscreen' : 'Fullscreen',
+      onClick: toggleFullscreen,
+      active: false,
     },
   ];
 
@@ -120,8 +168,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       setLeftSidebarCollapsed(true);
     } else {
       setLeftSidebarCollapsed(false);
-      setRightSidebarCollapsed(true); // Close right sidebar when opening left
+      setRightSidebarCollapsed(true);
     }
+    addToast({ message: leftSidebarCollapsed ? 'Sidebar opened' : 'Sidebar collapsed', variant: 'info' });
   };
 
   const handleRightSidebarToggle = () => {
@@ -132,6 +181,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       setRightSidebarCollapsed(false);
       setLeftSidebarCollapsed(true);
     }
+    addToast({ message: rightSidebarCollapsed ? 'Right sidebar opened' : 'Right sidebar collapsed', variant: 'info' });
   };
 
   const leftSidebarWidth = leftSidebarCollapsed ? 'w-16' : 'w-64';
@@ -201,19 +251,42 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         >
           {/* Icon bar - always visible */}
           <div className="w-16 flex-shrink-0 h-full flex flex-col items-center py-4 bg-base-100 border-l border-base-300 shadow-lg">
-            {rightSidebarItems.map(item => (
-              <button
-                key={item.id}
-                className={`
-                  mb-2 p-2 rounded-lg flex items-center justify-center transition-colors w-10 h-10
-                  ${activeTab === item.id && !rightSidebarCollapsed ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
-                `}
-                title={item.label}
-                onClick={item.onClick}
-              >
-                {item.icon}
-              </button>
-            ))}
+            <div className="flex flex-col flex-1 items-center">
+              {rightSidebarItems
+                .filter(item => item.id !== 'fullscreen')
+                .map(item => (
+                  <Tooltip key={item.id} tip={item.label} position="left">
+                    <button
+                      className={`
+                        mb-2 p-2 rounded-lg flex items-center justify-center transition-colors w-10 h-10 cursor-pointer
+                        ${(activeTab === item.id && !rightSidebarCollapsed) ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
+                      `}
+                      title={item.label}
+                      onClick={item.onClick}
+                    >
+                      {item.icon}
+                    </button>
+                  </Tooltip>
+                ))}
+            </div>
+            <div className="mt-auto mb-2">
+              {rightSidebarItems
+                .filter(item => item.id === 'fullscreen')
+                .map(item => (
+                  <Tooltip key={item.id} tip={item.label} position="left">
+                    <button
+                      className={`
+                        p-2 rounded-lg flex items-center justify-center transition-colors w-10 h-10 cursor-pointer
+                        ${isFullscreen ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
+                      `}
+                      title={item.label}
+                      onClick={item.onClick}
+                    >
+                      {item.icon}
+                    </button>
+                  </Tooltip>
+                ))}
+            </div>
           </div>
           <div
             className={`
