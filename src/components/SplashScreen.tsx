@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { InfinityLogo } from './InfinityLogo';
+import { InfinityLogo, Typography, Tooltip, useToast } from '@/components';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -13,6 +13,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
+  const { addToast } = useToast();
 
   const loadingSteps = [
     "Initializing Infinity...",
@@ -36,6 +37,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     loadingSteps.forEach((_, index) => {
       timeouts.push(setTimeout(() => {
         setCurrentStep(index);
+        addToast({ message: loadingSteps[index], variant: 'info' });
       }, index * stepDuration));
     });
 
@@ -58,7 +60,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       timeouts.forEach(clearTimeout);
       clearInterval(progressInterval);
     };
-  }, [duration, onComplete]);
+  }, [duration, onComplete, addToast]);
 
   return (
     <div className={`
@@ -178,16 +180,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
           {/* Brand Name with enhanced styling */}
           <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-light text-base-content tracking-wider relative">
+            <Typography variant="h1" className="text-4xl md:text-5xl font-light text-base-content tracking-wider relative">
               <span className="relative z-10">Infinity</span>
               <div className="absolute inset-0 blur-sm text-primary/30 animate-text-glow">
                 Infinity
               </div>
-            </h1>
+            </Typography>
             <div className="w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto animate-gradient-x"></div>
-            <p className="text-base-content/60 text-sm font-medium tracking-wide">
+            <Typography variant="body2" className="text-base-content/60 text-sm font-medium tracking-wide">
               DASHBOARD
-            </p>
+            </Typography>
           </div>
         </div>
 
@@ -195,9 +197,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         <div className="space-y-6">
           {/* Loading Text */}
           <div className="h-6">
-            <p className="text-base-content/80 text-sm font-medium animate-fade-in">
+            <Typography variant="body2" className="text-base-content/80 font-medium animate-fade-in">
               {loadingSteps[currentStep]}
-            </p>
+            </Typography>
           </div>
 
           {/* Enhanced Progress Bar */}
@@ -221,10 +223,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
             
             {/* Progress Percentage */}
             <div className="flex justify-between items-center text-xs">
-              <span className="text-base-content/50 font-medium">Loading</span>
-              <span className="text-base-content/50 font-mono bg-base-200/50 backdrop-blur-sm px-2 py-1 rounded-full">
+              <Typography variant="caption" className="text-base-content/50 font-medium">Loading</Typography>
+              <Typography variant="caption" className="text-base-content/50 font-mono bg-base-200/50 backdrop-blur-sm px-2 py-1 rounded-full">
                 {Math.round(progress)}%
-              </span>
+              </Typography>
             </div>
           </div>
         </div>
@@ -232,25 +234,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         {/* Enhanced Loading Dots */}
         <div className="flex justify-center space-x-2">
           {[0, 1, 2].map((dot) => (
-            <div
-              key={dot}
-              className="relative"
-            >
-              <div
-                className="w-3 h-3 bg-primary/60 rounded-full animate-bounce-enhanced shadow-lg"
-                style={{
-                  animationDelay: `${dot * 0.2}s`,
-                  animationDuration: '1.4s',
-                }}
-              />
-              <div
-                className="absolute inset-0 w-3 h-3 bg-primary/30 rounded-full blur-sm animate-bounce-enhanced"
-                style={{
-                  animationDelay: `${dot * 0.2}s`,
-                  animationDuration: '1.4s',
-                }}
-              />
-            </div>
+            <Tooltip key={dot} tip={`Loading step ${dot + 1}`}>
+              <div className="relative cursor-pointer">
+                <div
+                  className="w-3 h-3 bg-primary/60 rounded-full animate-bounce-enhanced shadow-lg"
+                  style={{
+                    animationDelay: `${dot * 0.2}s`,
+                    animationDuration: '1.4s',
+                  }}
+                />
+                <div
+                  className="absolute inset-0 w-3 h-3 bg-primary/30 rounded-full blur-sm animate-bounce-enhanced"
+                  style={{
+                    animationDelay: `${dot * 0.2}s`,
+                    animationDuration: '1.4s',
+                  }}
+                />
+              </div>
+            </Tooltip>
           ))}
         </div>
       </div>
@@ -258,9 +259,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       {/* Enhanced Footer */}
       <div className="absolute bottom-8 left-0 right-0 text-center">
         <div className="backdrop-blur-sm bg-base-100/30 mx-auto max-w-fit px-4 py-2 rounded-full border border-base-300/20">
-          <p className="text-base-content/40 text-xs font-medium tracking-wide">
+          <Typography variant="caption" className="text-base-content/40 font-medium tracking-wide">
             Powered by Infinity Technologies
-          </p>
+          </Typography>
         </div>
       </div>
     </div>

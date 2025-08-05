@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
-import { InfinityLogo, Typography } from '@/components';
+import { InfinityLogo, Typography, Tooltip, useToast } from '@/components';
 
 interface SidebarItem {
   id: string;
@@ -41,14 +41,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuthStore();
+  const { addToast } = useToast();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const handleLogout = async () => {
     try {
       await logout();
       navigate('/login');
+      addToast({ message: 'Logged out successfully', variant: 'info' });
     } catch (error) {
-      console.error('Logout failed:', error);
+      addToast({ message: 'Logout failed', variant: 'error' });
     }
   };
 
@@ -73,54 +75,59 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     return (
       <div key={item.id}>
-        <div
-          className={`
-            flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all duration-200
-            ${itemIsActive ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
-            ${level > 0 ? 'ml-4' : ''}
-          `}
-          onClick={() => {
-            if (hasChildren && !collapsed) {
-              toggleExpanded(item.id);
-            } else if (item.href) {
-              navigate(item.href);
-            } else {
-              item.onClick?.();
-            }
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <span className={`${collapsed && level === 0 ? 'text-lg' : 'text-base'}`}>
-              {item.icon}
-            </span>
-            {!collapsed && (
-              <Typography variant="body2" className="font-medium">
-                {item.label}
-              </Typography>
-            )}
-          </div>
-          
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              {item.badge && (
-                <span className="badge badge-primary badge-sm">
-                  {item.badge}
-                </span>
-              )}
-              {hasChildren && (
-                <svg
-                  className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+        <Tooltip tip={item.label ?? ''} position={side === 'right' ? 'left' : 'right'}>
+          <div
+            className={`
+              flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all duration-200
+              ${itemIsActive ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
+              ${level > 0 ? 'ml-4' : ''}
+            `}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              if (hasChildren && !collapsed) {
+                toggleExpanded(item.id);
+                addToast({ message: `${item.label} expanded`, variant: 'info' });
+              } else if (item.href) {
+                navigate(item.href);
+                addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
+              } else {
+                item.onClick?.();
+                addToast({ message: `${item.label} clicked`, variant: 'info' });
+              }
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className={`${collapsed && level === 0 ? 'text-lg' : 'text-base'}`}>
+                {item.icon}
+              </span>
+              {!collapsed && (
+                <Typography variant="body2" className="font-medium">
+                  {item.label}
+                </Typography>
               )}
             </div>
-          )}
-        </div>
-
+            
+            {!collapsed && (
+              <div className="flex items-center gap-2">
+                {item.badge && (
+                  <span className="badge badge-primary badge-sm">
+                    {item.badge}
+                  </span>
+                )}
+                {hasChildren && (
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
+              </div>
+            )}
+          </div>
+        </Tooltip>
         {/* Children */}
         {hasChildren && isExpanded && !collapsed && (
           <div className="ml-2 mt-1 space-y-1">
@@ -149,42 +156,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
             
             {showToggle && onToggleCollapse && (
-              <button
-                onClick={onToggleCollapse}
-                className="btn btn-ghost btn-sm btn-square transition-transform duration-200 hover:scale-110"
-              >
-                <svg
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    collapsed ? (side === 'right' ? 'rotate-180' : '') : (side === 'right' ? '' : 'rotate-180')
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <Tooltip tip={collapsed ? "Expand Sidebar" : "Collapse Sidebar"} position={side === 'right' ? 'left' : 'right'}>
+                <button
+                  onClick={() => {
+                    onToggleCollapse();
+                    addToast({ message: collapsed ? 'Sidebar expanded' : 'Sidebar collapsed', variant: 'info' });
+                  }}
+                  className="btn btn-ghost btn-sm btn-square transition-transform duration-200 hover:scale-110 cursor-pointer"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                </svg>
-              </button>
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      collapsed ? (side === 'right' ? 'rotate-180' : '') : (side === 'right' ? '' : 'rotate-180')
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  </svg>
+                </button>
+              </Tooltip>
             )}
 
             {onClose && (
-              <button
-                onClick={onClose}
-                className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <Tooltip tip="Close Sidebar" position={side === 'right' ? 'left' : 'right'}>
+                <button
+                  onClick={onClose}
+                  className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110 cursor-pointer"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </Tooltip>
             )}
           </div>
         </div>
@@ -198,19 +212,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Footer */}
       {authLogout && (
         <div className="p-2 border-t border-base-300 flex-shrink-0">
-          <div
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-all duration-200"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            {!collapsed && (
-              <Typography variant="body2" className="font-medium">
-                Logout
-              </Typography>
-            )}
-          </div>
+          <Tooltip tip="Logout" position={side === 'right' ? 'left' : 'right'}>
+            <div
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-all duration-200"
+              style={{ cursor: 'pointer' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              {!collapsed && (
+                <Typography variant="body2" className="font-medium">
+                  Logout
+                </Typography>
+              )}
+            </div>
+          </Tooltip>
         </div>
       )}
     </div>
@@ -248,7 +265,7 @@ const defaultSidebarItems: SidebarItem[] = [
     label: 'Users',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
     children: [
