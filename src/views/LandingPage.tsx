@@ -33,7 +33,7 @@ import {
 import { themes } from '@/themes';
 import { InfinityLogo } from '@/components';
 
-export default function InfinityDashboardLanding() {
+export function InfinityDashboardLanding() {
   return (
     <div className="min-h-screen bg-base-100 overflow-x-hidden relative">
       {/* Hero Section */}

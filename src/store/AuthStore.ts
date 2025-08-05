@@ -151,6 +151,8 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null,
           });
+
+          localStorage.removeItem('auth-storage');
         }
       },
 

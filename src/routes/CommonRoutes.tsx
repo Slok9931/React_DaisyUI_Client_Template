@@ -3,14 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import { PrivateRoute, PublicRoute } from '@/routes';
 import { PrivateLayout } from '@/layouts';
-import { ThemeDemo, AuthPages } from '@/views';
-import LandingPage from '@/views/LandingPage';
+import { ThemeDemo, AuthPages, InfinityDashboardLanding } from '@/views';
 
 export const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<InfinityDashboardLanding />} />
         <Route 
           path="/login" 
           element={

@@ -22,7 +22,6 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
   const hideTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const showLoading = useCallback((text?: string) => {
-    // Clear any pending hide timeout
     if (hideTimeout.current) {
       clearTimeout(hideTimeout.current);
       hideTimeout.current = null;
@@ -39,10 +38,9 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
   const hideLoading = useCallback(() => {
     const currentTime = Date.now();
     const elapsedTime = loadingStartTime.current ? currentTime - loadingStartTime.current : 0;
-    const minDisplayTime = 2000; // 2 seconds minimum
+    const minDisplayTime = 2000;
 
     if (elapsedTime < minDisplayTime) {
-      // Wait for the remaining time to reach minimum display duration
       const remainingTime = minDisplayTime - elapsedTime;
       
       hideTimeout.current = setTimeout(() => {
@@ -51,7 +49,6 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
         hideTimeout.current = null;
       }, remainingTime);
     } else {
-      // Already displayed for minimum time, hide immediately
       setIsLoading(false);
       loadingStartTime.current = null;
     }

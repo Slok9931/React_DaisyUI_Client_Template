@@ -15,7 +15,6 @@ export const FullPageLoader: React.FC<FullPageLoaderProps> = ({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Trigger entrance animation
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 50);

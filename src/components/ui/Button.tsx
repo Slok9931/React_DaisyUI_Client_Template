@@ -42,7 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
     block && 'btn-block',
     circle && 'btn-circle',
     square && 'btn-square',
-    loading && 'loading',
+    loading && 'loading loading-infinity',
     className
   ].filter(Boolean).join(' ');
 

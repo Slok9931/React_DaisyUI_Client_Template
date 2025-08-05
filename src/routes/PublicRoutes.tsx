@@ -2,7 +2,6 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { useAuthStore } from '@/store';
-import { FullPageLoader } from '@/components';
 
 interface PublicRouteProps {
   children: React.ReactNode;
@@ -13,13 +12,7 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({
   children, 
   redirectTo = '/dashboard' 
 }) => {
-  const { isAuthenticated, isLoading } = useAuthStore();
-
-  if (isLoading) {
-    return (
-      <FullPageLoader text="Checking Infinity credentials..." />
-    );
-  }
+  const { isAuthenticated } = useAuthStore();
 
   if (isAuthenticated) {
     return <Navigate to={redirectTo} replace />;

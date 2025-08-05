@@ -10,26 +10,20 @@ import {
   Award,
   Shield,
 } from "lucide-react";
-import { 
-  Typography, 
-  Input, 
-  Button, 
+import {
+  Typography,
+  Input,
+  Button,
   Alert,
   Divider,
   Card,
   CardBody,
   InfinityLogo,
-  useToast
+  useToast,
 } from "@/components";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useLoading } from "@/store";
 import { useTheme } from "@/hooks";
 import { themes } from "@/themes";
-
-const useLoadingWithTimeout = (_: any) => ({
-  showLoadingWithTimeout: async (fn: any, _: any) => {
-    await fn();
-  },
-});
 
 export const AuthPages = () => {
   const location = useLocation();
@@ -37,23 +31,23 @@ export const AuthPages = () => {
   const isLogin = location.pathname === "/login";
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const changeTheme = useTheme(state => state.changeTheme);
-  const currentTheme = useTheme(state => state.currentTheme);
-  
+  const changeTheme = useTheme((state) => state.changeTheme);
+  const currentTheme = useTheme((state) => state.currentTheme);
+
   const themeOptions = [
-    themes.find(t => t.name === "dark"), 
-    themes.find(t => t.name === "forest"),
-    themes.find(t => t.name === "coffee"),
-    themes.find(t => t.name === "bumblebee"),
+    themes.find((t) => t.name === "dark"),
+    themes.find((t) => t.name === "forest"),
+    themes.find((t) => t.name === "coffee"),
+    themes.find((t) => t.name === "bumblebee"),
   ].filter(Boolean);
 
-  const handleTheme = (e:any, themeName:any) => {
+  const handleTheme = (e: any, themeName: any) => {
     e.preventDefault();
     e.stopPropagation();
     changeTheme(themeName);
   };
 
-  const handlePageTransition = (targetPath:any) => {
+  const handlePageTransition = (targetPath: any) => {
     if (location.pathname === targetPath) return;
 
     setIsTransitioning(true);
@@ -72,25 +66,38 @@ export const AuthPages = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float-1"></div>
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float-2"></div>
         <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-float-3"></div>
-        
+
         {/* Geometric Patterns */}
-        <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="absolute inset-0 w-full h-full opacity-5"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
-            <pattern id="hexagons" width="60" height="52" patternUnits="userSpaceOnUse">
-              <polygon 
-                points="30,4 52,16 52,36 30,48 8,36 8,16" 
-                fill="none" 
-                stroke="currentColor" 
+            <pattern
+              id="hexagons"
+              width="60"
+              height="52"
+              patternUnits="userSpaceOnUse"
+            >
+              <polygon
+                points="30,4 52,16 52,36 30,48 8,36 8,16"
+                fill="none"
+                stroke="currentColor"
                 strokeWidth="0.5"
                 className="text-primary animate-pulse-slow"
               />
             </pattern>
-            <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle 
-                cx="10" 
-                cy="10" 
-                r="1" 
-                fill="currentColor" 
+            <pattern
+              id="dots"
+              width="20"
+              height="20"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx="10"
+                cy="10"
+                r="1"
+                fill="currentColor"
                 className="text-secondary"
                 opacity="0.3"
               />
@@ -138,12 +145,17 @@ export const AuthPages = () => {
         <div className="absolute inset-0 opacity-3">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path 
-                  d="M 40 0 L 0 0 0 40" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="0.5" 
+              <pattern
+                id="grid"
+                width="40"
+                height="40"
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 40 0 L 0 0 0 40"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="0.5"
                   className="text-base-content"
                 />
               </pattern>
@@ -160,7 +172,10 @@ export const AuthPages = () => {
           <div className="flex items-center space-x-4">
             <InfinityLogo size={64} />
             <div>
-              <Typography variant="h1" className="text-4xl font-bold text-base-content">
+              <Typography
+                variant="h1"
+                className="text-4xl font-bold text-base-content"
+              >
                 Infinity
               </Typography>
               <Typography variant="body1" className="text-base-content/60">
@@ -171,25 +186,46 @@ export const AuthPages = () => {
 
           {/* Features */}
           <div className="space-y-6 max-w-md">
-            <Typography variant="h2" className="text-2xl font-semibold text-base-content">
+            <Typography
+              variant="h2"
+              className="text-2xl font-semibold text-base-content"
+            >
               Professional Dashboard Solution
             </Typography>
-            
+
             <div className="space-y-4">
               {[
-                { icon: Building2, title: "Enterprise Ready", desc: "Built for business scale" },
-                { icon: Users, title: "Team Collaboration", desc: "Seamless team management" },
-                { icon: Award, title: "Premium Quality", desc: "Industry-leading standards" },
+                {
+                  icon: Building2,
+                  title: "Enterprise Ready",
+                  desc: "Built for business scale",
+                },
+                {
+                  icon: Users,
+                  title: "Team Collaboration",
+                  desc: "Seamless team management",
+                },
+                {
+                  icon: Award,
+                  title: "Premium Quality",
+                  desc: "Industry-leading standards",
+                },
               ].map((feature, index) => (
                 <div key={index} className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-base-300 rounded-xl flex items-center justify-center">
                     <feature.icon size={24} className="text-primary" />
                   </div>
                   <div>
-                    <Typography variant="h3" className="font-semibold text-base-content">
+                    <Typography
+                      variant="h3"
+                      className="font-semibold text-base-content"
+                    >
                       {feature.title}
                     </Typography>
-                    <Typography variant="body2" className="text-base-content/60 text-sm">
+                    <Typography
+                      variant="body2"
+                      className="text-base-content/60 text-sm"
+                    >
                       {feature.desc}
                     </Typography>
                   </div>
@@ -199,7 +235,10 @@ export const AuthPages = () => {
 
             {/* Theme Buttons - Fixed with proper event handling and z-index */}
             <div className="grid grid-cols-2 gap-3 mt-8 pt-8 border-t border-base-300 relative z-50">
-              <Typography variant="body2" className="col-span-2 text-base-content/80 font-medium mb-2">
+              <Typography
+                variant="body2"
+                className="col-span-2 text-base-content/80 font-medium mb-2"
+              >
                 Choose Theme:
               </Typography>
               {themeOptions.map((theme) => (
@@ -214,10 +253,16 @@ export const AuthPages = () => {
                   type="button"
                 >
                   <div className="flex items-center justify-between">
-                    <Typography variant="body2" className="font-medium capitalize">
+                    <Typography
+                      variant="body2"
+                      className="font-medium capitalize"
+                    >
                       {theme!.displayName}
                     </Typography>
-                    <div className="flex gap-1 bg-transparent" data-theme={theme!.name}>
+                    <div
+                      className="flex gap-1 bg-transparent"
+                      data-theme={theme!.name}
+                    >
                       <div className="w-2 h-2 rounded-full bg-primary"></div>
                       <div className="w-2 h-2 rounded-full bg-secondary"></div>
                       <div className="w-2 h-2 rounded-full bg-accent"></div>
@@ -226,9 +271,12 @@ export const AuthPages = () => {
                 </button>
               ))}
             </div>
-            
+
             <div className="mt-3 text-center">
-              <Typography variant="caption" className="text-base-content/60 text-xs">
+              <Typography
+                variant="caption"
+                className="text-base-content/60 text-xs"
+              >
                 To explore all 30+ beautiful themes, please login to Infinity.
               </Typography>
             </div>
@@ -241,7 +289,11 @@ export const AuthPages = () => {
             <Card
               className={`
                 transition-all duration-500 ease-out
-                ${isTransitioning ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
+                ${
+                  isTransitioning
+                    ? "scale-95 opacity-80"
+                    : "scale-100 opacity-100"
+                }
               `}
               bordered
             >
@@ -257,9 +309,10 @@ export const AuthPages = () => {
                   <div
                     className={`
                       absolute inset-0 transition-all duration-500 ease-out
-                      ${isLogin
-                        ? 'translate-x-0 opacity-100 pointer-events-auto'
-                        : 'translate-x-8 opacity-0 pointer-events-none'
+                      ${
+                        isLogin
+                          ? "translate-x-0 opacity-100 pointer-events-auto"
+                          : "translate-x-8 opacity-0 pointer-events-none"
                       }
                     `}
                   >
@@ -270,9 +323,10 @@ export const AuthPages = () => {
                   <div
                     className={`
                       absolute inset-0 transition-all duration-500 ease-out
-                      ${!isLogin
-                        ? 'translate-x-0 opacity-100 pointer-events-auto'
-                        : '-translate-x-8 opacity-0 pointer-events-none'
+                      ${
+                        !isLogin
+                          ? "translate-x-0 opacity-100 pointer-events-auto"
+                          : "-translate-x-8 opacity-0 pointer-events-none"
                       }
                     `}
                   >
@@ -293,33 +347,32 @@ const LoginForm = ({ onNavigate }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const { addToast } = useToast();
-  const { showLoadingWithTimeout } = useLoadingWithTimeout({
-    minDuration: 2000,
-    defaultText: "Signing you in...",
-  });
+  const { showLoading, hideLoading } = useLoading();
 
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) clearError();
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await showLoadingWithTimeout(async () => {
-        await login(formData);
-        addToast({
-          message: "Successfully signed in to Infinity!",
-          variant: "success"
-        });
-      }, "Authenticating...");
+      await login(formData);
+      addToast({
+        message: "Successfully signed in to Infinity!",
+        variant: "success",
+      });
+      showLoading("Loading your dashboard...");
+      setTimeout(() => {
+      hideLoading();
       onNavigate("/dashboard");
+    }, 800);
     } catch (err) {
       console.error("Login failed:", err);
       addToast({
         message: "Authentication failed. Please try again.",
-        variant: "error"
+        variant: "error",
       });
     }
   };
@@ -328,7 +381,10 @@ const LoginForm = ({ onNavigate }: any) => {
     <div className="space-y-6">
       {/* Form Header */}
       <div className="text-center space-y-2">
-        <Typography variant="h2" className="text-2xl font-bold text-base-content">
+        <Typography
+          variant="h2"
+          className="text-2xl font-bold text-base-content"
+        >
           Sign In to Infinity
         </Typography>
         <Typography variant="body1" className="text-base-content/60">
@@ -381,7 +437,10 @@ const LoginForm = ({ onNavigate }: any) => {
             }
           />
           <div className="flex justify-end">
-            <button type="button" className="text-sm text-primary hover:text-primary-focus font-medium">
+            <button
+              type="button"
+              className="text-sm text-primary hover:text-primary-focus font-medium"
+            >
               Forgot password?
             </button>
           </div>
@@ -419,13 +478,24 @@ const LoginForm = ({ onNavigate }: any) => {
         Create Account
       </Button>
       <div className="mt-4 p-4 bg-base-200 rounded-xl">
-        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
-          Username : <strong>superadmin</strong> | Password : <strong>superadmin123</strong>
+        <Typography
+          variant="caption"
+          className="text-base-content/60 text-xs text-center"
+        >
+          Username : <strong>superadmin</strong> | Password :{" "}
+          <strong>superadmin123</strong>
         </Typography>
-        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
-          Username : <strong>admin</strong> | Password : <strong>admin123</strong>
+        <Typography
+          variant="caption"
+          className="text-base-content/60 text-xs text-center"
+        >
+          Username : <strong>admin</strong> | Password :{" "}
+          <strong>admin123</strong>
         </Typography>
-        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+        <Typography
+          variant="caption"
+          className="text-base-content/60 text-xs text-center"
+        >
           Username : <strong>user</strong> | Password : <strong>user123</strong>
         </Typography>
       </div>
@@ -444,42 +514,36 @@ const RegisterForm = ({ onNavigate }: any) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading, error, clearError } = useAuthStore();
   const { addToast } = useToast();
-  const { showLoadingWithTimeout } = useLoadingWithTimeout({
-    minDuration: 2000,
-    defaultText: "Creating your account...",
-  });
 
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) clearError();
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       addToast({
         message: "Passwords do not match",
-        variant: "error"
+        variant: "error",
       });
       return;
     }
 
     try {
-      await showLoadingWithTimeout(async () => {
-        const { confirmPassword, ...registrationData } = formData;
-        await register(registrationData);
-        addToast({
-          message: "Account created successfully! Welcome to Infinity.",
-          variant: "success"
-        });
-      }, "Setting up your account...");
+      const { confirmPassword, ...registrationData } = formData;
+      await register(registrationData);
+      addToast({
+        message: "Account created successfully! Welcome to Infinity.",
+        variant: "success",
+      });
       onNavigate("/login");
     } catch (err) {
       console.error("Registration failed:", err);
       addToast({
         message: "Registration failed. Please try again.",
-        variant: "error"
+        variant: "error",
       });
     }
   };
@@ -491,7 +555,10 @@ const RegisterForm = ({ onNavigate }: any) => {
     <div className="space-y-6">
       {/* Form Header */}
       <div className="text-center space-y-2">
-        <Typography variant="h2" className="text-2xl font-bold text-base-content">
+        <Typography
+          variant="h2"
+          className="text-2xl font-bold text-base-content"
+        >
           Join Infinity
         </Typography>
         <Typography variant="body1" className="text-base-content/60">
@@ -611,7 +678,10 @@ const RegisterForm = ({ onNavigate }: any) => {
         Sign In
       </Button>
       <div className="mt-4 p-4 bg-transparent">
-        <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+        <Typography
+          variant="caption"
+          className="text-base-content/60 text-xs text-center"
+        >
           By creating an account, you agree to our{" "}
           <a href="/terms" className="text-primary hover:underline">
             Terms of Service
@@ -619,7 +689,8 @@ const RegisterForm = ({ onNavigate }: any) => {
           and{" "}
           <a href="/privacy" className="text-primary hover:underline">
             Privacy Policy
-          </a>.
+          </a>
+          .
         </Typography>
       </div>
     </div>
