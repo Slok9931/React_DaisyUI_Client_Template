@@ -15,5 +15,12 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <div
+      className="w-screen h-screen overflow-hidden"
+      style={{ maxHeight: '100vh', maxWidth: '100vw', overflow: 'hidden' }}
+    >
+      {children}
+    </div>
+  );
 };

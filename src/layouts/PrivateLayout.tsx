@@ -268,8 +268,8 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
 
         {/* Mobile Tab Modal */}
         <div className={`
-          fixed inset-x-0 bottom-0 z-50 lg:hidden transition-all duration-500 ease-in-out
-          ${mobileTabOpen ? 'translate-y-0' : 'translate-y-full'}
+          fixed inset-x-0 bottom-0 z-50 lg:hidden transition-transform duration-500 ease-in-out
+          ${mobileTabOpen ? 'translate-y-0' : '-translate-y-[300%]'}
         `}>
           <div className="bg-base-100 rounded-t-3xl shadow-2xl border-t border-base-300 max-h-[90vh] flex flex-col">
             {/* Header */}
