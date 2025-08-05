@@ -5,12 +5,13 @@ import { InfinityLogo, Typography } from '@/components';
 
 interface SidebarItem {
   id: string;
-  label: string;
+  label?: string;
   href?: string;
   onClick?: () => void;
   icon: React.ReactNode;
   children?: SidebarItem[];
   badge?: string | number;
+  active?: boolean;
 }
 
 interface SidebarProps {
@@ -18,12 +19,23 @@ interface SidebarProps {
   className?: string;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  authLogout?: boolean;
+  side?: 'left' | 'right';
+  isOpen?: boolean;
+  onClose?: () => void;
+  showHeader?: boolean;
+  showToggle?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   items = defaultSidebarItems,
   className = '',
   collapsed = false,
+  authLogout = false,
+  side = 'left',
+  onClose,
+  showHeader = true,
+  showToggle = true,
   onToggleCollapse,
 }) => {
   const location = useLocation();
@@ -48,7 +60,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  const isActive = (href?: string) => {
+  const isActive = (href?: string, active?: boolean) => {
+    if (active !== undefined) return active;
     if (!href) return false;
     return location.pathname === href || location.pathname.startsWith(href + '/');
   };
@@ -56,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const renderSidebarItem = (item: SidebarItem, level = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.id);
-    const itemIsActive = isActive(item.href);
+    const itemIsActive = isActive(item.href, item.active);
 
     return (
       <div key={item.id}>
@@ -67,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             ${level > 0 ? 'ml-4' : ''}
           `}
           onClick={() => {
-            if (hasChildren) {
+            if (hasChildren && !collapsed) {
               toggleExpanded(item.id);
             } else if (item.href) {
               navigate(item.href);
@@ -96,7 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
               {hasChildren && (
                 <svg
-                  className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                  className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -118,35 +131,64 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  return (
-    <div className={`h-full bg-base-100 border-r border-base-300 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} ${className}`}>
+  const sidebarContent = (
+    <div className={`h-full bg-base-100 border-base-300 transition-all duration-300 ease-in-out flex flex-col ${
+      side === 'right' ? 'border-l' : 'border-r'
+    } ${collapsed ? 'w-16' : 'w-64'} ${className}`}>
       {/* Sidebar Header */}
-      <div className="p-4 border-b border-base-300">
-        <div className="flex items-center justify-between">
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              <InfinityLogo size={24} />
-              <Typography variant="h6" className="font-bold infinity-brand">
-                Infinity
-              </Typography>
-            </div>
-          )}
-          
-          <button
-            onClick={onToggleCollapse}
-            className="btn btn-ghost btn-sm btn-square"
-          >
-            <svg
-              className={`w-4 h-4 transition-transform ${collapsed ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
-          </button>
+      {showHeader && (
+        <div className="p-4 border-b border-base-300 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            {!collapsed && (
+              <div className="flex items-center gap-2">
+                <InfinityLogo size={24} />
+                <Typography variant="h6" className="font-bold infinity-brand">
+                  Infinity
+                </Typography>
+              </div>
+            )}
+            
+            {showToggle && onToggleCollapse && (
+              <button
+                onClick={onToggleCollapse}
+                className="btn btn-ghost btn-sm btn-square transition-transform duration-200 hover:scale-110"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    collapsed ? (side === 'right' ? 'rotate-180' : '') : (side === 'right' ? '' : 'rotate-180')
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sidebar Content */}
       <div className="p-2 space-y-1 overflow-y-auto flex-1">
@@ -154,23 +196,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Sidebar Footer */}
-      <div className="p-2 border-t border-base-300">
-        <div
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          {!collapsed && (
-            <Typography variant="body2" className="font-medium">
-              Logout
-            </Typography>
-          )}
+      {authLogout && (
+        <div className="p-2 border-t border-base-300 flex-shrink-0">
+          <div
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-all duration-200"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            {!collapsed && (
+              <Typography variant="body2" className="font-medium">
+                Logout
+              </Typography>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
+
+  return sidebarContent;
 };
 
 // Default sidebar items
