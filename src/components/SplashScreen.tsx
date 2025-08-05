@@ -23,9 +23,22 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   ];
 
   useEffect(() => {
+    setProgress(0);
+    let animationFrame: number;
+    const start = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - start;
+      const percent = Math.min((elapsed / duration) * 100, 100);
+      setProgress(percent);
+      if (percent < 100) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+    animationFrame = requestAnimationFrame(animate);
+
     // Animation timeline
     const stepDuration = duration / loadingSteps.length;
-    
     const timeline = [
       { delay: duration - 500, action: () => setFadeOut(true) },
       { delay: duration, action: onComplete },
@@ -45,22 +58,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       timeouts.push(setTimeout(action, delay));
     });
 
-    // Smooth progress bar animation
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + (100 / (duration / 16)); // 60fps
-      });
-    }, 16);
-
     return () => {
       timeouts.forEach(clearTimeout);
-      clearInterval(progressInterval);
+      cancelAnimationFrame(animationFrame);
     };
-  }, [duration, onComplete, addToast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration, onComplete]);
 
   return (
     <div className={`
