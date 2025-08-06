@@ -122,9 +122,7 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
 
   // Enhanced sheet styles
   const sheetBaseClass = `
-    fixed z-[9999] bg-gradient-to-br from-base-100 to-base-200/50 backdrop-blur-xl
-    shadow-2xl border border-base-300/20 flex flex-col
-    transition-all duration-300 ease-out will-change-transform
+    fixed z-[9999] bg-gradient-to-br from-base-100 to-base-200/50 backdrop-blur-xl shadow-2xl border border-base-300/20 flex flex-col transition-all duration-500 ease-out will-change-transform
     ${className}
   `;
 
