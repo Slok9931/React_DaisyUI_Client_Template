@@ -52,3 +52,6 @@ export * from './ui/Table';
 // Feedback Components
 export * from './ui/Toast';
 export * from './ui/Skeleton';
+
+// Custom Components
+export * from './customComponents/InfinitySheet';

@@ -454,14 +454,10 @@ const LoginForm = ({ onNavigate }: any) => {
           loading={isLoading}
           disabled={isLoading}
         >
-          {isLoading ? (
-            "Signing In..."
-          ) : (
             <>
               Sign In
               <ArrowRight size={18} className="ml-2" />
             </>
-          )}
         </Button>
       </form>
 
