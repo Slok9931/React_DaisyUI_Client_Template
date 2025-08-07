@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, ThemeSelector, InfinitySheet } from '@/components';
 
 export const ThemeDemo: React.FC = () => {
-  const [isSheetOpen, setSheetOpen] = React.useState(true);
+  const [isSheetOpen, setSheetOpen] = React.useState(false);
 
   const handleSheetToggle = () => {
     if (isSheetOpen) {
@@ -30,7 +30,7 @@ export const ThemeDemo: React.FC = () => {
         minWidth={240}
         maxWidth={window.innerWidth}
         maxHeight={window.innerHeight}
-        sheetTitle="Settings"
+        headerTitle="Settings"
         showResizeHandle={true}
         className="transition-all duration-300"
       >

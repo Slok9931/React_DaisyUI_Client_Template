@@ -29,12 +29,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
 
   const { addToast } = useToast();
 
-  useEffect(() => {
-    if (!leftSidebarCollapsed && !rightSidebarCollapsed) {
-      setLeftSidebarCollapsed(true);
-    }
-  }, [leftSidebarCollapsed, rightSidebarCollapsed]);
-
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => {
@@ -271,7 +265,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
                   </Tooltip>
                 ))}
             </div>
-            <div className="mt-auto mb-2">
+            <div className="mt-auto">
               {rightSidebarItems
                 .filter(item => item.id === 'fullscreen')
                 .map(item => (
@@ -297,7 +291,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           onClose={() => setRightSidebarCollapsed(true)}
           side="right"
           width={600}
-          sheetTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          headerTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
           showResizeHandle={true}
           className="hidden lg:flex"
         >
@@ -311,7 +305,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           onClose={() => setMobileTabOpen(false)}
           side="bottom"
           height={400}
-          sheetTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          headerTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
           showResizeHandle={true}
           className="lg:hidden"
         >

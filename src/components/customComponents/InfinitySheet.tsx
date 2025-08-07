@@ -85,7 +85,9 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
     if (isOpen) {
       setShouldRender(true);
       requestAnimationFrame(() => {
-        setIsVisible(true);
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
       });
     } else {
       setIsVisible(false);
