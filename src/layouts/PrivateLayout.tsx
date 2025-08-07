@@ -6,7 +6,8 @@ import {
   TypographyTab,
   PreviewTab,
   Tooltip, useToast,
-  PrivateNavbar, ProfileTab, Sidebar, Typography
+  PrivateNavbar, ProfileTab, Sidebar, Typography,
+  InfinitySheet
 } from '@/components';
 
 interface PrivateLayoutProps {
@@ -89,11 +90,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           // Desktop behavior
           setActiveTab('profile');
           if (rightSidebarCollapsed) {
-            setLeftSidebarCollapsed(true);
             setRightSidebarCollapsed(false);
           } else {
             setRightSidebarCollapsed(true);
-            setLeftSidebarCollapsed(false);
           }
           addToast({ message: 'Profile tab opened', variant: 'info' });
         } else {
@@ -111,11 +110,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         if (window.innerWidth >= 1024) {
           setActiveTab('themes');
           if (rightSidebarCollapsed) {
-            setLeftSidebarCollapsed(true);
             setRightSidebarCollapsed(false);
           } else {
             setRightSidebarCollapsed(true);
-            setLeftSidebarCollapsed(false);
           }
           addToast({ message: 'Themes tab opened', variant: 'info' });
         } else {
@@ -132,11 +129,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         if (window.innerWidth >= 1024) {
           setActiveTab('fonts');
           if (rightSidebarCollapsed) {
-            setLeftSidebarCollapsed(true);
             setRightSidebarCollapsed(false);
           } else {
             setRightSidebarCollapsed(true);
-            setLeftSidebarCollapsed(false);
           }
           addToast({ message: 'Font Family tab opened', variant: 'info' });
         } else {
@@ -153,11 +148,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         if (window.innerWidth >= 1024) {
           setActiveTab('typography');
           if (rightSidebarCollapsed) {
-            setLeftSidebarCollapsed(true);
             setRightSidebarCollapsed(false);
           } else {
             setRightSidebarCollapsed(true);
-            setLeftSidebarCollapsed(false);
           }
           addToast({ message: 'Typography tab opened', variant: 'info' });
         } else {
@@ -174,11 +167,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         if (window.innerWidth >= 1024) {
           setActiveTab('preview');
           if (rightSidebarCollapsed) {
-            setLeftSidebarCollapsed(true);
             setRightSidebarCollapsed(false);
           } else {
             setRightSidebarCollapsed(true);
-            setLeftSidebarCollapsed(false);
           }
           addToast({ message: 'Preview tab opened', variant: 'info' });
         } else {
@@ -201,20 +192,8 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       setLeftSidebarCollapsed(true);
     } else {
       setLeftSidebarCollapsed(false);
-      setRightSidebarCollapsed(true);
     }
     addToast({ message: leftSidebarCollapsed ? 'Sidebar opened' : 'Sidebar collapsed', variant: 'info' });
-  };
-
-  const handleRightSidebarToggle = () => {
-    if (!rightSidebarCollapsed) {
-      setRightSidebarCollapsed(true);
-      setLeftSidebarCollapsed(false);
-    } else {
-      setRightSidebarCollapsed(false);
-      setLeftSidebarCollapsed(true);
-    }
-    addToast({ message: rightSidebarCollapsed ? 'Right sidebar opened' : 'Right sidebar collapsed', variant: 'info' });
   };
 
   const leftSidebarWidth = leftSidebarCollapsed ? 'w-16' : 'w-64';
@@ -266,40 +245,88 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           />
         </div>
 
-        {/* Mobile Tab Modal */}
-        <div className={`
-          fixed inset-x-0 bottom-0 z-50 lg:hidden transition-transform duration-500 ease-in-out
-          ${mobileTabOpen ? 'translate-y-0' : '-translate-y-[300%]'}
-        `}>
-          <div className="bg-base-100 rounded-t-3xl shadow-2xl border-t border-base-300 max-h-[90vh] flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-base-300 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  {rightSidebarItems.find(item => item.id === activeTab)?.icon}
-                </div>
-                <Typography variant="h6" className="font-semibold">
-                  {rightSidebarItems.find(item => item.id === activeTab)?.label}
-                </Typography>
-              </div>
-              <Tooltip tip="Close" position="left">
-                <button
-                  onClick={() => setMobileTabOpen(false)}
-                  className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110 cursor-pointer"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </Tooltip>
+        {/* Desktop Right Thin Sidebar (icon bar) */}
+        <div
+          className={`
+            hidden lg:flex flex-col h-full fixed top-0 right-0 z-30 transition-all duration-500 ease-in-out w-16
+          `}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <div className="w-16 flex-shrink-0 h-full flex flex-col items-center py-4 bg-base-100 border-l border-base-300 shadow-lg">
+            <div className="flex flex-col flex-1 items-center">
+              {rightSidebarItems
+                .filter(item => item.id !== 'fullscreen')
+                .map(item => (
+                  <Tooltip key={item.id} tip={item.label} position="left">
+                    <button
+                      className={`
+                        mb-2 p-2 rounded-lg flex items-center justify-center transition-all duration-300 w-10 h-10 cursor-pointer
+                        ${(activeTab === item.id && !rightSidebarCollapsed) ? 'bg-primary text-primary-content scale-110' : 'hover:bg-base-200 hover:scale-105'}
+                      `}
+                      title={item.label}
+                      onClick={item.onClick}
+                    >
+                      {item.icon}
+                    </button>
+                  </Tooltip>
+                ))}
             </div>
-            
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
-              {tabContent[activeTab]}
+            <div className="mt-auto mb-2">
+              {rightSidebarItems
+                .filter(item => item.id === 'fullscreen')
+                .map(item => (
+                  <Tooltip key={item.id} tip={item.label} position="left">
+                    <button
+                      className={`
+                        p-2 rounded-lg flex items-center justify-center transition-all duration-300 w-10 h-10 cursor-pointer
+                        ${isFullscreen ? 'bg-primary text-primary-content scale-110' : 'hover:bg-base-200 hover:scale-105'}
+                      `}
+                      title={item.label}
+                      onClick={item.onClick}
+                    >
+                      {item.icon}
+                    </button>
+                  </Tooltip>
+                ))}
             </div>
           </div>
         </div>
+
+        <InfinitySheet
+          isOpen={!rightSidebarCollapsed}
+          onClose={() => setRightSidebarCollapsed(true)}
+          side="right"
+          width={600}
+          sheetTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          showResizeHandle={true}
+          className="hidden lg:flex"
+        >
+            <div className="flex-1 overflow-y-auto p-4">
+              {tabContent[activeTab]}
+            </div>
+        </InfinitySheet>
+
+        <InfinitySheet
+          isOpen={mobileTabOpen}
+          onClose={() => setMobileTabOpen(false)}
+          side="bottom"
+          height={400}
+          sheetTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          showResizeHandle={true}
+          className="lg:hidden"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              {rightSidebarItems.find(item => item.id === activeTab)?.icon}
+            </div>
+            <Typography variant="h6" className="font-semibold">
+              {rightSidebarItems.find(item => item.id === activeTab)?.label}
+            </Typography>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {tabContent[activeTab]}
+          </div>
+        </InfinitySheet>
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 transition-all duration-500 ease-in-out lg:mr-16">
@@ -372,85 +399,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
               )}
             </div>
           </main>
-        </div>
-
-        {/* Desktop Right Sidebar */}
-        <div
-          className={`
-            hidden lg:flex flex-col h-full fixed top-0 right-0 z-30 transition-all duration-500 ease-in-out w-16
-          `}
-          style={{ pointerEvents: 'auto' }}
-        >
-          {/* Icon bar - always visible */}
-          <div className="w-16 flex-shrink-0 h-full flex flex-col items-center py-4 bg-base-100 border-l border-base-300 shadow-lg">
-            <div className="flex flex-col flex-1 items-center">
-              {rightSidebarItems
-                .filter(item => item.id !== 'fullscreen')
-                .map(item => (
-                  <Tooltip key={item.id} tip={item.label} position="left">
-                    <button
-                      className={`
-                        mb-2 p-2 rounded-lg flex items-center justify-center transition-all duration-300 w-10 h-10 cursor-pointer
-                        ${(activeTab === item.id && !rightSidebarCollapsed) ? 'bg-primary text-primary-content scale-110' : 'hover:bg-base-200 hover:scale-105'}
-                      `}
-                      title={item.label}
-                      onClick={item.onClick}
-                    >
-                      {item.icon}
-                    </button>
-                  </Tooltip>
-                ))}
-            </div>
-            <div className="mt-auto mb-2">
-              {rightSidebarItems
-                .filter(item => item.id === 'fullscreen')
-                .map(item => (
-                  <Tooltip key={item.id} tip={item.label} position="left">
-                    <button
-                      className={`
-                        p-2 rounded-lg flex items-center justify-center transition-all duration-300 w-10 h-10 cursor-pointer
-                        ${isFullscreen ? 'bg-primary text-primary-content scale-110' : 'hover:bg-base-200 hover:scale-105'}
-                      `}
-                      title={item.label}
-                      onClick={item.onClick}
-                    >
-                      {item.icon}
-                    </button>
-                  </Tooltip>
-                ))}
-            </div>
-          </div>
-          <div
-            className={`
-              bg-base-100 border-l border-base-300 shadow-lg h-full transition-all duration-500 ease-in-out
-              ${rightSidebarCollapsed ? 'w-0 opacity-0' : 'w-[404px] opacity-100'}
-              overflow-hidden flex flex-col absolute top-0 right-16
-            `}
-          >
-            {!rightSidebarCollapsed && (
-              <>
-                <div className="flex items-center justify-between p-4 border-b border-base-300 h-16 flex-shrink-0">
-                  <Typography variant="h5" className="font-semibold">
-                    {rightSidebarItems.find(item => item.id === activeTab)?.label}
-                  </Typography>
-                  <Tooltip tip="Close Sidebar" position="left">
-                    <button
-                      onClick={handleRightSidebarToggle}
-                      className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110 cursor-pointer"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </Tooltip>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto p-4">
-                  {tabContent[activeTab]}
-                </div>
-              </>
-            )}
-          </div>
         </div>
       </div>
     </div>

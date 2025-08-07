@@ -38,11 +38,8 @@ export const ThemeTab = () => {
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <>
       <div className="flex-1">
-        <Typography variant="h6" className="mb-4">
-          Choose Theme
-        </Typography>
         <div
           className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto"
           ref={themeListRef}
@@ -53,7 +50,7 @@ export const ThemeTab = () => {
                 className={`p-4 rounded-lg border cursor-pointer transition-all ${
                   currentTheme.name === theme.name
                     ? "border-primary bg-primary/10"
-                    : "border-base-300 hover:border-primary/50"
+                    : "border-base-100 hover:border-primary/50"
                 }`}
                 onClick={() => handleThemeSelect(theme.name)}
                 tabIndex={0}
@@ -95,7 +92,7 @@ export const ThemeTab = () => {
           Reset to Default
         </Button>
       </div>
-    </div>
+      </>
   );
 };
 

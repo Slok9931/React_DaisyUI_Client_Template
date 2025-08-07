@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Typography } from "@/components";
 
 type SheetSide = "left" | "right" | "top" | "bottom";
 
@@ -15,7 +16,21 @@ interface InfinitySheetProps {
   children: React.ReactNode;
   className?: string;
   showResizeHandle?: boolean;
-  sheetTitle?: React.ReactNode;
+  headerIcon?: React.ReactNode;
+  headerTitle?: React.ReactNode;
+  headerSubtitle?: React.ReactNode;
+  headerActions?: React.ReactNode;
+  showCloseButton?: boolean;
+  headerClassName?: string;
+  footer?: React.ReactNode;
+  footerClassName?: string;
+  contentClassName?: string;
+  scrollable?: boolean;
+  overlayClosable?: boolean;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  variant?: "default" | "blur" | "glass";
+  size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 export const InfinitySheet: React.FC<InfinitySheetProps> = ({
@@ -25,16 +40,42 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
   width = 400,
   height = 400,
   minWidth = 240,
-  maxWidth = 800,
+  maxWidth = 1600,
   minHeight = 240,
-  maxHeight = 800,
+  maxHeight = 1600,
   children,
   className = "",
   showResizeHandle = true,
-  sheetTitle,
+  headerIcon,
+  headerTitle = "Sheet",
+  headerSubtitle,
+  headerActions,
+  showCloseButton = true,
+  headerClassName = "",
+  footer,
+  footerClassName = "",
+  contentClassName = "",
+  scrollable = true,
+  overlayClosable = true,
+  showHeader = true,
+  showFooter = !!footer,
+  variant = "default",
+  size = "lg",
 }) => {
-  const [sheetWidth, setSheetWidth] = useState(width);
-  const [sheetHeight, setSheetHeight] = useState(height);
+  // Size presets
+  const sizePresets = {
+    sm: { width: 320, height: 320 },
+    md: { width: 400, height: 400 },
+    lg: { width: 600, height: 600 },
+    xl: { width: 800, height: 800 },
+    full: { width: window?.innerWidth * 0.9 || 800, height: window?.innerHeight * 0.9 || 600 }
+  };
+
+  const initialWidth = sizePresets[size]?.width || width;
+  const initialHeight = sizePresets[size]?.height || height;
+
+  const [sheetWidth, setSheetWidth] = useState(initialWidth);
+  const [sheetHeight, setSheetHeight] = useState(initialHeight);
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const resizing = useRef(false);
@@ -50,7 +91,7 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
       setIsVisible(false);
       animationTimeoutRef.current = setTimeout(() => {
         setShouldRender(false);
-      }, 3500);
+      }, 350);
     }
 
     return () => {
@@ -61,7 +102,7 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
   }, [isOpen]);
 
   const startPos = useRef<number>(0);
-  const startSize = useRef<number>(side === "left" || side === "right" ? width : height);
+  const startSize = useRef<number>(side === "left" || side === "right" ? initialWidth : initialHeight);
 
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -113,6 +154,18 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
     window.removeEventListener("mouseup", handleResizeMouseUp);
   };
 
+  // Variant styles
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "blur":
+        return "bg-base-200/80 backdrop-blur-xl border-base-300/30";
+      case "glass":
+        return "bg-base-100/20 backdrop-blur-md border-base-content/10 shadow-lg";
+      default:
+        return "bg-base-200 border-base-300/20";
+    }
+  };
+
   // Enhanced backdrop styles
   const backdropClass = `
     fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm
@@ -122,7 +175,8 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
 
   // Enhanced sheet styles
   const sheetBaseClass = `
-    fixed z-[9999] bg-gradient-to-br from-base-100 to-base-200/50 backdrop-blur-xl shadow-2xl border border-base-300/20 flex flex-col transition-all duration-500 ease-out will-change-transform
+    fixed z-[9999] ${getVariantStyles()} shadow-2xl border flex flex-col 
+    transition-all duration-500 ease-out will-change-transform
     ${className}
   `;
 
@@ -175,30 +229,46 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
     }
   })();
 
-  // Enhanced resize handle styles (DaisyUI diff style)
+  // Enhanced resize handle styles
   const resizeHandleClass = (() => {
-    // DaisyUI diff style: dashed border, subtle handle
     const baseClasses =
       "absolute z-10 group transition-all duration-200 bg-transparent";
     switch (side) {
       case "right":
-        return `${baseClasses} -left-2 top-0 h-full w-3 cursor-ew-resize border-l-2 border-dashed border-base-300/70 hover:border-primary/60`;
+        return `${baseClasses} -left-2 top-0 h-full w-4 cursor-ew-resize border-l-2 border-dashed border-base-300/50 hover:border-primary/80`;
       case "left":
-        return `${baseClasses} -right-2 top-0 h-full w-3 cursor-ew-resize border-r-2 border-dashed border-base-300/70 hover:border-primary/60`;
+        return `${baseClasses} -right-2 top-0 h-full w-4 cursor-ew-resize border-r-2 border-dashed border-base-300/50 hover:border-primary/80`;
       case "top":
-        return `${baseClasses} -bottom-2 left-0 w-full h-3 cursor-ns-resize border-b-2 border-dashed border-base-300/70 hover:border-primary/60`;
+        return `${baseClasses} -bottom-2 left-0 w-full h-4 cursor-ns-resize border-b-2 border-dashed border-base-300/50 hover:border-primary/80`;
       case "bottom":
-        return `${baseClasses} -top-2 left-0 w-full h-3 cursor-ns-resize border-t-2 border-dashed border-base-300/70 hover:border-primary/60`;
+        return `${baseClasses} -top-2 left-0 w-full h-4 cursor-ns-resize border-t-2 border-dashed border-base-300/50 hover:border-primary/80`;
       default:
         return "";
     }
   })();
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (overlayClosable && e.target === e.currentTarget) {
       onClose();
     }
   };
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!shouldRender) return null;
 
@@ -217,35 +287,68 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
         aria-modal="true"
         tabIndex={-1}
       >
-        <div className="flex items-center justify-between p-6 border-b border-base-300/30 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="font-semibold text-lg">
-              {sheetTitle || "Infinity Sheet"}
+        {/* Header */}
+        {showHeader && (
+          <div className={`flex items-center justify-between p-4 border-b-2 border-base-100 backdrop-blur-sm shrink-0 ${headerClassName}`}>
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              {headerIcon && (
+                <div className="flex-shrink-0 w-6 h-6 text-primary">
+                  {headerIcon}
+                </div>
+              )}
+              
+              <div className="min-w-0 flex-1">
+                {headerTitle && (
+                  <Typography variant="h5" className="font-semibold text-base-content truncate">
+                    {headerTitle}
+                  </Typography>
+                )}
+                {headerSubtitle && (
+                  <Typography variant="body2" className="text-base-content/70 truncate">
+                    {headerSubtitle}
+                  </Typography>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {headerActions}
+              
+              {showCloseButton && (
+                <button
+                  className="btn btn-ghost btn-sm btn-circle hover:btn-error group"
+                  onClick={onClose}
+                  aria-label="Close Sheet"
+                >
+                  <svg 
+                    className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
-          
-          <button
-            className="btn btn-ghost btn-sm btn-circle hover:bg-error/10 hover:text-error transition-all duration-200 group"
-            onClick={onClose}
-            aria-label="Close Sheet"
-          >
-            <svg 
-              className="w-5 h-5 transition-transform duration-200 group-hover:rotate-90" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        )}
         
-        <div className="flex-1 overflow-auto">
-          <div className="p-6 space-y-4">
+        {/* Content */}
+        <div className={`flex-1 min-h-0 ${scrollable ? 'overflow-auto' : 'overflow-hidden'} ${contentClassName}`}>
+          <div className="p-6">
             {children}
           </div>
         </div>
         
+        {/* Footer */}
+        {showFooter && footer && (
+          <div className={`border-t border-base-300/50 backdrop-blur-sm shrink-0 p-4 ${footerClassName}`}>
+            <Typography variant="body2">{footer}</Typography>
+          </div>
+        )}
+        
+        {/* Resize Handle */}
         {showResizeHandle && (
           <div
             className={resizeHandleClass}
@@ -255,11 +358,11 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
             tabIndex={0}
             aria-label={`Resize ${side} panel`}
           >
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
               {(side === "left" || side === "right") ? (
-                <span className="w-4 h-8 bg-primary rounded-full"></span>
+                <div className="w-1 h-8 bg-primary rounded-full"></div>
               ) : (
-                <span className="h-4 w-8 bg-primary rounded-full"></span>
+                <div className="h-1 w-8 bg-primary rounded-full"></div>
               )}
             </div>
           </div>
