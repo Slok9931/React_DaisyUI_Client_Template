@@ -184,8 +184,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           {/* Brand Name with enhanced styling */}
           <div className="space-y-3">
             <Typography variant="h1" className="text-4xl md:text-5xl font-light text-base-content tracking-wider relative">
-              <span className="relative z-10">Infinity</span>
-              <div className="absolute inset-0 blur-sm text-primary/30 animate-text-glow">
+              <span className="relative z-10 font-courgette">Infinity</span>
+              <div className="absolute inset-0 blur-sm text-primary/30 animate-text-glow font-courgette">
                 Infinity
               </div>
             </Typography>

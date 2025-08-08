@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { InfinityLogo, Typography, Tooltip, useToast } from '@/components';
 import {
@@ -36,6 +36,8 @@ interface SidebarProps {
   onClose?: () => void;
   showHeader?: boolean;
   showToggle?: boolean;
+  activeTab?: string;
+  setActiveTab?: (id: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -49,12 +51,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   showToggle = true,
   onToggleCollapse,
 }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const { addToast } = useToast();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<string | undefined>(
+    items.find(item => !item.children)?.id
+  );
 
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem('activeTab', activeTab);
+    }
+  }, [activeTab]);
+  
   const handleLogout = async () => {
     try {
       await logout();
@@ -73,43 +83,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  const isActive = (href?: string, active?: boolean) => {
-    if (active !== undefined) return active;
-    if (!href) return false;
-    return location.pathname === href || location.pathname.startsWith(href + '/');
-  };
-
   const handleSidebarItemClick = (item: SidebarItem) => {
     const hasChildren = item.children && item.children.length > 0;
     if (collapsed) {
       if (hasChildren) {
         onToggleCollapse?.();
         setTimeout(() => toggleExpanded(item.id), 300);
-      } else if (item.href) {
-        navigate(item.href);
-        addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
       } else {
-        item.onClick?.();
-        addToast({ message: `${item.label} clicked`, variant: 'info' });
+        setActiveTab(item.id);
+        localStorage.setItem('pageName', `${item.label}`)
+        if (item.href) {
+          navigate(item.href);
+          addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
+        } else {
+          item.onClick?.();
+          addToast({ message: `${item.label} clicked`, variant: 'info' });
+        }
       }
     } else {
       if (hasChildren) {
         toggleExpanded(item.id);
-        addToast({ message: `${item.label} expanded`, variant: 'info' });
-      } else if (item.href) {
-        navigate(item.href);
-        addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
       } else {
-        item.onClick?.();
-        addToast({ message: `${item.label} clicked`, variant: 'info' });
+        setActiveTab(item.id);
+        localStorage.setItem('pageName', `${item.label}`)
+        if (item.href) {
+          navigate(item.href);
+          addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
+        } else {
+          item.onClick?.();
+          addToast({ message: `${item.label} clicked`, variant: 'info' });
+        }
       }
     }
+  };
+
+  const isActive = (item: SidebarItem) => {
+    return activeTab === item.id;
   };
 
   const renderSidebarItem = (item: SidebarItem, level = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.id);
-    const itemIsActive = isActive(item.href, item.active);
+    const itemIsActive = isActive(item);
 
     return (
       <div key={item.id} className="w-full">
@@ -164,19 +179,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       side === 'right' ? 'border-l' : 'border-r'
     } ${collapsed ? 'w-16' : 'w-64'} ${className}`}>
       {showHeader && (
-        <div className="p-4 border-b mb-2 border-base-300 flex-shrink-0 w-full">
+        <div className="p-4 pb-[18px] border-b mb-2 border-base-300 flex-shrink-0 w-full">
           <div className="flex items-center justify-between w-full">
             {collapsed ? (
               <div
                 className="flex items-center justify-center w-full cursor-pointer"
                 onClick={onToggleCollapse}
               >
-                <InfinityLogo size={28} />
+                <InfinityLogo size={48} />
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <InfinityLogo size={24} />
-                <Typography variant="h6" className="font-bold infinity-brand">
+                <InfinityLogo size={48} />
+                <Typography variant="h3" className="font-bold infinity-brand font-courgette">
                   Infinity
                 </Typography>
               </div>
@@ -276,7 +291,7 @@ const defaultSidebarItems: SidebarItem[] = [
   {
     id: 'settings',
     label: 'Settings',
-    href: '/settings',
+    href: '/dashboard/settings',
     icon: <LucideSettings className="w-5 h-5" />,
   },
 ];

@@ -41,6 +41,16 @@ export const AppRoutes: React.FC = () => {
           } 
         />
         <Route 
+          path="/dashboard/settings" 
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <ThemeDemo />
+              </PrivateLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
           path="*" 
           element={
             <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
@@ -53,7 +63,7 @@ export const AppRoutes: React.FC = () => {
                   onClick={() => window.location.href = '/'}
                   className="btn btn-primary"
                 >
-                  Return to Infinity
+                  Return to <span className="font-courgette">Infinity</span>
                 </button>
               </div>
             </div>

@@ -1,76 +1,114 @@
-import React from 'react';
-import { useAuthStore } from '@/store';
-import { Typography } from '@/components';
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Breadcrumbs, SearchBar, Typography } from '@/components';
+import { AlignCenter, Search } from 'lucide-react';
+
+interface SidebarItem {
+  id: string;
+  label?: string;
+  href?: string;
+  onClick?: () => void;
+  icon?: React.ReactNode;
+  children?: SidebarItem[];
+  badge?: string | number;
+  active?: boolean;
+}
 
 interface PrivateNavbarProps {
   onToggleSidebar?: () => void;
   sidebarCollapsed?: boolean;
   className?: string;
+  breadcrumbs?: { label: string; href?: string; current?: boolean }[];
+  leftSidebarItems?: SidebarItem[];
+  leftSidebarActiveTab?: string;
+}
+
+function getBreadcrumbsFromPath(pathname: string) {
+  const segments = pathname.split('/').filter(Boolean);
+  const breadcrumbs = segments.map((seg, idx) => {
+    const label = seg.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return {
+      label,
+      href: '/' + segments.slice(0, idx + 1).join('/'),
+      current: idx === segments.length - 1,
+    };
+  });
+  return breadcrumbs;
 }
 
 export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
   onToggleSidebar,
   className = '',
+  breadcrumbs: _breadcrumbs = [],
 }) => {
-  const { user } = useAuthStore();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const location = useLocation();
+
+  const breadcrumbs = getBreadcrumbsFromPath(location.pathname);
+
+  const pageName = localStorage.getItem('pageName') || ''
 
   return (
     <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 sticky top-0 z-20 ${className}`}>
       {/* Navbar Start */}
-      <div className="navbar-start">
+      <div className="navbar-start gap-2 min-w-0">
         <button
           onClick={onToggleSidebar}
-          className="btn btn-ghost btn-square lg:hidden"
+          className={`btn btn-ghost btn-square lg:hidden
+            ${mobileSearchOpen ? 'opacity-50' : 'opacity-100'}`}
+          aria-label="Toggle sidebar"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
+          <AlignCenter className="w-5 h-5" />
         </button>
-
-        {/* Breadcrumb or Page Title */}
-        <div className="hidden lg:flex items-center">
-          <Typography variant="h5" className="text-base-content">
-            Welcome back, {user?.username}!
+        <div className="mx-6 flex flex-col">
+          <Typography
+            variant="h5"
+            className="hidden lg:block font-bold text-primary truncate max-w-[8rem] sm:max-w-xs lg:max-w-sm"
+          >
+            {pageName}
           </Typography>
+          <div className="hidden lg:flex items-center min-w-0">
+            <Breadcrumbs items={breadcrumbs} />
+          </div>
         </div>
       </div>
 
-      {/* Navbar Center */}
+      <div className="navbar-center">
+        {/* Dashboard Name (mobile only, hide if search is open) */}
+        <Typography
+          variant="h3"
+          className={`
+            lg:hidden font-bold text-primary transition-all duration-100 font-courgette
+            ${mobileSearchOpen ? 'opacity-50' : 'opacity-100 w-auto'}
+          `}
+        >
+          Infinity
+        </Typography>
+      </div>
+
+      {/* Navbar End */}
       <div className="navbar-end">
-        {/* Search Bar */}
-        <div className="form-control hidden md:flex">
-          <div className="input-group">
-            <input
-              type="text"
-              placeholder="Search infinite possibilities..."
-              className="input input-bordered input-sm w-64 focus:input-primary"
-            />
-            <button className="btn btn-square btn-sm">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+        <div className="hidden md:block">
+          <SearchBar />
+        </div>
+        <div className="md:hidden flex items-center">
+          {mobileSearchOpen ? (
+            <div className="w-full transition-all duration-300">
+              <SearchBar
+                autoFocus
+                onBlur={() => setMobileSearchOpen(false)}
+                mobile
+              />
+            </div>
+          ) : (
+            <button
+              className="btn btn-ghost btn-square"
+              onClick={() => setMobileSearchOpen(true)}
+              aria-label="Open search"
+            >
+              <Search className="w-5 h-5" />
             </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

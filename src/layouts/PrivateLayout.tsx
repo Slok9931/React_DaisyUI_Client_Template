@@ -17,7 +17,6 @@ interface PrivateLayoutProps {
 
 export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
   children,
-  sidebarItems,
 }) => {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -218,7 +217,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         {/* Left Sidebar */}
         <div className={`hidden lg:block ${leftSidebarWidth} flex-shrink-0 transition-all duration-300 ease-in-out`}>
           <Sidebar
-            items={sidebarItems}
             collapsed={leftSidebarCollapsed}
             onToggleCollapse={handleLeftSidebarToggle}
             authLogout={true}
@@ -232,7 +230,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
           <Sidebar
-            items={sidebarItems}
             onClose={() => setMobileSidebarOpen(false)}
             side="left"
             showToggle={false}

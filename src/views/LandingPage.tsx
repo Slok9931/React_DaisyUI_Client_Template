@@ -106,8 +106,8 @@ const HeroSection = () => {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Infinity Dashboard
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-courgette">
+                Infinity
               </h1>
               <h2 className="text-xl md:text-2xl text-base-content/80 font-light">
                 Dynamic theming admin panel with 30+ themes & comprehensive UI library
@@ -1025,7 +1025,7 @@ const FooterSection = () => {
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center space-x-2">
               <InfinityLogo size={32} />
-              <h3 className="text-2xl font-bold">Infinity Dashboard</h3>
+              <h3 className="text-2xl font-bold font-courgette">Infinity</h3>
             </div>
             <p className="text-base-content/70 max-w-md">
               A modern, dynamic theming admin dashboard with 30+ themes, comprehensive UI components, and advanced customization options.
@@ -1081,7 +1081,7 @@ const FooterSection = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-base-content/60">
-            © 2025 Infinity Dashboard. Built with ❤️ using React, TypeScript, and modern development practices.
+            © 2025 <span className="font-courgette">Infinity</span>. Built with ❤️ using React, TypeScript, and modern development practices.
           </p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <span className="text-sm text-base-content/60">Made with</span>

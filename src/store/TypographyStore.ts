@@ -31,7 +31,8 @@ const availableFontFamilies = [
   { name: 'Inter', value: 'Inter, system-ui, sans-serif', preview: 'Modern & Clean' },
   { name: 'Poppins', value: 'Poppins, system-ui, sans-serif', preview: 'Friendly & Rounded' },
   { name: 'Playfair Display', value: '"Playfair Display", serif', preview: 'Elegant & Serif' },
-  { name: 'Fira Code', value: '"Fira Code", monospace', preview: 'Code & Monospace' }
+  { name: 'Fira Code', value: '"Fira Code", monospace', preview: 'Code & Monospace' },
+  { name: 'Playwrite AU QLD', value: '"Playwrite AU QLD", cursive', preview: 'Playful & Cursive' },
 ];
 
 export const useTypographyStore = create<TypographyStore>()(

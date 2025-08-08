@@ -174,7 +174,7 @@ export const AuthPages = () => {
             <div>
               <Typography
                 variant="h1"
-                className="text-4xl font-bold text-base-content"
+                className="text-4xl font-bold text-base-content font-courgette"
               >
                 Infinity
               </Typography>
@@ -359,6 +359,7 @@ const LoginForm = ({ onNavigate }: any) => {
     e.preventDefault();
     try {
       await login(formData);
+      localStorage.setItem('pageName', 'Dashboard');
       addToast({
         message: "Successfully signed in to Infinity!",
         variant: "success",
@@ -385,7 +386,7 @@ const LoginForm = ({ onNavigate }: any) => {
           variant="h2"
           className="text-2xl font-bold text-base-content"
         >
-          Sign In to Infinity
+          Sign In to <span className="font-courgette text-primary">Infinity</span>
         </Typography>
         <Typography variant="body1" className="text-base-content/60">
           Access your professional dashboard
@@ -461,7 +462,7 @@ const LoginForm = ({ onNavigate }: any) => {
         </Button>
       </form>
 
-      <Divider>New to INFINITY?</Divider>
+      <Divider>New to Infinity?</Divider>
 
       <Button
         variant="primary"
@@ -555,7 +556,7 @@ const RegisterForm = ({ onNavigate }: any) => {
           variant="h2"
           className="text-2xl font-bold text-base-content"
         >
-          Join Infinity
+          Join <span className="font-courgette text-primary">Infinity</span>
         </Typography>
         <Typography variant="body1" className="text-base-content/60">
           Create your professional dashboard account
