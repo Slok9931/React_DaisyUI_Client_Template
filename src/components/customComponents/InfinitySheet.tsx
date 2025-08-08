@@ -291,7 +291,7 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
       >
         {/* Header */}
         {showHeader && (
-          <div className={`flex items-center justify-between p-4 border-b-2 border-base-100 backdrop-blur-sm shrink-0 ${headerClassName}`}>
+          <div className={`flex items-center justify-between p-4 border-b border-primary backdrop-blur-sm shrink-0 ${headerClassName}`}>
             <div className="flex items-center gap-3 min-w-0 flex-1">
               {headerIcon && (
                 <div className="flex-shrink-0 w-6 h-6 text-primary">

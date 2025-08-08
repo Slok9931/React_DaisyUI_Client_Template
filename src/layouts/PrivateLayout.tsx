@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Pencil, Type, Eye, User, Maximize, Settings } from 'lucide-react';
+import { Palette, Pencil, Type, User, Maximize, Settings } from 'lucide-react';
 import {
-  ThemeTab,
-  FontFamilyTab,
-  TypographyTab,
-  PreviewTab,
+  ThemeTabHeader, ThemeTabContent, ThemeTabFooter,
+  FontFamilyTabHeader, FontFamilyTabContent, FontFamilyTabFooter,
+  TypographyTabHeader, TypographyTabContent, TypographyTabFooter,
+  ProfileTabHeader, ProfileTabContent, ProfileTabFooter,
   Tooltip, useToast,
-  PrivateNavbar, ProfileTab, Sidebar, Typography,
+  PrivateNavbar, Sidebar,
   InfinitySheet
 } from '@/components';
 
@@ -21,7 +21,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(true);
-  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'typography' | 'preview' | 'profile'>('themes');
+  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'typography' | 'profile'>('profile');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
   const [mobileTabOpen, setMobileTabOpen] = useState(false);
@@ -56,12 +56,25 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
     };
   }, []);
 
+  const tabHeader: Record<typeof activeTab, React.ReactNode> = {
+    profile: <ProfileTabHeader />,
+    themes: <ThemeTabHeader />,
+    fonts: <FontFamilyTabHeader />,
+    typography: <TypographyTabHeader />,
+  };
+
   const tabContent: Record<typeof activeTab, React.ReactNode> = {
-    profile: <ProfileTab />,
-    themes: <ThemeTab />,
-    fonts: <FontFamilyTab />,
-    typography: <TypographyTab />,
-    preview: <PreviewTab />,
+    profile: <ProfileTabContent />,
+    themes: <ThemeTabContent />,
+    fonts: <FontFamilyTabContent />,
+    typography: <TypographyTabContent />,
+  };
+
+  const tabFooter: Record<typeof activeTab, React.ReactNode> = {
+    profile: <ProfileTabFooter />,
+    themes: <ThemeTabFooter />,
+    fonts: <FontFamilyTabFooter />,
+    typography: <TypographyTabFooter />,
   };
 
   const handleMobileFloatingMenuClick = (tabId: typeof activeTab) => {
@@ -151,25 +164,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
         }
       },
       active: activeTab === 'typography' && !rightSidebarCollapsed,
-    },
-    {
-      id: 'preview',
-      icon: <Eye className="w-5 h-5" />,
-      label: 'Preview',
-      onClick: () => {
-        if (window.innerWidth >= 1024) {
-          setActiveTab('preview');
-          if (rightSidebarCollapsed) {
-            setRightSidebarCollapsed(false);
-          } else {
-            setRightSidebarCollapsed(true);
-          }
-          addToast({ message: 'Preview tab opened', variant: 'info' });
-        } else {
-          handleMobileFloatingMenuClick('preview');
-        }
-      },
-      active: activeTab === 'preview' && !rightSidebarCollapsed,
     },
     {
       id: 'fullscreen',
@@ -288,7 +282,8 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           onClose={() => setRightSidebarCollapsed(true)}
           side="right"
           width={600}
-          headerTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          headerTitle={tabHeader[activeTab]}
+          footer={tabFooter[activeTab]}
           showResizeHandle={true}
           className="hidden lg:flex"
         >
@@ -302,19 +297,12 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           onClose={() => setMobileTabOpen(false)}
           side="bottom"
           height={400}
-          headerTitle={rightSidebarItems.find(item => item.id === activeTab)?.label || "Settings"}
+          headerTitle={tabHeader[activeTab]}
+          footer={tabFooter[activeTab]}
           showResizeHandle={true}
           className="lg:hidden"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              {rightSidebarItems.find(item => item.id === activeTab)?.icon}
-            </div>
-            <Typography variant="h6" className="font-semibold">
-              {rightSidebarItems.find(item => item.id === activeTab)?.label}
-            </Typography>
-          </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-4">
             {tabContent[activeTab]}
           </div>
         </InfinitySheet>
