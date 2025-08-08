@@ -49,9 +49,9 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
   const pageName = localStorage.getItem('pageName') || ''
 
   return (
-    <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 sticky top-0 z-20 ${className}`}>
+    <div className={`navbar bg-base-100 border-b border-base-300 min-h-16 sticky top-0 z-20 px-6 ${className}`}>
       {/* Navbar Start */}
-      <div className="navbar-start gap-2 min-w-0">
+      <div className="navbar-start gap-1 min-w-0">
         <button
           onClick={onToggleSidebar}
           className={`btn btn-ghost btn-square lg:hidden
@@ -60,7 +60,7 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
         >
           <AlignCenter className="w-5 h-5" />
         </button>
-        <div className="mx-6 flex flex-col">
+        <div className="flex flex-col">
           <Typography
             variant="h5"
             className="hidden lg:block font-bold text-primary truncate max-w-[8rem] sm:max-w-xs lg:max-w-sm"

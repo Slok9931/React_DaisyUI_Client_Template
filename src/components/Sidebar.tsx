@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
 
             {!collapsed && showToggle && onToggleCollapse && (
-              <Tooltip tip="Collapse Sidebar" position={side === 'right' ? 'left' : 'right'}>
+              <Tooltip tip="Close" position={side === 'right' ? 'left' : 'right'}>
                 <button
                   onClick={onToggleCollapse}
                   className="btn btn-ghost btn-sm btn-square transition-transform duration-200 hover:scale-110 cursor-pointer"

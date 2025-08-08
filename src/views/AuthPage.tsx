@@ -347,7 +347,7 @@ const LoginForm = ({ onNavigate }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const { addToast } = useToast();
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoading } = useLoading();
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
@@ -359,16 +359,13 @@ const LoginForm = ({ onNavigate }: any) => {
     e.preventDefault();
     try {
       await login(formData);
+      if (isLoading) showLoading("Loading your dashboard...");
       localStorage.setItem('pageName', 'Dashboard');
       addToast({
         message: "Successfully signed in to Infinity!",
         variant: "success",
       });
-      showLoading("Loading your dashboard...");
-      setTimeout(() => {
-      hideLoading();
       onNavigate("/dashboard");
-    }, 800);
     } catch (err) {
       console.error("Login failed:", err);
       addToast({
