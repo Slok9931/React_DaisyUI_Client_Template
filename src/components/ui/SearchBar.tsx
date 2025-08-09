@@ -1,13 +1,28 @@
 import React, { useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
+import { Chip } from '@/components';
 
 interface SearchBarProps {
   autoFocus?: boolean;
   onBlur?: () => void;
   mobile?: boolean;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClear?: () => void;
+  placeholder?: string;
+  width?: string;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ autoFocus, onBlur, mobile }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({
+  autoFocus,
+  onBlur,
+  mobile,
+  value = '',
+  onChange,
+  onClear,
+  placeholder = 'Search...',
+  width = 'w-64',
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -17,31 +32,48 @@ export const SearchBar: React.FC<SearchBarProps> = ({ autoFocus, onBlur, mobile 
   }, [autoFocus]);
 
   return (
-    <form
-      className={`
-        relative flex items-center transition-all duration-300
-        ${mobile ? 'w-56' : 'w-64'}
-      `}
-      onBlur={mobile ? onBlur : undefined}
-      tabIndex={-1}
-    >
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Search infinite possibilities..."
+    <div>
+      <form
         className={`
-          input w-full pr-10 input-sm
-          ${mobile ? 'transition-all duration-300' : ''}
+          relative flex items-center transition-all duration-300
+          ${mobile ? 'w-56' : width}
         `}
         onBlur={mobile ? onBlur : undefined}
-      />
-      <button
-        type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs p-0"
         tabIndex={-1}
+        onSubmit={e => e.preventDefault()}
       >
-        <Search className="w-4 h-4 text-base-content/70" />
-      </button>
-    </form>
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={`
+            input w-full pr-10 input-sm
+            ${mobile ? 'transition-all duration-300' : ''}
+          `}
+          onBlur={mobile ? onBlur : undefined}
+        />
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs p-0"
+          tabIndex={-1}
+        >
+          <Search className="w-4 h-4 text-base-content/70" />
+        </button>
+      </form>
+      {value && (
+        <div className="flex items-center gap-2 mt-3">
+          <Chip
+            variant="primary"
+            size="sm"
+            onRemove={onClear}
+            icon={<Search className="w-3 h-3" />}
+          >
+            "{value}"
+          </Chip>
+        </div>
+      )}
+    </div>
   );
 };

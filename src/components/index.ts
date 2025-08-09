@@ -30,6 +30,7 @@ export * from './ui/Accordion';
 export * from './ui/Divider';
 export * from './ui/Hero';
 export * from './ui/Stats';
+export * from './ui/Chip';
 export * from './ui/SearchBar';
 
 // Navigation Components

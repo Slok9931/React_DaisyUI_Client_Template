@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { Card, CardBody, Input, Tooltip } from '@/components';
-import { X } from 'lucide-react';
+import { Card, CardBody, SearchBar, Tooltip } from '@/components';
 
 const iconEntries = Object.entries(LucideIcons).filter(
   ([, icon]) =>
@@ -17,13 +16,11 @@ interface InfinityIconsProps {
   iconSize?: number | string;
   className?: string;
   cardClassName?: string;
-  searchPlaceholder?: string;
   style?: React.CSSProperties;
   batchSize?: number;
 }
 
 const ShimmerGrid: React.FC<{ iconSize: number | string; count?: number }> = ({ iconSize, count = 100 }) => {
-
   return (
     <>
       {Array.from({ length: count }).map((_, idx) => (
@@ -52,7 +49,6 @@ export const InfinityIcons: React.FC<InfinityIconsProps> = ({
   iconSize = 24,
   className = '',
   cardClassName = '',
-  searchPlaceholder = 'Search icons...',
   style,
   batchSize = 100,
 }) => {
@@ -85,36 +81,19 @@ export const InfinityIcons: React.FC<InfinityIconsProps> = ({
     }, 800);
   };
 
-  const clearSearch = () => {
-    setSearch('');
-  };
+  const clearSearch = () => setSearch('');
 
   return (
     <div className={`w-full ${className}`} style={style}>
-      {/* Fixed Search Bar */}
+      {/* Search Bar with Chip */}
       <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4 shadow-sm">
-        <Input
+        <SearchBar
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full"
+          onClear={clearSearch}
+          placeholder="Search infinity icons..."
+          width="w-full"
         />
-        
-        {/* Search Chip */}
-        {search && (
-          <div className="flex items-center gap-2 mt-3">
-            <div className="badge badge-primary gap-2">
-              <span>"{search}"</span>
-              <button
-                onClick={clearSearch}
-                className="hover:bg-primary-focus rounded-full p-0.5"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-        )}
-        
         <div className="text-xs text-base-content/60 mt-2">
           {filteredIcons.length} icons found
         </div>
@@ -143,7 +122,6 @@ export const InfinityIcons: React.FC<InfinityIconsProps> = ({
                 </Card>
               </Tooltip>
             ))}
-            
             {/* Loading More Shimmer */}
             {loadingMore && (
               <ShimmerGrid iconSize={iconSize} count={batchSize} />
