@@ -106,7 +106,7 @@ const HeroSection = () => {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-courgette">
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-courgette py-2 pt-4">
                 Infinity
               </h1>
               <h2 className="text-xl md:text-2xl text-base-content/80 font-light">

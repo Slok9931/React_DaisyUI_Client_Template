@@ -15,7 +15,7 @@ interface TooltipProps {
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
   tip,
-  position = 'top',
+  position = 'bottom',
   variant,
   open = false,
   className = '',

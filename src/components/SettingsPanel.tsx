@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTheme } from "@/hooks";
 import { useTypographyStore, useAuthStore } from "@/store";
 import { Button, Typography, useToast, Tooltip, Input } from "@/components";
-import { User as UserIcon, RotateCcw, Edit, Save, X, Palette, Pencil, Type } from "lucide-react";
+import { User as UserIcon, RotateCcw, Edit, Save, X, Palette, Pencil, Type, Shuffle } from "lucide-react";
 
 // --- ThemeTab ---
 export const ThemeTabHeader = () => (
@@ -28,6 +28,18 @@ export const ThemeTabContent = () => {
     });
   };
 
+  // Add this function for random theme selection
+  const handleRandomTheme = () => {
+    if (themes.length === 0) return;
+    // Exclude current theme from random selection if more than 1 theme
+    const availableThemes = themes.length > 1
+      ? themes.filter(t => t.name !== currentTheme.name)
+      : themes;
+    const randomTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
+    handleThemeSelect(randomTheme.name);
+    addToast({ message: `Random theme: ${randomTheme.displayName}`, variant: "info" });
+  };
+
   const ColorSwatch = ({ theme }: { theme: any }) => (
     <div
       className="flex items-center gap-1 p-3 rounded-lg border"
@@ -42,6 +54,16 @@ export const ThemeTabContent = () => {
 
   return (
     <div className="flex-1">
+      <div className="flex justify-end mb-2">
+        <button
+          className="btn btn-sm btn-outline gap-2"
+          onClick={handleRandomTheme}
+          type="button"
+        >
+          <Shuffle className="w-4 h-4" />
+          Random Theme
+        </button>
+      </div>
       <div
         className="grid grid-cols-1 gap-3 max-h-full overflow-y-auto"
         ref={themeListRef}
