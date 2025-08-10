@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { PrivateRoute, PublicRoute } from '@/routes';
 import { PrivateLayout } from '@/layouts';
 import { ThemeDemo, AuthPages, InfinityDashboardLanding } from '@/views';
-import { InfinityIcons } from '@/components';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -36,8 +35,7 @@ export const AppRoutes: React.FC = () => {
           element={
             <PrivateRoute>
               <PrivateLayout>
-                {/* <ThemeDemo /> */}
-                <InfinityIcons className='p-6' />
+                <ThemeDemo />
               </PrivateLayout>
             </PrivateRoute>
           } 

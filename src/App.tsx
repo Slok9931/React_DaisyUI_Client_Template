@@ -35,7 +35,7 @@ function App() {
 
   return (
     <div className={`
-      max-w-screen max-h-screen overflow-hidden
+      max-w-screen overflow-x-hidden
       ${splashCompleted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
     `}>
       <AppRoutes />

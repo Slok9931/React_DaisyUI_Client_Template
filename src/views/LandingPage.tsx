@@ -36,33 +36,17 @@ import { InfinityLogo } from '@/components';
 export function InfinityDashboardLanding() {
   return (
     <div className="min-h-screen bg-base-100 overflow-x-hidden relative">
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* Dashboard Features */}
-      <DashboardFeaturesSection />
-
-      {/* Scroll-Sensitive Theme Showcase - Keep as is */}
-      <ScrollSensitiveThemeShowcase />
-
-      {/* UI Components Library */}
-      <UIComponentsSection />
-
-      {/* Admin Features */}
-      <AdminFeaturesSection />
-
-      {/* Responsive Design */}
-      <ResponsiveDesignSection />
-
-      {/* Customization Features */}
-      <CustomizationSection />
-
-      {/* Getting Started */}
-      <GettingStartedSection />
-
-      {/* Footer */}
-      <FooterSection />
-
+      {/* <div className="h-screen overflow-y-auto"> */}
+        <HeroSection />
+        <DashboardFeaturesSection />
+        <ScrollSensitiveThemeShowcase />
+        <UIComponentsSection />
+        <AdminFeaturesSection />
+        <ResponsiveDesignSection />
+        <CustomizationSection />
+        <GettingStartedSection />
+        <FooterSection />
+      {/* </div> */}
     </div>
   );
 }
