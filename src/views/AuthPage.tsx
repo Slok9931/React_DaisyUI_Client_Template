@@ -365,7 +365,7 @@ const LoginForm = ({ onNavigate }: any) => {
         message: "Successfully signed in to Infinity!",
         variant: "success",
       });
-      onNavigate("/dashboard");
+      onNavigate("/infinity/dashboard");
     } catch (err) {
       console.error("Login failed:", err);
       addToast({

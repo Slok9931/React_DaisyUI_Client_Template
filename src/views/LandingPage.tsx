@@ -129,7 +129,7 @@ const HeroSection = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="/login" className="btn btn-primary btn-lg gap-2">
+            <a href="/infinity/dashboard" className="btn btn-primary btn-lg gap-2">
               <Play className="w-5 h-5" />
               Try Dashboard
             </a>

@@ -1,5 +1,6 @@
 export interface SidebarRoute {
   id: number;
+  name: string;
   route: string;
   label: string;
   icon: string;

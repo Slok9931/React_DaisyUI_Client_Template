@@ -14,6 +14,7 @@ import { getIconComponent } from '@/utils';
 
 interface SidebarItem {
   id: string;
+  name: string;
   label?: string;
   href?: string;
   onClick?: () => void;
@@ -41,6 +42,7 @@ interface SidebarProps {
 const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
   return {
     id: route.id.toString(),
+    name: route.name,
     label: route.label,
     href: route.route,
     icon: getIconComponent(route.icon, 20),
@@ -51,6 +53,7 @@ const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
 const convertModuleToSidebarItem = (module: SidebarModule): SidebarItem => {
   return {
     id: module.id.toString(),
+    name: module.name,
     label: module.label,
     href: module.routes.length === 0 ? module.route : undefined,
     icon: getIconComponent(module.icon, 20),
@@ -68,13 +71,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   showHeader = true,
   showToggle = true,
   onToggleCollapse,
+  activeTab: controlledActiveTab,
+  setActiveTab: controlledSetActiveTab,
 }) => {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const { addToast } = useToast();
   const { sidebarData, loading, error } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<string | undefined>();
+  const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<string | undefined>(
+    () => localStorage.getItem('activeTab') || "dashboard"
+  );
+
+  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : uncontrolledActiveTab;
+  const setActiveTab = controlledSetActiveTab !== undefined ? controlledSetActiveTab : setUncontrolledActiveTab;
 
   const backendSidebarItems: SidebarItem[] = sidebarData.map(convertModuleToSidebarItem);
   
@@ -111,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onToggleCollapse?.();
         setTimeout(() => toggleExpanded(item.id), 300);
       } else {
-        setActiveTab(item.id);
+        setActiveTab(item.name);
         localStorage.setItem('pageName', `${item.label}`)
         if (item.href) {
           navigate(item.href);
@@ -125,7 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       if (hasChildren) {
         toggleExpanded(item.id);
       } else {
-        setActiveTab(item.id);
+        setActiveTab(item.name);
         localStorage.setItem('pageName', `${item.label}`)
         if (item.href) {
           navigate(item.href);
@@ -139,7 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const isActive = (item: SidebarItem) => {
-    return activeTab === item.id;
+    return activeTab === item.name;
   };
 
   const renderSidebarItem = (item: SidebarItem, level = 0) => {
@@ -155,7 +165,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all duration-200
               ${!collapsed ? 'w-56': 'w-full'}
               ${itemIsActive ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}
-              ${level > 0 ? 'ml-4' : ''}
             `}
             style={{ cursor: 'pointer' }}
             onClick={() => handleSidebarItemClick(item)}
@@ -266,7 +275,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Tooltip tip="Logout" position={side === 'right' ? 'left' : 'right'}>
             <div
               onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-all duration-200"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-error hover:text-error-content transition-all duration-200
+              ${!collapsed ? 'w-56': 'w-full'}`}
               style={{ cursor: 'pointer' }}
             >
               <LogOut className="w-5 h-5" />
