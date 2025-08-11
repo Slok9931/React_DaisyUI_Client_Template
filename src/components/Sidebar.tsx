@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { InfinityLogo, Typography, Tooltip, useToast } from '@/components';
+import { useSidebar } from '@/hooks';
+import { SidebarModule, SidebarRoute } from '@/types';
 import {
-  LayoutDashboard,
-  BarChart2,
-  Users,
-  UserCircle2,
-  ShieldCheck,
-  Settings as LucideSettings,
   LogOut,
   ChevronRight,
   ChevronLeft,
+  Loader2,
 } from 'lucide-react';
+import { getIconComponent } from '@/utils';
 
 interface SidebarItem {
   id: string;
@@ -40,8 +38,28 @@ interface SidebarProps {
   setActiveTab?: (id: string) => void;
 }
 
+const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
+  return {
+    id: route.id.toString(),
+    label: route.label,
+    href: route.route,
+    icon: getIconComponent(route.icon, 20),
+    children: route.children?.map(convertRouteToSidebarItem),
+  };
+};
+
+const convertModuleToSidebarItem = (module: SidebarModule): SidebarItem => {
+  return {
+    id: module.id.toString(),
+    label: module.label,
+    href: module.routes.length === 0 ? module.route : undefined,
+    icon: getIconComponent(module.icon, 20),
+    children: module.routes?.map(convertRouteToSidebarItem),
+  };
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({
-  items = defaultSidebarItems,
+  items,
   className = '',
   collapsed = false,
   authLogout = false,
@@ -54,10 +72,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const { addToast } = useToast();
+  const { sidebarData, loading, error } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<string | undefined>(
-    items.find(item => !item.children)?.id
-  );
+  const [activeTab, setActiveTab] = useState<string | undefined>();
+
+  const backendSidebarItems: SidebarItem[] = sidebarData.map(convertModuleToSidebarItem);
+  
+  const sidebarItems = backendSidebarItems.length > 0 ? backendSidebarItems : (items || []);
 
   useEffect(() => {
     if (activeTab) {
@@ -227,7 +248,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <div className="p-2 space-y-1 overflow-y-auto flex-1">
-        {items.map(item => renderSidebarItem(item))}
+        {loading ? (
+          <div className="flex items-center justify-center p-4">
+            <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="p-4 text-center text-error">
+            <Typography variant="body2">Failed to load menu</Typography>
+          </div>
+        ) : (
+          sidebarItems.map(item => renderSidebarItem(item))
+        )}
       </div>
 
       {authLogout && (
@@ -253,45 +284,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return sidebarContent;
 };
-
-// Default sidebar items with lucide-react icons
-const defaultSidebarItems: SidebarItem[] = [
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    href: '/dashboard',
-    icon: <LayoutDashboard className="w-5 h-5" />,
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    href: '/analytics',
-    icon: <BarChart2 className="w-5 h-5" />,
-    badge: 'New',
-  },
-  {
-    id: 'users',
-    label: 'Users',
-    icon: <Users className="w-5 h-5" />,
-    children: [
-      {
-        id: 'users-list',
-        label: 'All Users',
-        href: '/users',
-        icon: <UserCircle2 className="w-4 h-4" />,
-      },
-      {
-        id: 'users-roles',
-        label: 'Roles & Permissions',
-        href: '/users/roles',
-        icon: <ShieldCheck className="w-4 h-4" />,
-      },
-    ],
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    href: '/dashboard/settings',
-    icon: <LucideSettings className="w-5 h-5" />,
-  },
-];
