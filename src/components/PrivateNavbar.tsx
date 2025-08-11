@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Breadcrumbs, SearchBar, Typography } from '@/components';
-import { AlignCenter, Search } from 'lucide-react';
+import { getIconComponent } from '@/utils/utilityFunction';
 
 interface SidebarItem {
   id: string;
@@ -58,7 +58,7 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
             ${mobileSearchOpen ? 'opacity-50' : 'opacity-100'}`}
           aria-label="Toggle sidebar"
         >
-          <AlignCenter className="w-5 h-5" />
+          {getIconComponent('AlignCenter', 16, 'w-5 h-5')}
         </button>
         <div className="flex flex-col">
           <Typography
@@ -106,7 +106,7 @@ export const PrivateNavbar: React.FC<PrivateNavbarProps> = ({
               onClick={() => setMobileSearchOpen(true)}
               aria-label="Open search"
             >
-              <Search className="w-5 h-5" />
+              {getIconComponent('Search', 16, 'w-5 h-5')}
             </button>
           )}
         </div>

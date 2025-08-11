@@ -1,37 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Shield, 
-  Users, 
-  Database,
-  Settings,
-  Star,
-  Github,
-  ExternalLink,
-  Palette,
-  Eye,
-  Layout,
-  Layers,
-  Rainbow,
-  Scroll,
-  User,
-  FileText,
-  CheckCircle,
-  Code,
-  Activity,
-  BookOpen,
-  Download,
-  Play,
-  Brush,
-  Smartphone,
-  TabletSmartphone,
-  Laptop,
-  MousePointer,
-  Type,
-  Grid,
-  Component
-} from 'lucide-react';
 import { themes } from '@/themes';
 import { InfinityLogo } from '@/components';
+import { getIconComponent } from '@/utils/utilityFunction';
 
 export function InfinityDashboardLanding() {
   return (
@@ -130,15 +100,15 @@ const HeroSection = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a href="/infinity/dashboard" className="btn btn-primary btn-lg gap-2">
-              <Play className="w-5 h-5" />
+              {getIconComponent("Play", 20, "w-5 h-5")}
               Try Dashboard
             </a>
             <a className="btn btn-outline btn-lg gap-2">
-              <Github className="w-5 h-5" />
+              {getIconComponent("Github", 20, "w-5 h-5")}
               View Source
             </a>
             <a className="btn btn-ghost btn-lg gap-2">
-              <BookOpen className="w-5 h-5" />
+              {getIconComponent("BookOpen", 20, "w-5 h-5")}
               Components Docs
             </a>
           </div>
@@ -166,7 +136,7 @@ const HeroSection = () => {
           {/* Scroll Indicator */}
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2 text-base-content/60">
-              <Scroll className="w-5 h-5" />
+              {getIconComponent("Scroll", 20, "w-5 h-5")}
               <span className="text-sm">Scroll to experience live theme switching</span>
             </div>
             <div className="animate-bounce">
@@ -293,13 +263,13 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                 <div className="rounded-box bg-base-200 h-full">
                   <ul className="menu">
                     <li className="menu-title">
-                      <Layers className="w-5 h-5" />
+                      {getIconComponent("Layers", 20, "w-5 h-5")}
                     </li>
-                    <li><button className="active"><Layout className="w-5 h-5" /></button></li>
-                    <li><button><Shield className="w-5 h-5" /></button></li>
-                    <li><button><Users className="w-5 h-5" /></button></li>
-                    <li><button><Database className="w-5 h-5" /></button></li>
-                    <li><button><Settings className="w-5 h-5" /></button></li>
+                    <li><button className="active">{getIconComponent("Layout", 20, "w-5 h-5")}</button></li>
+                    <li><button>{getIconComponent("Shield", 20, "w-5 h-5")}</button></li>
+                    <li><button>{getIconComponent("Users", 20, "w-5 h-5")}</button></li>
+                    <li><button>{getIconComponent("Database", 20, "w-5 h-5")}</button></li>
+                    <li><button>{getIconComponent("Settings", 20, "w-5 h-5")}</button></li>
                   </ul>
                 </div>
 
@@ -307,13 +277,13 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                 <div className="rounded-box bg-base-200 h-full w-60 shrink-0">
                   <ul className="menu w-full">
                     <li className="menu-title">Theme Control</li>
-                    <li><button className="active"><Layout className="w-5 h-5" /> Dashboard</button></li>
-                    <li><button><Palette className="w-5 h-5" /> Themes</button></li>
-                    <li><button><Eye className="w-5 h-5" /> Preview</button></li>
-                    <li><button><Settings className="w-5 h-5" /> Settings</button></li>
+                    <li><button className="active">{getIconComponent("Layout", 20, "w-5 h-5")} Dashboard</button></li>
+                    <li><button>{getIconComponent("Palette", 20, "w-5 h-5")} Themes</button></li>
+                    <li><button>{getIconComponent("Eye", 20, "w-5 h-5")} Preview</button></li>
+                    <li><button>{getIconComponent("Settings", 20, "w-5 h-5")} Settings</button></li>
                     <li>
                       <button>
-                        <Rainbow className="w-5 h-5" /> 
+                        {getIconComponent("Rainbow", 20, "w-5 h-5")} 
                         Colors 
                         <span className="badge badge-info">{themes.length}</span>
                       </button>
@@ -342,15 +312,15 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
                 <div className="grow">
                   <button className="btn btn-ghost btn-circle avatar">
                     <div className="w-10 rounded-full bg-primary flex items-center justify-center">
-                      <span className="text-primary-content flex items-center justify-center mt-2 font-bold"><User className="w-5 h-5" /></span>
+                      <span className="text-primary-content flex items-center justify-center mt-2 font-bold">{getIconComponent("User", 20, "w-5 h-5")}</span>
                     </div>
                   </button>
                 </div>
                 <ul className="menu menu-sm menu-horizontal rounded-box">
                   <li>
                     <button>
-                      <Layout className="h-5 w-5" />
-                      Themes 
+                      {getIconComponent("Layout", 20, "h-5 w-5")}
+                      Themes
                       <span className="badge badge-sm hidden md:flex">{themes.length}+</span>
                     </button>
                   </li>
@@ -462,28 +432,28 @@ const ScrollSensitiveThemeShowcase = ({ onThemeChange }: any) => {
 const DashboardFeaturesSection = () => {
   const features = [
     {
-      icon: Palette,
+      icon: "Layout",
       title: "Dynamic Theming",
       description: "Switch between 30+ beautiful themes with real-time preview and instant application.",
       highlights: ["Live Preview", "30+ Themes", "Light & Dark", "Instant Switch"],
       color: "text-purple-500"
     },
     {
-      icon: Settings,
+      icon: "Settings",
       title: "Advanced Settings Panel", 
       description: "Comprehensive settings panel with theme customization, typography controls, and preferences.",
       highlights: ["Theme Selector", "Font Controls", "Live Preview", "Export Settings"],
       color: "text-blue-500"
     },
     {
-      icon: Layout,
+      icon: "Layout",
       title: "Responsive Layout",
       description: "Fully responsive dashboard that works perfectly on desktop, tablet, and mobile devices.",
       highlights: ["Mobile First", "Adaptive Design", "Touch Friendly", "Cross Browser"],
       color: "text-green-500"
     },
     {
-      icon: Component,
+      icon: "Component",
       title: "Component Library",
       description: "50+ pre-built UI components with TypeScript support and comprehensive documentation.",
       highlights: ["50+ Components", "TypeScript", "Documented", "Customizable"],
@@ -509,7 +479,7 @@ const DashboardFeaturesSection = () => {
               <div className="card-body space-y-4">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <feature.icon className={`w-6 h-6 ${feature.color}`} />
+                    {getIconComponent(feature.icon, 24, `w-6 h-6 ${feature.color}`)}
                   </div>
                   <h3 className="card-title text-lg">
                     {feature.title}
@@ -541,37 +511,37 @@ const UIComponentsSection = () => {
   const componentCategories = [
     {
       title: "Form Components",
-      icon: FileText,
+      icon: "FileText",
       components: ["Button", "Input", "Select", "Textarea", "Checkbox", "Radio", "Toggle", "Range", "Rating", "File Input"],
       description: "Complete form controls with validation"
     },
     {
       title: "Layout Components",
-      icon: Layout,
+      icon: "Layout",
       components: ["Card", "Modal", "Drawer", "Collapse", "Tabs", "Accordion", "Divider", "Hero", "Stats"],
       description: "Structure your content beautifully"
     },
     {
       title: "Navigation Components",
-      icon: MousePointer,
+      icon: "MousePointer",
       components: ["Menu", "Navbar", "Sidebar", "Breadcrumbs", "Pagination", "Steps", "Dropdown"],
       description: "Guide users through your application"
     },
     {
       title: "Data Display",
-      icon: Grid,
+      icon: "Grid",
       components: ["Alert", "Badge", "Avatar", "Tooltip", "Progress", "Loading", "Countdown", "Table"],
       description: "Present information effectively"
     },
     {
       title: "Feedback Components",
-      icon: Activity,
+      icon: "Activity",
       components: ["Toast", "Skeleton", "Progress Bar", "Spinner", "Alert Dialog", "Confirmation"],
       description: "Communicate status and actions"
     },
     {
       title: "Typography & Text",
-      icon: Type,
+      icon: "Type",
       components: ["Typography", "Text Styles", "Headings", "Labels", "Captions", "Code Blocks"],
       description: "Beautiful text presentation"
     }
@@ -582,7 +552,7 @@ const UIComponentsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
-            <Component className="w-16 h-16 text-primary" />
+            {getIconComponent("Component", 24, "w-16 h-16 text-primary")}
           </div>
           <h2 className="text-4xl font-bold mb-4">
             🧩 Comprehensive UI Library
@@ -598,7 +568,7 @@ const UIComponentsSection = () => {
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <category.icon className="w-5 h-5 text-primary" />
+                    {getIconComponent(category.icon, 24, "w-6 h-6 text-primary")}
                   </div>
                   <h3 className="card-title text-lg">{category.title}</h3>
                 </div>
@@ -621,7 +591,7 @@ const UIComponentsSection = () => {
                 <div className="flex justify-between items-center text-xs text-base-content/60">
                   <span>{category.components.length} components</span>
                   <span className="flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3 text-success" />
+                    {getIconComponent("CheckCircle", 24, "w-3 h-3 text-success")}
                     TypeScript
                   </span>
                 </div>
@@ -633,11 +603,11 @@ const UIComponentsSection = () => {
         <div className="text-center mt-12">
           <div className="flex flex-wrap justify-center gap-4">
             <button className="btn btn-primary gap-2">
-              <BookOpen className="w-4 h-4" />
+              {getIconComponent("BookOpen", 24, "w-4 h-4")}
               Component Documentation
             </button>
             <button className="btn btn-outline gap-2">
-              <Code className="w-4 h-4" />
+              {getIconComponent("Code", 24, "w-4 h-4")}
               View Source Code
             </button>
           </div>
@@ -652,25 +622,25 @@ const AdminFeaturesSection = () => {
   const adminFeatures = [
     {
       title: "User Management",
-      icon: Users,
+      icon: "Users",
       description: "Complete user administration with roles and permissions",
       features: ["User List", "Role Assignment", "Permission Control", "Bulk Actions"]
     },
     {
       title: "Dashboard Analytics",
-      icon: Activity,
+      icon: "Activity",
       description: "Real-time analytics and monitoring dashboard",
       features: ["Live Charts", "Performance Metrics", "User Statistics", "System Health"]
     },
     {
       title: "Settings Management",
-      icon: Settings,
+      icon: "Settings",
       description: "Comprehensive application settings and configuration",
       features: ["Theme Settings", "System Config", "User Preferences", "API Settings"]
     },
     {
       title: "Content Management",
-      icon: FileText,
+      icon: "FileText",
       description: "Manage application content and resources",
       features: ["File Upload", "Media Library", "Content Editor", "Version Control"]
     }
@@ -681,7 +651,7 @@ const AdminFeaturesSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
-            <Shield className="w-16 h-16 text-primary" />
+            {getIconComponent("Shield", 24, "w-16 h-16 text-primary")}
           </div>
           <h2 className="text-4xl font-bold mb-4">
             🛡️ Admin Panel Features
@@ -696,14 +666,14 @@ const AdminFeaturesSection = () => {
             <div key={index} className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-4">
-                  <feature.icon className="w-8 h-8 text-primary" />
+                  {getIconComponent(feature.icon, 24, "w-8 h-8 text-primary")}
                   <h3 className="card-title text-lg">{feature.title}</h3>
                 </div>
                 <p className="text-base-content/70 mb-4">{feature.description}</p>
                 <ul className="space-y-1">
                   {feature.features.map((item, idx) => (
                     <li key={idx} className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-success" />
+                      {getIconComponent("CheckCircle", 24, "w-4 h-4 text-success")}
                       {item}
                     </li>
                   ))}
@@ -735,7 +705,7 @@ const ResponsiveDesignSection = () => {
           <div className="space-y-8">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Smartphone className="w-6 h-6 text-primary" />
+                {getIconComponent("Smartphone", 24, "w-6 h-6 text-primary")}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Mobile First</h3>
@@ -745,7 +715,7 @@ const ResponsiveDesignSection = () => {
 
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <TabletSmartphone className="w-6 h-6 text-secondary" />
+                {getIconComponent("TabletSmartphone", 24, "w-6 h-6 text-secondary")}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Tablet Optimized</h3>
@@ -755,7 +725,7 @@ const ResponsiveDesignSection = () => {
 
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Laptop className="w-6 h-6 text-accent" />
+                {getIconComponent("Laptop", 24, "w-6 h-6 text-accent")}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Desktop Ready</h3>
@@ -834,7 +804,7 @@ const CustomizationSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
-            <Brush className="w-16 h-16 text-primary" />
+            {getIconComponent("Brush", 64, "w-16 h-16 text-primary")}
           </div>
           <h2 className="text-4xl font-bold mb-4">
             🎛️ Advanced Customization
@@ -849,7 +819,7 @@ const CustomizationSection = () => {
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Type className="w-6 h-6 text-primary" />
+                  {getIconComponent("Type", 24, "w-6 h-6 text-primary")}
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-2">Typography Control</h3>
@@ -859,7 +829,7 @@ const CustomizationSection = () => {
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Palette className="w-6 h-6 text-secondary" />
+                  {getIconComponent("Palette", 24, "w-6 h-6 text-secondary")}
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-2">Color Customization</h3>
@@ -869,7 +839,7 @@ const CustomizationSection = () => {
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Settings className="w-6 h-6 text-accent" />
+                  {getIconComponent("Settings", 24, "w-6 h-6 text-accent")}
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-2">Layout Settings</h3>
@@ -880,11 +850,11 @@ const CustomizationSection = () => {
 
             <div className="flex gap-4">
               <button className="btn btn-primary gap-2">
-                <Eye className="w-4 h-4" />
+                {getIconComponent("Eye", 24, "w-4 h-4")}
                 Live Preview
               </button>
               <button className="btn btn-outline gap-2">
-                <Download className="w-4 h-4" />
+                {getIconComponent("Download", 24, "w-4 h-4")}
                 Export Settings
               </button>
             </div>
@@ -907,7 +877,7 @@ const CustomizationSection = () => {
                       <span className="font-medium text-sm">{item.feature}</span>
                       <p className="text-xs text-base-content/60">{item.description}</p>
                     </div>
-                    <CheckCircle className="w-4 h-4 text-success" />
+                    {getIconComponent("CheckCircle", 24, "w-4 h-4 text-success")}
                   </div>
                 ))}
               </div>
@@ -982,15 +952,15 @@ const GettingStartedSection = () => {
         <div className="text-center mt-12">
           <div className="flex flex-wrap justify-center gap-4">
             <button className="btn btn-primary btn-lg gap-2">
-              <Play className="w-5 h-5" />
+              {getIconComponent("Play", 24, "w-5 h-5")}
               Try Dashboard
             </button>
             <button className="btn btn-outline btn-lg gap-2">
-              <Github className="w-5 h-5" />
+              {getIconComponent("Github", 24, "w-5 h-5")}
               View Source
             </button>
             <button className="btn btn-ghost btn-lg gap-2">
-              <BookOpen className="w-5 h-5" />
+              {getIconComponent("BookOpen", 24, "w-5 h-5")}
               Documentation
             </button>
           </div>
@@ -1016,13 +986,13 @@ const FooterSection = () => {
             </p>
             <div className="flex space-x-3">
               <a href="#" className="btn btn-ghost btn-sm">
-                <Github size={20} />
+                {getIconComponent("Github", 24, "w-5 h-5")}
               </a>
               <a href="#" className="btn btn-ghost btn-sm">
-                <Star size={20} />
+                {getIconComponent("Star", 24, "w-5 h-5")}
               </a>
               <a href="#" className="btn btn-ghost btn-sm">
-                <ExternalLink size={20} />
+                {getIconComponent("ExternalLink", 24, "w-5 h-5")}
               </a>
             </div>
           </div>

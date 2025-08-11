@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useTheme } from "@/hooks";
 import { useTypographyStore, useAuthStore } from "@/store";
 import { Button, Typography, useToast, Tooltip, Input } from "@/components";
-import { User as UserIcon, RotateCcw, Edit, Save, X, Palette, Pencil, Type, Shuffle } from "lucide-react";
+import { getIconComponent } from "@/utils/utilityFunction";
 
 // --- ThemeTab ---
 export const ThemeTabHeader = () => (
   <Typography variant="h6" className="mb-2 flex gap-2">
-    <Palette />
+    {getIconComponent("Palette", 20)}
     Choose Theme
   </Typography>
 );
@@ -60,7 +60,7 @@ export const ThemeTabContent = () => {
           onClick={handleRandomTheme}
           type="button"
         >
-          <Shuffle className="w-4 h-4" />
+          {getIconComponent("Shuffle", 16)}
           Random Theme
         </button>
       </div>
@@ -122,7 +122,7 @@ export const ThemeTabFooter = () => {
       onClick={handleReset}
       className="btn btn-primary btn-sm w-full gap-2"
     >
-      <RotateCcw className="w-4 h-4" />
+      {getIconComponent("RotateCcw", 16)}
       Reset to Default
     </Button>
   );
@@ -131,7 +131,7 @@ export const ThemeTabFooter = () => {
 // --- FontFamilyTab ---
 export const FontFamilyTabHeader = () => (
   <Typography variant="h6" className="mb-4 flex gap-2">
-    <Pencil />
+    {getIconComponent("Pencil", 20)}
     Choose Font Family
   </Typography>
 );
@@ -197,7 +197,7 @@ export const FontFamilyTabFooter = () => {
       onClick={handleReset}
       className="btn btn-primary btn-sm w-full gap-2"
     >
-      <RotateCcw className="w-4 h-4" />
+      {getIconComponent("RotateCcw", 16)}
       Reset to Default
     </Button>
   );
@@ -206,7 +206,7 @@ export const FontFamilyTabFooter = () => {
 // --- TypographyTab ---
 export const TypographyTabHeader = () => (
   <Typography variant="h6" className="mb-4 flex gap-2">
-    <Type />
+    {getIconComponent("Type", 20)}
     Font Size & Weight
   </Typography>
 );
@@ -390,7 +390,7 @@ export const TypographyTabFooter = () => {
       onClick={handleReset}
       className="btn btn-primary btn-sm w-full gap-2"
     >
-      <RotateCcw className="w-4 h-4" />
+      {getIconComponent("RotateCcw", 16)}
       Reset to Default
     </Button>
   );
@@ -399,7 +399,7 @@ export const TypographyTabFooter = () => {
 // --- ProfileTab ---
 export const ProfileTabHeader = () => (
   <Typography variant="h6" className="mb-4 flex gap-2">
-    <UserIcon />
+    {getIconComponent("User", 20)}
     Profile
   </Typography>
 );
@@ -472,14 +472,14 @@ export const ProfileTabContent = () => {
               onClick={handleSave}
               className="btn btn-primary btn-sm flex-1 gap-2"
             >
-              <Save className="w-4 h-4" />
+              {getIconComponent("Save", 16)}
               Save Changes
             </Button>
             <Button
               onClick={handleCancel}
               className="btn btn-outline btn-sm flex-1 gap-2"
             >
-              <X className="w-4 h-4" />
+              {getIconComponent("X", 16)}
               Cancel
             </Button>
           </div>
@@ -494,7 +494,7 @@ export const ProfileTabContent = () => {
         <div className="flex flex-col items-center gap-4">
           <div className="avatar">
             <div className="w-20 rounded-full bg-base-200 flex items-center justify-center">
-              <UserIcon className="w-16 h-16 text-base-content/60" />
+              {getIconComponent("User", 64, "w-16 h-16 text-base-content/60")}
             </div>
           </div>
           <div className="text-center">
@@ -533,7 +533,7 @@ export const ProfileTabFooter = () => {
       }}
       className="btn btn-primary btn-sm w-full gap-2"
     >
-      <Edit className="w-4 h-4" />
+      {getIconComponent("Edit", 16)}
       Edit Profile
     </Button>
   );

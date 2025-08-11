@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
-import { InfinityLogo, Typography, Tooltip, useToast } from '@/components';
+import { InfinityLogo, Typography, Tooltip, useToast, Loading } from '@/components';
 import { useSidebar } from '@/hooks';
 import { SidebarModule, SidebarRoute } from '@/types';
-import {
-  LogOut,
-  ChevronRight,
-  ChevronLeft,
-  Loader2,
-} from 'lucide-react';
 import { getIconComponent } from '@/utils';
 
 interface SidebarItem {
@@ -187,9 +181,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 )}
                 {hasChildren && (
-                  <ChevronRight
-                    className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                  />
+                  getIconComponent("ChevronRight", 16, `w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`)
                 )}
               </div>
             )}
@@ -234,9 +226,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className="btn btn-ghost btn-sm btn-square transition-transform duration-200 hover:scale-110 cursor-pointer"
                 >
                   {side === 'right' ? (
-                    <ChevronRight className="w-4 h-4" />
+                    getIconComponent("ChevronRight", 16, "w-4 h-4")
                   ) : (
-                    <ChevronLeft className="w-4 h-4" />
+                    getIconComponent("ChevronLeft", 16, "w-4 h-4")
                   )}
                 </button>
               </Tooltip>
@@ -248,7 +240,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={onClose}
                   className="btn btn-ghost btn-sm btn-circle transition-transform duration-200 hover:scale-110 cursor-pointer"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  {getIconComponent("ChevronLeft", 16, "w-4 h-4")}
                 </button>
               </Tooltip>
             )}
@@ -259,7 +251,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-2 space-y-1 overflow-y-auto flex-1">
         {loading ? (
           <div className="flex items-center justify-center p-4">
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <Loading />
           </div>
         ) : error ? (
           <div className="p-4 text-center text-error">
@@ -279,7 +271,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ${!collapsed ? 'w-56': 'w-full'}`}
               style={{ cursor: 'pointer' }}
             >
-              <LogOut className="w-5 h-5" />
+              {getIconComponent("LogOut", 16, "w-5 h-5")}
               {!collapsed && (
                 <Typography variant="body2" className="font-medium">
                   Logout

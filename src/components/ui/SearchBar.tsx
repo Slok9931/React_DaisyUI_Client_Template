@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import { Search } from 'lucide-react';
 import { Chip } from '@/components';
+import { getIconComponent } from '@/utils/utilityFunction';
 
 interface SearchBarProps {
   autoFocus?: boolean;
@@ -59,7 +59,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs p-0"
           tabIndex={-1}
         >
-          <Search className="w-4 h-4 text-base-content/70" />
+          {getIconComponent("Search", 16, "w-4 h-4 text-base-content/70")}
         </button>
       </form>
       {value && (
@@ -68,7 +68,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             variant="primary"
             size="sm"
             onRemove={onClear}
-            icon={<Search className="w-3 h-3" />}
+            icon={getIconComponent("Search", 12, "w-3 h-3")}
           >
             "{value}"
           </Chip>

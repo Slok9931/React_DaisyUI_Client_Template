@@ -1,16 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Eye,
-  EyeOff,
-  ArrowRight,
-  UserPlus,
-  Building2,
-  Users,
-  Award,
-  Shield,
-} from "lucide-react";
-import {
   Typography,
   Input,
   Button,
@@ -24,6 +14,7 @@ import {
 import { useAuthStore, useLoading } from "@/store";
 import { useTheme } from "@/hooks";
 import { themes } from "@/themes";
+import { getIconComponent } from "@/utils";
 
 export const AuthPages = () => {
   const location = useLocation();
@@ -196,24 +187,24 @@ export const AuthPages = () => {
             <div className="space-y-4">
               {[
                 {
-                  icon: Building2,
+                  icon: getIconComponent("Building2", 24, "text-primary"),
                   title: "Enterprise Ready",
                   desc: "Built for business scale",
                 },
                 {
-                  icon: Users,
+                  icon: getIconComponent("Users", 24, "text-primary"),
                   title: "Team Collaboration",
                   desc: "Seamless team management",
                 },
                 {
-                  icon: Award,
+                  icon: getIconComponent("Award", 24, "text-primary"),
                   title: "Premium Quality",
                   desc: "Industry-leading standards",
                 },
               ].map((feature, index) => (
                 <div key={index} className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-base-300 rounded-xl flex items-center justify-center">
-                    <feature.icon size={24} className="text-primary" />
+                    {feature.icon}
                   </div>
                   <div>
                     <Typography
@@ -430,7 +421,7 @@ const LoginForm = ({ onNavigate }: any) => {
                 disabled={isLoading}
                 tabIndex={-1}
               >
-                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                {showPassword ? getIconComponent("Eye", 20, "text-base-content/60 hover:text-primary transition-colors") : getIconComponent("EyeOff", 20, "text-base-content/60 hover:text-primary transition-colors")}
               </button>
             }
           />
@@ -454,7 +445,7 @@ const LoginForm = ({ onNavigate }: any) => {
         >
             <>
               Sign In
-              <ArrowRight size={18} className="ml-2" />
+              {getIconComponent("ArrowRight", 18, "ml-2")}
             </>
         </Button>
       </form>
@@ -468,7 +459,7 @@ const LoginForm = ({ onNavigate }: any) => {
         block
         onClick={() => onNavigate("/register")}
       >
-        <UserPlus size={18} className="mr-2" />
+        {getIconComponent("UserPlus", 18, "mr-2")}
         Create Account
       </Button>
       <div className="mt-4 p-4 bg-base-200 rounded-xl">
@@ -611,7 +602,7 @@ const RegisterForm = ({ onNavigate }: any) => {
               disabled={isLoading}
               tabIndex={-1}
             >
-              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              {showPassword ? getIconComponent("Eye", 20, "text-base-content/60 hover:text-primary transition-colors") : getIconComponent("EyeOff", 20, "text-base-content/60 hover:text-primary transition-colors")}
             </button>
           }
         />
@@ -635,7 +626,7 @@ const RegisterForm = ({ onNavigate }: any) => {
               disabled={isLoading}
               tabIndex={-1}
             >
-              {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              {showConfirmPassword ? getIconComponent("Eye", 20, "text-base-content/60 hover:text-primary transition-colors") : getIconComponent("EyeOff", 20, "text-base-content/60 hover:text-primary transition-colors")}
             </button>
           }
         />
@@ -653,7 +644,7 @@ const RegisterForm = ({ onNavigate }: any) => {
           ) : (
             <>
               Create Infinity Account
-              <ArrowRight size={18} className="ml-2" />
+              {getIconComponent("ArrowRight", 18, "ml-2")}
             </>
           )}
         </Button>
@@ -668,7 +659,7 @@ const RegisterForm = ({ onNavigate }: any) => {
         block
         onClick={() => onNavigate("/login")}
       >
-        <Shield size={18} className="mr-2" />
+        {getIconComponent("Shield", 18, "mr-2")}
         Sign In
       </Button>
       <div className="mt-4 p-4 bg-transparent">

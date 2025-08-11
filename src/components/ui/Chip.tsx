@@ -1,5 +1,5 @@
+import { getIconComponent } from '@/utils/utilityFunction';
 import React from 'react';
-import { X } from 'lucide-react';
 
 type ChipSize = 'xs' | 'sm' | 'md' | 'lg';
 type ChipVariant = 'default' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error';
@@ -95,7 +95,7 @@ export const Chip: React.FC<ChipProps> = ({
           disabled={disabled}
           type="button"
         >
-          <X className="w-3 h-3" />
+          {getIconComponent("X", 12, "w-3 h-3")}
         </button>
       )}
     </span>
