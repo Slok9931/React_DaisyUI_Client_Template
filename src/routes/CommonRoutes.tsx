@@ -1,47 +1,53 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-import { PrivateRoute, PublicRoute } from '@/routes';
-import { PrivateLayout } from '@/layouts';
-import { ThemeDemo, AuthPages, InfinityDashboardLanding } from '@/views';
+import { PrivateRoute, PublicRoute } from "@/routes";
+import { PrivateLayout } from "@/layouts";
+import {
+  AuthPages,
+  InfinityDashboardLanding,
+  InfinitePage,
+} from "@/views";
 
 export const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<InfinityDashboardLanding />} />
-        <Route 
-          path="/login" 
+        <Route
+          path="/login"
           element={
             <PublicRoute>
               <AuthPages />
             </PublicRoute>
-          } 
+          }
         />
-        <Route 
-          path="/register" 
+        <Route
+          path="/register"
           element={
             <PublicRoute>
               <AuthPages />
             </PublicRoute>
-          } 
+          }
         />
-        <Route 
-          path="/auth" 
-          element={<Navigate to="/login" replace />} 
-        />
-        <Route 
-          path="/infinity/dashboard" 
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/infinity/:page/*"
           element={
             <PrivateRoute>
               <PrivateLayout>
-                <ThemeDemo />
+                <InfinitePage />
               </PrivateLayout>
             </PrivateRoute>
-          } 
+          }
         />
-        <Route 
-          path="*" 
+        <Route
+          path="*"
           element={
             <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
               <div className="text-center">
@@ -49,15 +55,15 @@ export const AppRoutes: React.FC = () => {
                 <p className="text-xl text-base-content/70 mb-8">
                   Page not found in the infinite universe
                 </p>
-                <button 
-                  onClick={() => window.location.href = '/'}
+                <button
+                  onClick={() => (window.location.href = "/")}
                   className="btn btn-primary"
                 >
                   Return to <span className="font-courgette">Infinity</span>
                 </button>
               </div>
             </div>
-          } 
+          }
         />
       </Routes>
     </Router>

@@ -8,8 +8,7 @@ import { getIconComponent } from '@/utils';
 
 interface SidebarItem {
   id: string;
-  name: string;
-  label?: string;
+  label: string;
   href?: string;
   onClick?: () => void;
   icon: React.ReactNode;
@@ -36,7 +35,6 @@ interface SidebarProps {
 const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
   return {
     id: route.id.toString(),
-    name: route.name,
     label: route.label,
     href: route.route,
     icon: getIconComponent(route.icon, 20),
@@ -47,7 +45,6 @@ const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
 const convertModuleToSidebarItem = (module: SidebarModule): SidebarItem => {
   return {
     id: module.id.toString(),
-    name: module.name,
     label: module.label,
     href: module.routes.length === 0 ? module.route : undefined,
     icon: getIconComponent(module.icon, 20),
@@ -74,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { sidebarData, loading, error } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<string | undefined>(
-    () => localStorage.getItem('activeTab') || "dashboard"
+    () => localStorage.getItem('activeTab') || "Dashboard"
   );
 
   const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : uncontrolledActiveTab;
@@ -115,13 +112,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onToggleCollapse?.();
         setTimeout(() => toggleExpanded(item.id), 300);
       } else {
-        setActiveTab(item.name);
+        setActiveTab(item.label);
         localStorage.setItem('pageName', `${item.label}`)
         if (item.href) {
+          setActiveTab(item.label);
           navigate(item.href);
           addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
         } else {
           item.onClick?.();
+          setActiveTab(item.label);
           addToast({ message: `${item.label} clicked`, variant: 'info' });
         }
       }
@@ -129,13 +128,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       if (hasChildren) {
         toggleExpanded(item.id);
       } else {
-        setActiveTab(item.name);
+        setActiveTab(item.label);
         localStorage.setItem('pageName', `${item.label}`)
         if (item.href) {
+          setActiveTab(item.label);
           navigate(item.href);
           addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
         } else {
           item.onClick?.();
+          setActiveTab(item.label);
           addToast({ message: `${item.label} clicked`, variant: 'info' });
         }
       }
@@ -143,7 +144,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const isActive = (item: SidebarItem) => {
-    return activeTab === item.name;
+    return activeTab === item.label;
   };
 
   const renderSidebarItem = (item: SidebarItem, level = 0) => {
