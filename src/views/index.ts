@@ -1,3 +1,3 @@
 export * from './AuthPage';
 export * from './LandingPage';
-export * from './InfinitePage';
+export * from './InfinityPage';
