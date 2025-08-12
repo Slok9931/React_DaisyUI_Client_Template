@@ -49,7 +49,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onChange={onChange}
           placeholder={placeholder}
           className={`
-            input w-full pr-10 input-sm
+            input w-full p-5 pl-3 pr-10 input-sm
             ${mobile ? 'transition-all duration-300' : ''}
           `}
           onBlur={mobile ? onBlur : undefined}

@@ -32,7 +32,7 @@ export const Input: React.FC<InputProps> = ({
     'w-full',
     startIcon && 'pl-10',
     endIcon && 'pr-10',
-    className
+    className && 'p-5 pl-3 pr-10',
   ].filter(Boolean).join(' ');
 
   return (

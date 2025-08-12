@@ -19,6 +19,7 @@ export * from './ui/Toggle';
 export * from './ui/Range';
 export * from './ui/Rating';
 export * from './ui/FileInput';
+export * from './ui/DatePicker';
 
 // Layout Components
 export * from './ui/Card';
