@@ -20,6 +20,7 @@ export * from './ui/Range';
 export * from './ui/Rating';
 export * from './ui/FileInput';
 export * from './ui/DatePicker';
+export * from './ui/TimePicker';
 
 // Layout Components
 export * from './ui/Card';
