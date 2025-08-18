@@ -21,6 +21,7 @@ export * from './ui/Rating';
 export * from './ui/FileInput';
 export * from './ui/DatePicker';
 export * from './ui/TimePicker';
+export * from './ui/ColorPicker';
 
 // Layout Components
 export * from './ui/Card';
