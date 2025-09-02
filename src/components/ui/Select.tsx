@@ -41,11 +41,7 @@ export const Select: React.FC<SelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedValues, setSelectedValues] = useState<string[]>(
-    multiSelect 
-      ? (Array.isArray(value) ? value : value ? [value] : [])
-      : (value ? [typeof value === 'string' ? value : value[0] || ''] : [])
-  );
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Filter options based on search term
@@ -69,14 +65,20 @@ export const Select: React.FC<SelectProps> = ({
     };
   }, []);
 
-  // Update selectedValues when value prop changes
+  // Update selectedValues when value prop changes - FIXED THIS USEEFFECT
   useEffect(() => {
-    if (multiSelect) {
-      setSelectedValues(Array.isArray(value) ? value : value ? [value] : []);
-    } else {
-      setSelectedValues(value ? [typeof value === 'string' ? value : value[0] || ''] : []);
+    const newSelectedValues = multiSelect 
+      ? (Array.isArray(value) ? value : value ? [value] : [])
+      : (value ? [typeof value === 'string' ? value : value[0] || ''] : []);
+    
+    // Only update if the values are actually different
+    const currentValuesString = JSON.stringify(selectedValues.sort());
+    const newValuesString = JSON.stringify(newSelectedValues.sort());
+    
+    if (currentValuesString !== newValuesString) {
+      setSelectedValues(newSelectedValues);
     }
-  }, [value, multiSelect]);
+  }, [value, multiSelect]); // Removed selectedValues from dependency array
 
   const handleOptionSelect = (optionValue: string) => {
     let newSelectedValues: string[];
@@ -140,12 +142,20 @@ export const Select: React.FC<SelectProps> = ({
       <div ref={dropdownRef} className="relative">
         {/* Select Input */}
         <div
-          className={`${selectClasses} flex items-center justify-between`}
+          className={`${selectClasses} flex items-center justify-between cursor-pointer`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className={selectedValues.length > 0 ? '' : 'text-base-content/50'}>
             {displayText}
           </span>
+          <svg 
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
 
         {/* Selected Options as Chips */}
@@ -191,12 +201,24 @@ export const Select: React.FC<SelectProps> = ({
                     }`}
                     onClick={() => !option.disabled && handleOptionSelect(option.value)}
                   >
-                    <Checkbox
-                      checked={selectedValues.includes(option.value)}
-                      onChange={() => !option.disabled && handleOptionSelect(option.value)}
-                      disabled={option.disabled}
-                      size="sm"
-                    />
+                    {multiSelect ? (
+                      <Checkbox
+                        checked={selectedValues.includes(option.value)}
+                        onChange={() => !option.disabled && handleOptionSelect(option.value)}
+                        disabled={option.disabled}
+                        size="sm"
+                      />
+                    ) : (
+                      <div className={`w-4 h-4 rounded-full border-2 ${
+                        selectedValues.includes(option.value) 
+                          ? 'bg-primary border-primary' 
+                          : 'border-base-300'
+                      }`}>
+                        {selectedValues.includes(option.value) && (
+                          <div className="w-full h-full rounded-full bg-primary"></div>
+                        )}
+                      </div>
+                    )}
                     <Typography variant="body2">
                       {option.label}
                     </Typography>

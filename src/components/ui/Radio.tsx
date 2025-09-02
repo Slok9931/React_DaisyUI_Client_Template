@@ -50,7 +50,7 @@ export const Radio: React.FC<RadioProps> = ({
   return (
     <div className={containerClasses}>
       {options.map((option) => (
-        <label key={option.value} className="label cursor-pointer justify-start gap-2">
+        <label key={option.value} className="label cursor-pointer justify-start gap-2 mr-4">
           <input
             type="radio"
             name={name}
@@ -58,7 +58,7 @@ export const Radio: React.FC<RadioProps> = ({
             checked={value === option.value}
             onChange={() => handleChange(option.value)}
             disabled={option.disabled}
-            className={radioClasses}
+            className={`${radioClasses} text-primary`}
             {...props}
           />
           <span className="label-text">{option.label}</span>

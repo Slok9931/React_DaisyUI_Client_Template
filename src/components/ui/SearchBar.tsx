@@ -31,6 +31,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     }
   }, [autoFocus]);
 
+  // Provide a default onChange if none is provided
+  const handleChange = onChange || (() => {});
+
   return (
     <div>
       <form
@@ -46,7 +49,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           ref={inputRef}
           type="text"
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           placeholder={placeholder}
           className={`
             input w-full p-5 pl-3 pr-10 input-sm

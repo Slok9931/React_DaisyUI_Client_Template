@@ -56,13 +56,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(
     dateRange 
-      ? (rangeValue?.startDate?.getMonth() ?? new Date().getMonth())
-      : (value?.getMonth() ?? new Date().getMonth())
+      ? (getValidDate(rangeValue?.startDate).getMonth())
+      : (getValidDate(value).getMonth())
   );
   const [currentYear, setCurrentYear] = useState(
     dateRange 
-      ? (rangeValue?.startDate?.getFullYear() ?? new Date().getFullYear())
-      : (value?.getFullYear() ?? new Date().getFullYear())
+      ? (getValidDate(rangeValue?.startDate).getFullYear())
+      : (getValidDate(value).getFullYear())
   );
   const [inputValue, setInputValue] = useState('');
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
@@ -442,3 +442,5 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     </div>
   );
 };
+
+const getValidDate = (date: any) => date instanceof Date ? date : new Date();

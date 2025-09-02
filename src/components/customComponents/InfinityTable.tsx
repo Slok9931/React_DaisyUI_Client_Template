@@ -12,7 +12,7 @@ import {
   Card,
   CardBody
 } from '@/components';
-import { getIconComponent } from '@/utils/utilityFunction';
+import { getIconComponent } from '@/utils';
 
 // Types
 interface FilterConfig {
@@ -361,7 +361,7 @@ export const InfinityTable = <T extends Record<string, any>>({
       <FilterRow filters={filters} />
 
       {/* Table Card */}
-      <Card className={bordered ? 'border border-base-300' : ''}>
+      <Card className={bordered ? 'border border-base-300 overflow-hidden' : ''}>
         <CardBody className="p-0">
           <div className="overflow-x-auto">
             <table className={tableClasses}>
