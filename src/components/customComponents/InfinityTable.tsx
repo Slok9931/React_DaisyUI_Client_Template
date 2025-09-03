@@ -15,7 +15,7 @@ import {
 import { getIconComponent } from '@/utils';
 
 // Types
-interface FilterConfig {
+export interface FilterConfig {
   type: 'search' | 'select' | 'multiSelect' | 'datePicker' | 'dateRange' | 'timePicker' | 'timeRange';
   key: string;
   label: string;
@@ -28,7 +28,7 @@ interface FilterConfig {
   showClear?: boolean;
 }
 
-interface ColumnConfig<T> {
+export interface ColumnConfig<T> {
   key: keyof T | string;
   header: string;
   width?: string;

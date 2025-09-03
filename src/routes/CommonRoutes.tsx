@@ -12,7 +12,9 @@ import {
   AuthPages,
   InfinityDashboardLanding,
   InfinitePage,
+  UsersView,
 } from "@/views";
+
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -36,6 +38,16 @@ export const AppRoutes: React.FC = () => {
           }
         />
         <Route path="/auth" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/infinity/administration/accessControls/users"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <UsersView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/infinity/:page/*"
           element={

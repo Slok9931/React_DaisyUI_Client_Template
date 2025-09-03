@@ -62,4 +62,5 @@ export * from './ui/Skeleton';
 // Custom Components
 export * from './customComponents/InfinitySheet';
 export * from './customComponents/InfinityIcons';
-export * from './customComponents/InfinityTable';
+export * from './customComponents/InfinityTable'
+export * from './customComponents/InfinityForm';
