@@ -1,7 +1,7 @@
 import React from 'react';
 
 type ToggleSize = 'xs' | 'sm' | 'md' | 'lg';
-type ToggleVariant = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'info' | 'error';
+type ToggleVariant = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'info' | 'error' | 'neutral';
 
 interface ToggleProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;

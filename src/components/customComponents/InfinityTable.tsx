@@ -1,96 +1,96 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  Typography, 
-  SearchBar, 
-  Select, 
-  DatePicker, 
-  TimePicker, 
-  Button, 
-  Checkbox, 
+import React, { useState, useMemo } from 'react'
+import {
+  Typography,
+  SearchBar,
+  Select,
+  DatePicker,
+  TimePicker,
+  Button,
+  Checkbox,
   Pagination,
   Collapse,
   Card,
   CardBody
-} from '@/components';
-import { getIconComponent } from '@/utils';
+} from '@/components'
+import { getIconComponent } from '@/utils'
 
 // Types
 export interface FilterConfig {
-  type: 'search' | 'select' | 'multiSelect' | 'datePicker' | 'dateRange' | 'timePicker' | 'timeRange';
-  key: string;
-  label: string;
-  placeholder?: string;
-  options?: Array<{ value: string; label: string }>;
-  value?: any;
-  onChange?: (value: any) => void;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  variant?: string;
-  showClear?: boolean;
+  type: 'search' | 'select' | 'multiSelect' | 'datePicker' | 'dateRange' | 'timePicker' | 'timeRange'
+  key: string
+  label: string
+  placeholder?: string
+  options?: Array<{ value: string; label: string }>
+  value?: any
+  onChange?: (value: any) => void
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  variant?: string
+  showClear?: boolean
 }
 
 export interface ColumnConfig<T> {
-  key: keyof T | string;
-  header: string;
-  width?: string;
-  sortable?: boolean;
-  customRender?: (value: any, row: T, rowIndex: number) => React.ReactNode;
-  align?: 'left' | 'center' | 'right';
-  className?: string;
+  key: keyof T | string
+  header: string
+  width?: string
+  sortable?: boolean
+  customRender?: (value: any, row: T, rowIndex: number) => React.ReactNode
+  align?: 'left' | 'center' | 'right'
+  className?: string
 }
 
 interface InfinityTableProps<T> {
   // Core data
-  data: T[];
-  columns: ColumnConfig<T>[];
-  loading?: boolean;
-  
+  data: T[]
+  columns: ColumnConfig<T>[]
+  loading?: boolean
+
   // Table configuration
-  title?: string;
-  subtitle?: string;
-  icon?: React.ReactNode;
-  
+  title?: string
+  subtitle?: string
+  icon?: React.ReactNode
+
   // Filters
-  filters?: FilterConfig[];
-  
+  filters?: FilterConfig[]
+
   // Selection
-  selectable?: boolean;
-  selectedRows?: string[];
-  onRowSelect?: (selectedIds: string[]) => void;
-  rowIdKey?: keyof T;
-  
+  selectable?: boolean
+  selectedRows?: string[]
+  onRowSelect?: (selectedIds: string[]) => void
+  rowIdKey?: keyof T
+
   // Expansion
-  expandable?: boolean;
-  expandedContent?: (row: T, rowIndex: number) => React.ReactNode;
-  
+  expandable?: boolean
+  expandedContent?: (row: T, rowIndex: number) => React.ReactNode
+
   // Pagination
   pagination?: {
-    currentPage: number;
-    totalPages: number;
-    pageSize: number;
-    totalItems: number;
-    onPageChange: (page: number) => void;
-    showPageSize?: boolean;
-    pageSizeOptions?: number[];
-    onPageSizeChange?: (size: number) => void;
-  };
-  
+    currentPage: number
+    totalPages: number
+    pageSize: number
+    totalItems: number
+    onPageChange: (page: number) => void
+    showPageSize?: boolean
+    pageSizeOptions?: number[]
+    onPageSizeChange?: (size: number) => void
+  }
+
   // Styling
-  className?: string;
-  tableClassName?: string;
-  zebra?: boolean;
-  compact?: boolean;
-  hoverable?: boolean;
-  bordered?: boolean;
-  
+  className?: string
+  tableClassName?: string
+  zebra?: boolean
+  compact?: boolean
+  hoverable?: boolean
+  bordered?: boolean
+
   // Actions
-  headerActions?: React.ReactNode;
+  headerActions?: React.ReactNode
   bulkActions?: Array<{
-    label: string;
-    icon?: React.ReactNode;
-    onClick: (selectedIds: string[]) => void;
-    variant?: string;
-    disabled?: boolean;
-  }>;
+    label: string
+    icon?: React.ReactNode
+    onClick: (selectedIds: string[]) => void
+    variant?: string
+    disabled?: boolean
+  }>
 }
 
 // Shimmer Component
@@ -110,109 +110,120 @@ const TableShimmer: React.FC<{ columns: number; rows?: number }> = ({ columns, r
         </tr>
       ))}
     </>
-  );
-};
+  )
+}
 
 // Filter Row Component
 const FilterRow: React.FC<{ filters: FilterConfig[] }> = ({ filters }) => {
-  if (!filters.length) return null;
+  if (!filters.length) return null
+
+  // Separate search filters from other filters
+  const searchFilters = filters.filter(filter => filter.type === 'search')
+  const otherFilters = filters.filter(filter => filter.type !== 'search')
 
   return (
-    <div className="bg-base-50 border-b border-base-300 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filters.map((filter) => {
-          switch (filter.type) {
-            case 'search':
-              return (
-                <div key={filter.key}>
-                  <Typography variant="caption" className="block mb-1">
-                    {filter.label}
-                  </Typography>
-                  <SearchBar
-                    value={filter.value || ''}
-                    onChange={(e) => filter.onChange?.(e.target.value)}
-                    placeholder={filter.placeholder}
-                    width="w-full"
-                  />
-                </div>
-              );
-              
-            case 'select':
-            case 'multiSelect':
-              return (
-                <div key={filter.key}>
-                  <Select
-                    label={filter.label}
-                    options={filter.options || []}
-                    value={filter.value}
-                    onChange={filter.onChange}
-                    placeholder={filter.placeholder}
-                    multiSelect={filter.type === 'multiSelect'}
-                    size={filter.size || 'sm'}
-                  />
-                </div>
-              );
-              
-            case 'datePicker':
-              return (
-                <div key={filter.key}>
-                  <DatePicker
-                    label={filter.label}
-                    value={filter.value}
-                    onChange={filter.onChange}
-                    placeholder={filter.placeholder}
-                    size={filter.size || 'sm'}
-                  />
-                </div>
-              );
-              
-            case 'dateRange':
-              return (
-                <div key={filter.key}>
-                  <DatePicker
-                    label={filter.label}
-                    dateRange={true}
-                    rangeValue={filter.value}
-                    onRangeChange={filter.onChange}
-                    size={filter.size || 'sm'}
-                  />
-                </div>
-              );
-              
-            case 'timePicker':
-              return (
-                <div key={filter.key}>
-                  <TimePicker
-                    label={filter.label}
-                    value={filter.value}
-                    onChange={filter.onChange}
-                    placeholder={filter.placeholder}
-                    size={filter.size || 'sm'}
-                  />
-                </div>
-              );
-              
-            case 'timeRange':
-              return (
-                <div key={filter.key}>
-                  <TimePicker
-                    label={filter.label}
-                    timeRange={true}
-                    rangeValue={filter.value}
-                    onRangeChange={filter.onChange}
-                    size={filter.size || 'sm'}
-                  />
-                </div>
-              );
-              
-            default:
-              return null;
-          }
-        })}
-      </div>
+    <div className="bg-base-50 border-b border-base-300 py-2 space-y-4">
+      {/* Search filters - full width row */}
+      {searchFilters.length > 0 && (
+        <div className="grid grid-cols-1 gap-4">
+          {searchFilters.map((filter) => (
+            <div key={filter.key}>
+              <label className="label">
+                <Typography variant="caption" className="label-text">{filter.label}</Typography>
+              </label>
+              <SearchBar
+                value={filter.value || ''}
+                onChange={(e) => filter.onChange?.(e.target.value)}
+                placeholder={filter.placeholder}
+                width="w-full"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Other filters - responsive grid */}
+      {otherFilters.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {otherFilters.map((filter) => {
+            switch (filter.type) {
+              case 'select':
+              case 'multiSelect':
+                return (
+                  <div key={filter.key}>
+                    <Select
+                      label={filter.label}
+                      options={filter.options || []}
+                      value={filter.value}
+                      onChange={filter.onChange}
+                      placeholder={filter.placeholder}
+                      multiSelect={filter.type === 'multiSelect'}
+                      size={filter.size || 'sm'}
+                    />
+                  </div>
+                )
+
+              case 'datePicker':
+                return (
+                  <div key={filter.key}>
+                    <DatePicker
+                      label={filter.label}
+                      value={filter.value}
+                      onChange={filter.onChange}
+                      placeholder={filter.placeholder}
+                      size={filter.size || 'sm'}
+                    />
+                  </div>
+                )
+
+              case 'dateRange':
+                return (
+                  <div key={filter.key}>
+                    <DatePicker
+                      label={filter.label}
+                      dateRange={true}
+                      rangeValue={filter.value}
+                      onRangeChange={filter.onChange}
+                      size={filter.size || 'sm'}
+                    />
+                  </div>
+                )
+
+              case 'timePicker':
+                return (
+                  <div key={filter.key}>
+                    <TimePicker
+                      label={filter.label}
+                      value={filter.value}
+                      onChange={filter.onChange}
+                      placeholder={filter.placeholder}
+                      size={filter.size || 'sm'}
+                    />
+                  </div>
+                )
+
+              case 'timeRange':
+                return (
+                  <div key={filter.key}>
+                    <TimePicker
+                      label={filter.label}
+                      timeRange={true}
+                      rangeValue={filter.value}
+                      onRangeChange={filter.onChange}
+                      size={filter.size || 'sm'}
+                    />
+                  </div>
+                )
+
+              default:
+                return null
+            }
+          })}
+        </div>
+      )}
     </div>
-  );
-};
+  )
+}
 
 export const InfinityTable = <T extends Record<string, any>>({
   data,
@@ -238,61 +249,61 @@ export const InfinityTable = <T extends Record<string, any>>({
   headerActions,
   bulkActions = [],
 }: InfinityTableProps<T>) => {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null)
 
   // Handle row selection
   const handleRowSelect = (rowId: string, checked: boolean) => {
-    const newSelected = checked 
+    const newSelected = checked
       ? [...selectedRows, rowId]
-      : selectedRows.filter(id => id !== rowId);
-    onRowSelect?.(newSelected);
-  };
+      : selectedRows.filter(id => id !== rowId)
+    onRowSelect?.(newSelected)
+  }
 
   const handleSelectAll = (checked: boolean) => {
-    const allIds = data.map(row => String(row[rowIdKey]));
-    onRowSelect?.(checked ? allIds : []);
-  };
+    const allIds = data.map(row => String(row[rowIdKey]))
+    onRowSelect?.(checked ? allIds : [])
+  }
 
-  const isAllSelected = data.length > 0 && selectedRows.length === data.length;
-  const isIndeterminate = selectedRows.length > 0 && selectedRows.length < data.length;
+  const isAllSelected = data.length > 0 && selectedRows.length === data.length
+  const isIndeterminate = selectedRows.length > 0 && selectedRows.length < data.length
 
   // Handle row expansion
   const toggleRowExpansion = (rowId: string) => {
-    const newExpanded = new Set(expandedRows);
+    const newExpanded = new Set(expandedRows)
     if (newExpanded.has(rowId)) {
-      newExpanded.delete(rowId);
+      newExpanded.delete(rowId)
     } else {
-      newExpanded.add(rowId);
+      newExpanded.add(rowId)
     }
-    setExpandedRows(newExpanded);
-  };
+    setExpandedRows(newExpanded)
+  }
 
   // Handle sorting
   const handleSort = (key: string) => {
     setSortConfig(current => {
       if (current?.key === key) {
-        return current.direction === 'asc' 
+        return current.direction === 'asc'
           ? { key, direction: 'desc' }
-          : null;
+          : null
       }
-      return { key, direction: 'asc' };
-    });
-  };
+      return { key, direction: 'asc' }
+    })
+  }
 
   // Sort data
   const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
-    
+    if (!sortConfig) return data
+
     return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+      const aValue = a[sortConfig.key]
+      const bValue = b[sortConfig.key]
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [data, sortConfig])
 
   // Table classes
   const tableClasses = [
@@ -301,9 +312,9 @@ export const InfinityTable = <T extends Record<string, any>>({
     compact && 'table-compact',
     hoverable && 'table-hover',
     tableClassName
-  ].filter(Boolean).join(' ');
+  ].filter(Boolean).join(' ')
 
-  const hasSelectedRows = selectedRows.length > 0;
+  const hasSelectedRows = selectedRows.length > 0
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -379,23 +390,22 @@ export const InfinityTable = <T extends Record<string, any>>({
                       />
                     </th>
                   )}
-                  
+
                   {/* Expansion column */}
                   {expandable && (
                     <th className="w-12 p-3"></th>
                   )}
-                  
+
                   {/* Data columns */}
                   {columns.map((column) => (
-                    <th 
-                      key={String(column.key)} 
+                    <th
+                      key={String(column.key)}
                       className={`p-3 ${column.className || ''}`}
                       style={{ width: column.width }}
                     >
-                      <div className={`flex items-center gap-2 ${
-                        column.align === 'center' ? 'justify-center' :
-                        column.align === 'right' ? 'justify-end' : 'justify-start'
-                      }`}>
+                      <div className={`flex items-center gap-2 ${column.align === 'center' ? 'justify-center' :
+                          column.align === 'right' ? 'justify-end' : 'justify-start'
+                        }`}>
                         <Typography variant="body2" className="font-semibold">
                           {column.header}
                         </Typography>
@@ -405,9 +415,9 @@ export const InfinityTable = <T extends Record<string, any>>({
                             className="btn btn-ghost btn-xs p-1"
                           >
                             {sortConfig?.key === column.key ? (
-                              sortConfig.direction === 'asc' ? 
-                              getIconComponent('ChevronUp', 14, 'text-primary') :
-                              getIconComponent('ChevronDown', 14, 'text-primary')
+                              sortConfig.direction === 'asc' ?
+                                getIconComponent('ChevronUp', 14, 'text-primary') :
+                                getIconComponent('ChevronDown', 14, 'text-primary')
                             ) : (
                               getIconComponent('ChevronsUpDown', 14, 'text-base-content/50')
                             )}
@@ -422,13 +432,13 @@ export const InfinityTable = <T extends Record<string, any>>({
               {/* Table Body */}
               <tbody>
                 {loading ? (
-                  <TableShimmer 
-                    columns={columns.length + (selectable ? 1 : 0) + (expandable ? 1 : 0)} 
+                  <TableShimmer
+                    columns={columns.length + (selectable ? 1 : 0) + (expandable ? 1 : 0)}
                     rows={pagination?.pageSize || 10}
                   />
                 ) : sortedData.length === 0 ? (
                   <tr>
-                    <td 
+                    <td
                       colSpan={columns.length + (selectable ? 1 : 0) + (expandable ? 1 : 0)}
                       className="text-center p-8"
                     >
@@ -445,10 +455,10 @@ export const InfinityTable = <T extends Record<string, any>>({
                   </tr>
                 ) : (
                   sortedData.map((row, rowIndex) => {
-                    const rowId = String(row[rowIdKey]);
-                    const isSelected = selectedRows.includes(rowId);
-                    const isExpanded = expandedRows.has(rowId);
-                    
+                    const rowId = String(row[rowIdKey])
+                    const isSelected = selectedRows.includes(rowId)
+                    const isExpanded = expandedRows.has(rowId)
+
                     return (
                       <React.Fragment key={rowId}>
                         {/* Main row */}
@@ -463,7 +473,7 @@ export const InfinityTable = <T extends Record<string, any>>({
                               />
                             </td>
                           )}
-                          
+
                           {/* Expansion toggle */}
                           {expandable && (
                             <td className="p-3">
@@ -472,25 +482,24 @@ export const InfinityTable = <T extends Record<string, any>>({
                                 className="btn btn-ghost btn-xs p-1"
                               >
                                 {getIconComponent(
-                                  isExpanded ? 'ChevronDown' : 'ChevronRight', 
-                                  16, 
+                                  isExpanded ? 'ChevronDown' : 'ChevronRight',
+                                  16,
                                   'transition-transform'
                                 )}
                               </button>
                             </td>
                           )}
-                          
+
                           {/* Data cells */}
                           {columns.map((column) => (
-                            <td 
-                              key={String(column.key)} 
+                            <td
+                              key={String(column.key)}
                               className={`p-3 ${column.className || ''}`}
                             >
-                              <div className={`${
-                                column.align === 'center' ? 'text-center' :
-                                column.align === 'right' ? 'text-right' : 'text-left'
-                              }`}>
-                                {column.customRender ? 
+                              <div className={`${column.align === 'center' ? 'text-center' :
+                                  column.align === 'right' ? 'text-right' : 'text-left'
+                                }`}>
+                                {column.customRender ?
                                   column.customRender(row[column.key], row, rowIndex) :
                                   <Typography variant="body2">
                                     {String(row[column.key] || '')}
@@ -500,15 +509,15 @@ export const InfinityTable = <T extends Record<string, any>>({
                             </td>
                           ))}
                         </tr>
-                        
+
                         {/* Expanded content row */}
                         {expandable && isExpanded && expandedContent && (
                           <tr className="bg-base-50">
-                            <td 
+                            <td
                               colSpan={columns.length + (selectable ? 1 : 0) + 1}
                               className="p-0"
                             >
-                              <Collapse title='' defaultOpen={isExpanded}>
+                              <Collapse title='' defaultOpen={isExpanded} className='rounded-none bg-transparent'>
                                 <div className="p-4">
                                   {expandedContent(row, rowIndex)}
                                 </div>
@@ -517,7 +526,7 @@ export const InfinityTable = <T extends Record<string, any>>({
                           </tr>
                         )}
                       </React.Fragment>
-                    );
+                    )
                   })
                 )}
               </tbody>
@@ -535,7 +544,7 @@ export const InfinityTable = <T extends Record<string, any>>({
               {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} of{' '}
               {pagination.totalItems} entries
             </Typography>
-            
+
             {pagination.showPageSize && pagination.pageSizeOptions && (
               <Select
                 options={pagination.pageSizeOptions.map(size => ({
@@ -549,7 +558,7 @@ export const InfinityTable = <T extends Record<string, any>>({
               />
             )}
           </div>
-          
+
           <Pagination
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
@@ -561,5 +570,5 @@ export const InfinityTable = <T extends Record<string, any>>({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

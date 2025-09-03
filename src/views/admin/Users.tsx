@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { InfinityTable, InfinityForm, Button, Badge, Modal, Typography, Tooltip, ColumnConfig, FilterConfig } from '@/components'
+import { InfinityTable, InfinityForm, Button, Badge, Modal, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
 import { useUsersStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Users, CreateUserRequest, Roles } from '@/types'
@@ -46,7 +46,6 @@ export const UsersView: React.FC = () => {
             header: 'ID',
             width: '80px',
             sortable: true,
-            align: 'left',
         },
         {
             key: 'username',
@@ -64,7 +63,6 @@ export const UsersView: React.FC = () => {
                     </div>
                 </div>
             ),
-            align: 'left',
         },
         {
             key: 'roles',
@@ -76,6 +74,7 @@ export const UsersView: React.FC = () => {
                             key={role.id}
                             variant={role.is_system_role ? 'primary' : 'secondary'}
                             size="sm"
+                            className='capitalize'
                         >
                             {role.name}
                         </Badge>
@@ -87,43 +86,19 @@ export const UsersView: React.FC = () => {
         {
             key: 'is_active',
             header: 'Status',
-            align: 'left',
             sortable: true,
             customRender: (value, row) => (
                 <div>
-                    <button
-                        onClick={() => handleToggleStatus(row)}
-                        className="btn btn-ghost btn-xs p-1"
-                    >
-                        <Badge
-                            variant={row.is_active ? 'success' : 'error'}
-                            size="sm"
-                            className="cursor-pointer"
-                        >
-                            {row.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                    </button>
+                    <Toggle variant={row.is_active ? 'primary' : 'error'} checked={row.is_active} aria-label={row.is_active ? 'Active' : 'Inactive'} />
                 </div>
             ),
         },
         {
-            key: 'created_at',
-            header: 'Created',
-            sortable: true,
-            customRender: (value, row) => (
-                <Typography variant="body2" className="text-base-content/70">
-                    {new Date(row.created_at).toLocaleDateString()}
-                </Typography>
-            ),
-            align: 'left',
-        },
-        {
             key: 'actions',
             header: 'Actions',
-            align: 'left',
             width: '120px',
             customRender: (value, row) => (
-                <div className="flex items-center justify-center gap-1">
+                <div className="flex items-center gap-1">
                     <Tooltip tip="Edit user">
                         <Button
                             size="xs"
@@ -173,7 +148,7 @@ export const UsersView: React.FC = () => {
             }),
         },
         {
-            type: 'select',
+            type: 'multiSelect',
             key: 'role',
             label: 'Role',
             placeholder: 'All Roles',
@@ -245,14 +220,6 @@ export const UsersView: React.FC = () => {
     const handleDelete = (user: Users) => {
         setDeletingUser(user)
         setShowDeleteModal(true)
-    }
-
-    const handleToggleStatus = async (user: Users) => {
-        try {
-            await toggleUserStatus(user.id, !user.is_active)
-        } catch (error) {
-            console.error('Failed to toggle user status:', error)
-        }
     }
 
     const handleBulkDelete = async () => {
@@ -339,7 +306,6 @@ export const UsersView: React.FC = () => {
                 loading={loading}
                 title="Users Management"
                 subtitle="Manage system users, roles, and permissions"
-                icon={getIconComponent('Users', 24, 'text-primary')}
                 filters={filterConfigs}
                 selectable={true}
                 selectedRows={selectedUserIds}

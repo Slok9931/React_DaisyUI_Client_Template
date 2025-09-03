@@ -5,6 +5,7 @@ interface CollapseProps {
   children: React.ReactNode;
   defaultOpen?: boolean;
   className?: string;
+  isCollapseArrow?: boolean
 }
 
 export const Collapse: React.FC<CollapseProps> = ({
@@ -12,12 +13,13 @@ export const Collapse: React.FC<CollapseProps> = ({
   children,
   defaultOpen = false,
   className = '',
+  isCollapseArrow = false,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const collapseClasses = [
     'collapse',
-    'collapse-arrow',
+    isCollapseArrow? 'collapse-arrow':'',
     'bg-base-200',
     className
   ].filter(Boolean).join(' ');
