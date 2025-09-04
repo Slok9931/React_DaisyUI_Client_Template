@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { rolesApi } from "@/api";
+import { permissionsApi, rolesApi } from "@/api";
 import type {
   Role,
   RolesQueryParams,
@@ -45,7 +45,6 @@ interface RolesActions {
 
   // CRUD operations
   createRole: (roleData: CreateRoleRequest) => Promise<void>;
-  bulkDeleteRoles: (ids: number[]) => Promise<void>;
 
   // Permission management
   togglePermission: (
@@ -133,8 +132,8 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
 
   fetchAllPermissions: async () => {
     try {
-      const permissions = await rolesApi.getAllPermissions();
-      set({ allPermissions: permissions });
+      const permissionsResponse = await permissionsApi.getPermissions();
+      set({ allPermissions: permissionsResponse.permissions });
     } catch (error: any) {
       console.error("Failed to fetch permissions:", error);
     }
@@ -205,27 +204,6 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
     } catch (error: any) {
       set({
         error: error.message || "Failed to create role",
-        loading: false,
-      });
-      throw error;
-    }
-  },
-
-  bulkDeleteRoles: async (ids: number[]) => {
-    set({ loading: true, error: null });
-
-    try {
-      await rolesApi.bulkDeleteRoles(ids);
-
-      set((state) => ({
-        roles: state.roles.filter((role) => !ids.includes(role.id)),
-        selectedRoleIds: [],
-        totalRoles: state.totalRoles - ids.length,
-        loading: false,
-      }));
-    } catch (error: any) {
-      set({
-        error: error.message || "Failed to delete roles",
         loading: false,
       });
       throw error;

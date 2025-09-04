@@ -4,7 +4,6 @@ import type {
   RolesListResponse,
   RolesQueryParams,
   CreateRoleRequest,
-  Permission,
 } from "@/types";
 
 export const rolesApi = {
@@ -52,16 +51,5 @@ export const rolesApi = {
   // Remove permission from role
   removePermissionFromRole: async (roleId: number, permissionId: number): Promise<void> => {
     await apiClient.delete(`/api/v1/roles/${roleId}/permissions/${permissionId}`);
-  },
-
-  // Get all permissions (for permission matrix)
-  getAllPermissions: async (): Promise<Permission[]> => {
-    const response = await apiClient.get("/api/v1/permissions/?limit=1000");
-    return response.data;
-  },
-
-  // Bulk delete roles
-  bulkDeleteRoles: async (ids: number[]): Promise<void> => {
-    await apiClient.post("/api/v1/roles/bulk-delete", { role_ids: ids });
-  },
+  }
 };

@@ -1,70 +1,48 @@
 import React, { useEffect } from 'react'
-import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
+import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
-import { useUsersStore, useRolesStore } from '@/store'
+import { useModulesStore } from '@/store'
 import { getIconComponent } from '@/utils'
-import type { Users, CreateUserRequest, Role } from '@/types'
+import type { Module, CreateModuleRequest } from '@/types'
 
-export const UsersView: React.FC = () => {
+export const ModulesView: React.FC = () => {
     const {
-        users,
+        modules,
         loading,
         error,
         currentPage,
         pageSize,
-        totalUsers,
+        totalModules,
         totalPages,
         filters,
-        selectedUserIds,
-        fetchUsers,
-        createUser,
-        updateUser,
-        deleteUser,
-        bulkDeleteUsers,
+        selectedModuleIds,
+        fetchModules,
+        createModule,
+        updateModule,
+        deleteModule,
+        bulkDeleteModules,
         setCurrentPage,
         setPageSize,
         setFilters,
         clearFilters,
-        setSelectedUserIds,
+        setSelectedModuleIds,
         clearError,
-    } = useUsersStore()
-
-    // Fetch roles for dropdowns
-    const {
-        roles,
-        fetchRoles,
-    } = useRolesStore()
+    } = useModulesStore()
 
     const {
         modals,
-        editingItem: editingUser,
-        deletingItem: deletingUser,
+        editingItem: editingModule,
+        deletingItem: deletingModule,
         openModal,
         closeModal,
     } = useModals()
 
     useEffect(() => {
-        fetchUsers()
-        fetchRoles() // Fetch roles when component mounts
-    }, [fetchUsers, fetchRoles])
-
-    // Get unique role options for filters and forms
-    const getRoleOptions = () => {
-        return roles.map(role => ({
-            value: role.name.toLowerCase(),
-            label: role.name.charAt(0).toUpperCase() + role.name.slice(1)
-        }))
-    }
-
-    const getRoleFormOptions = () => {
-        return roles.map(role => ({
-            value: role.id.toString(),
-            label: role.name.charAt(0).toUpperCase() + role.name.slice(1)
-        }))
-    }
+        fetchModules()
+    }, [fetchModules])
 
     // Table columns configuration
-    const columns: ColumnConfig<Users>[] = [
+    const columns: ColumnConfig<Module>[] = [
         {
             key: 'id',
             header: 'ID',
@@ -72,42 +50,38 @@ export const UsersView: React.FC = () => {
             sortable: true,
         },
         {
-            key: 'username',
-            header: 'User',
+            key: 'icon',
+            header: 'Icon',
+            width: '60px',
+            customRender: (value, row) => (
+                <div className="flex items-center justify-center">
+                    {getIconComponent(row.icon, 20)}
+                </div>
+            ),
+        },
+        {
+            key: 'name',
+            header: 'Module',
             sortable: true,
             customRender: (value, row) => (
                 <div className="flex items-center gap-3">
                     <div>
-                        <Typography variant="body2" className="font-medium">
-                            {row.username}
+                        <Typography variant="body2" className="font-medium capitalize">
+                            {row.label}
                         </Typography>
                         <Typography variant="caption" className="text-base-content/60">
-                            {row.email}
+                            {row.name}
                         </Typography>
                     </div>
                 </div>
             ),
         },
         {
-            key: 'roles',
-            header: 'Roles',
+            key: 'route',
+            header: 'Route',
             customRender: (value, row) => (
-                <div className="flex flex-wrap gap-1">
-                    {row.roles && row.roles.map((role: Role) => (
-                        <Badge
-                            key={role.id}
-                            variant={role.is_system_role ? 'warning' : 'secondary'}
-                            size="sm"
-                            className='capitalize'
-                        >
-                            {role.name}
-                        </Badge>
-                    ))}
-                    {(!row.roles || row.roles.length === 0) && (
-                        <Badge variant="error" size="sm">
-                            No Role
-                        </Badge>
-                    )}
+                <div className="font-mono text-sm bg-warning/10 px-2 py-1 rounded">
+                    {row.route}
                 </div>
             ),
         },
@@ -115,13 +89,14 @@ export const UsersView: React.FC = () => {
             key: 'is_active',
             header: 'Status',
             sortable: true,
+            width: '100px',
             customRender: (value, row) => (
                 <div>
                     <Toggle
                         variant={row.is_active ? 'primary' : 'error'}
                         checked={row.is_active}
                         aria-label={row.is_active ? 'Active' : 'Inactive'}
-                        onChange={() => updateUser(row.id, { is_active: !row.is_active })}
+                        onChange={() => updateModule(row.id, { is_active: !row.is_active })}
                     />
                 </div>
             ),
@@ -133,7 +108,7 @@ export const UsersView: React.FC = () => {
             width: '120px',
             customRender: (value, row) => (
                 <div className="flex items-center justify-center gap-1">
-                    <Tooltip tip="Edit user">
+                    <Tooltip tip="Edit module">
                         <Button
                             size="xs"
                             variant="ghost"
@@ -142,7 +117,7 @@ export const UsersView: React.FC = () => {
                             {getIconComponent('Edit', 16)}
                         </Button>
                     </Tooltip>
-                    <Tooltip tip="Delete user">
+                    <Tooltip tip="Delete module">
                         <Button
                             size="xs"
                             variant="ghost"
@@ -162,8 +137,8 @@ export const UsersView: React.FC = () => {
         {
             type: 'search',
             key: 'search',
-            label: 'Search Users',
-            placeholder: 'Search by username or email...',
+            label: 'Search Modules',
+            placeholder: 'Search by name, label, or route...',
             value: filters.search,
             onChange: (value) => setFilters({ search: value }),
         },
@@ -181,91 +156,108 @@ export const UsersView: React.FC = () => {
                 is_active: value === '' ? undefined : value === 'true'
             }),
         },
-        {
-            type: 'multiSelect',
-            key: 'role',
-            label: 'Role',
-            placeholder: 'All Roles',
-            options: getRoleOptions(),
-            value: filters.role || '',
-            onChange: (value) => setFilters({ role: value || undefined }),
-        },
     ]
 
-    // Form fields for create/edit user
-    const getUserFormFields = (isEdit = false) => [
+    // Common icon options for forms
+    const iconOptions = [
+        { value: 'LayoutDashboard', label: 'Dashboard' },
+        { value: 'ShieldUser', label: 'Administration' },
+        { value: 'Users', label: 'Users' },
+        { value: 'Shield', label: 'Roles' },
+        { value: 'Key', label: 'Permissions' },
+        { value: 'Settings', label: 'Settings' },
+        { value: 'Database', label: 'Database' },
+        { value: 'FileText', label: 'Documents' },
+        { value: 'BarChart3', label: 'Analytics' },
+        { value: 'Mail', label: 'Messages' },
+        { value: 'Calendar', label: 'Calendar' },
+        { value: 'Package', label: 'Package' },
+        { value: 'Globe', label: 'Website' },
+        { value: 'Zap', label: 'API' },
+        { value: 'Code', label: 'Development' },
+    ]
+
+    // Form fields for create/edit module
+    const getModuleFormFields = () => [
         {
             type: 'input' as const,
-            name: 'username',
-            label: 'Username',
-            placeholder: 'Enter username',
+            name: 'name',
+            label: 'Module Name',
+            placeholder: 'e.g., administration',
             required: true,
-            disabled: isEdit,
         },
         {
             type: 'input' as const,
-            name: 'email',
-            label: 'Email',
-            inputType: 'email' as const,
-            placeholder: 'Enter email address',
+            name: 'label',
+            label: 'Display Label',
+            placeholder: 'e.g., Administration',
             required: true,
         },
-        ...(isEdit ? [] : [{
-            type: 'input' as const,
-            name: 'password',
-            label: 'Password',
-            inputType: 'password' as const,
-            placeholder: 'Enter password',
+        {
+            type: 'select' as const,
+            name: 'icon',
+            label: 'Icon',
+            placeholder: 'Select an icon',
             required: true,
-        }]),
+            options: iconOptions,
+        },
+        {
+            type: 'input' as const,
+            name: 'route',
+            label: 'Route Path',
+            placeholder: 'e.g., /infinity/administration',
+            required: true,
+        },
+        {
+            type: 'input' as const,
+            name: 'priority',
+            inputType: 'number' as const,
+            label: 'Priority',
+            placeholder: '0',
+            required: true,
+        },
         {
             type: 'toggle' as const,
             name: 'is_active',
             label: 'Active Status',
-            helperText: 'Enable or disable user account',
-        },
-        {
-            type: 'multiSelect' as const,
-            name: 'role_ids',
-            label: 'Roles',
-            placeholder: 'Select roles',
-            options: getRoleFormOptions(),
-            required: true,
         },
     ]
 
     // Event handlers
     const handleCreateSubmit = async (data: any) => {
-        const userData: CreateUserRequest = {
-            username: data.username,
-            email: data.email,
-            password: data.password,
+        const moduleData: CreateModuleRequest = {
+            name: data.name,
+            label: data.label,
+            icon: data.icon,
+            route: data.route,
+            priority: parseInt(data.priority),
             is_active: data.is_active ?? true,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
         }
-        await createUser(userData)
+        await createModule(moduleData)
     }
 
     const handleEditSubmit = async (data: any) => {
-        if (!editingUser) return
-        await updateUser(editingUser.id, {
-            username: data.username,
-            email: data.email,
+        if (!editingModule) return
+        await updateModule(editingModule.id, {
+            name: data.name,
+            label: data.label,
+            icon: data.icon,
+            route: data.route,
+            priority: parseInt(data.priority),
             is_active: data.is_active,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
         })
     }
 
     const handleDeleteConfirm = async () => {
-        if (!deletingUser) return
-        await deleteUser(deletingUser.id)
+        if (!deletingModule) return
+        await deleteModule(deletingModule.id)
     }
 
     const handleBulkDeleteConfirm = async () => {
-        if (selectedUserIds.length === 0) return
-        const ids = selectedUserIds.map(id => parseInt(id))
-        await bulkDeleteUsers(ids)
-        setSelectedUserIds([])
+        if (selectedModuleIds.length === 0) return
+        const ids = selectedModuleIds.map(id => parseInt(id))
+        await bulkDeleteModules(ids)
+        setSelectedModuleIds([])
     }
 
     return (
@@ -283,23 +275,44 @@ export const UsersView: React.FC = () => {
                 </div>
             )}
 
-            {/* Users Table */}
+            {/* Modules Table */}
             <InfinityTable
-                data={users}
+                data={modules}
                 columns={columns}
                 loading={loading}
-                title="Users Management"
-                subtitle="Manage system users, roles, and permissions"
+                title="Modules Management"
+                subtitle="Manage system modules and navigation structure"
                 filters={filterConfigs}
                 selectable={true}
-                selectedRows={selectedUserIds}
-                onRowSelect={setSelectedUserIds}
+                selectedRows={selectedModuleIds}
+                onRowSelect={setSelectedModuleIds}
                 rowIdKey="id"
                 expandable={true}
                 expandedContent={(row) => (
                     <div className="space-y-3">
-                        <Typography variant="h6">User Details</Typography>
+                        <Typography variant="h6">Module Details</Typography>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <Typography variant="caption" className="text-base-content/60">
+                                    Priority
+                                </Typography>
+                                <Typography variant="body2">
+                                    {row.priority}
+                                </Typography>
+                            </div>
+                            <div>
+                                <Typography variant="caption" className="text-base-content/60">
+                                    Status
+                                </Typography>
+                                <Typography variant="body2">
+                                    <Badge 
+                                        variant={row.is_active ? 'success' : 'error'} 
+                                        size="sm"
+                                    >
+                                        {row.is_active ? 'Active' : 'Inactive'}
+                                    </Badge>
+                                </Typography>
+                            </div>
                             <div>
                                 <Typography variant="caption" className="text-base-content/60">
                                     Created At
@@ -310,24 +323,35 @@ export const UsersView: React.FC = () => {
                             </div>
                             <div>
                                 <Typography variant="caption" className="text-base-content/60">
-                                    Last Updated
+                                    Total Routes
                                 </Typography>
                                 <Typography variant="body2">
-                                    {row.updated_at ? new Date(row.updated_at).toLocaleString() : 'Never'}
+                                    {row.route_count} routes
                                 </Typography>
                             </div>
                         </div>
 
-                        <div>
-                            <Typography variant="caption" className="text-base-content/60">
-                                Permissions
-                            </Typography>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                                {row.roles && row.roles.flatMap(role => role.permissions).map((permission) => (
-                                    <Badge key={permission.id} variant="primary" size="xs">
-                                        {permission.name}
-                                    </Badge>
-                                ))}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Typography variant="caption" className="text-base-content/60">
+                                    Full Route Path
+                                </Typography>
+                                <div className="font-mono text-sm bg-base-200 py-2 rounded mt-1">
+                                    {row.route}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div>
+                                    <Typography variant="caption" className="text-base-content/60">
+                                        Module Icon
+                                    </Typography>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        {getIconComponent(row.icon, 18)}
+                                        <Typography variant="body2" className="font-mono">
+                                            {row.icon}
+                                        </Typography>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -336,7 +360,7 @@ export const UsersView: React.FC = () => {
                     currentPage,
                     totalPages,
                     pageSize,
-                    totalItems: totalUsers,
+                    totalItems: totalModules,
                     onPageChange: setCurrentPage,
                     showPageSize: true,
                     pageSizeOptions: [10, 20, 50, 100],
@@ -360,7 +384,7 @@ export const UsersView: React.FC = () => {
                             className="gap-2"
                         >
                             {getIconComponent('Plus', 16)}
-                            Add User
+                            Add Module
                         </Button>
                     </div>
                 }
@@ -377,31 +401,33 @@ export const UsersView: React.FC = () => {
                 bordered={true}
             />
 
-            {/* Create User Modal */}
+            {/* Create Module Modal */}
             <FormModal
                 isOpen={modals.create}
                 onClose={() => closeModal('create')}
-                title="Create New User"
-                fields={getUserFormFields(false)}
+                title="Create New Module"
+                fields={getModuleFormFields()}
                 onSubmit={handleCreateSubmit}
-                submitText="Create User"
-                initialValues={{ is_active: true }}
+                submitText="Create Module"
+                initialValues={{ is_active: true, priority: 0 }}
                 loading={loading}
             />
 
-            {/* Edit User Modal */}
+            {/* Edit Module Modal */}
             <FormModal
                 isOpen={modals.edit}
                 onClose={() => closeModal('edit')}
-                title="Edit User"
-                fields={getUserFormFields(true)}
+                title="Edit Module"
+                fields={getModuleFormFields()}
                 onSubmit={handleEditSubmit}
-                submitText="Update User"
-                initialValues={editingUser ? {
-                    username: editingUser.username,
-                    email: editingUser.email,
-                    is_active: editingUser.is_active,
-                    role_ids: editingUser.roles?.map((role: Role) => role.id.toString()) || [],
+                submitText="Update Module"
+                initialValues={editingModule ? {
+                    name: editingModule.name,
+                    label: editingModule.label,
+                    icon: editingModule.icon,
+                    route: editingModule.route,
+                    priority: editingModule.priority,
+                    is_active: editingModule.is_active,
                 } : {}}
                 loading={loading}
             />
@@ -411,8 +437,8 @@ export const UsersView: React.FC = () => {
                 isOpen={modals.delete}
                 onClose={() => closeModal('delete')}
                 title="Confirm Delete"
-                message={`Are you sure you want to delete the user "${deletingUser?.username}"? This action cannot be undone.`}
-                confirmText="Delete User"
+                message={`Are you sure you want to delete the module "${deletingModule?.label}"? This action cannot be undone.`}
+                confirmText="Delete Module"
                 onConfirm={handleDeleteConfirm}
                 variant="error"
                 icon={getIconComponent('Trash2', 24)}
@@ -422,8 +448,8 @@ export const UsersView: React.FC = () => {
             <BulkActionModal
                 isOpen={modals.bulkDelete}
                 onClose={() => closeModal('bulkDelete')}
-                title="Bulk Delete Users"
-                count={selectedUserIds.length}
+                title="Bulk Delete Modules"
+                count={selectedModuleIds.length}
                 action="Delete"
                 onConfirm={handleBulkDeleteConfirm}
                 variant="error"
