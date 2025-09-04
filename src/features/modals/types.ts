@@ -35,3 +35,28 @@ export interface BulkActionModalProps extends Omit<BaseModalProps, 'children'> {
   variant?: 'error' | 'warning' | 'info';
   icon?: ReactNode;
 }
+
+export interface ModalState {
+  create: boolean;
+  edit: boolean;
+  delete: boolean;
+  createChild: boolean;
+  bulkDelete: boolean;
+  [key: string]: boolean;
+}
+
+export interface ModalData {
+  moduleId?: number;
+  parentRoute?: any;
+  [key: string]: any;
+}
+
+export interface UseModalsReturn {
+  modals: ModalState;
+  data: ModalData | null;
+  editingItem: any;
+  deletingItem: any;
+  openModal: (type: string, item?: any) => void;
+  closeModal: (type: string) => void;
+  closeAllModals: () => void;
+}

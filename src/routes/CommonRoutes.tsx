@@ -16,6 +16,7 @@ import {
   PermissionsView,
   RolesView,
   ModulesView,
+  RoutesView,
 } from "@/views";
 
 
@@ -77,6 +78,16 @@ export const AppRoutes: React.FC = () => {
             <PrivateRoute>
               <PrivateLayout>
                 <ModulesView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/infinity/administration/pages/routes"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <RoutesView />
               </PrivateLayout>
             </PrivateRoute>
           }

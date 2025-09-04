@@ -1,8 +1,19 @@
 import React from 'react';
-import { Typography, Button } from '@/components';
-import { getIconComponent } from '@/utils';
 import { BaseModal } from './BaseModal';
-import { ConfirmModalProps } from '../types';
+import { Button, Typography } from '@/components';
+
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm: () => Promise<void> | void;
+  variant?: 'primary' | 'error' | 'warning' | 'success';
+  icon?: React.ReactNode;
+  loading?: boolean;
+}
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
@@ -12,70 +23,71 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm,
-  variant = 'error',
+  variant = 'primary',
   icon,
-  ...props
+  loading = false,
 }) => {
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
-  };
-
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'error':
-        return {
-          iconColor: 'text-error',
-          buttonVariant: 'error' as const,
-          defaultIcon: 'AlertTriangle'
-        };
-      case 'warning':
-        return {
-          iconColor: 'text-warning',
-          buttonVariant: 'warning' as const,
-          defaultIcon: 'AlertTriangle'
-        };
-      case 'info':
-        return {
-          iconColor: 'text-info',
-          buttonVariant: 'info' as const,
-          defaultIcon: 'Info'
-        };
-      case 'success':
-        return {
-          iconColor: 'text-success',
-          buttonVariant: 'success' as const,
-          defaultIcon: 'CheckCircle'
-        };
-      default:
-        return {
-          iconColor: 'text-error',
-          buttonVariant: 'error' as const,
-          defaultIcon: 'AlertTriangle'
-        };
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+      onClose();
+    } catch (error) {
+      // Error handling is done at the component level
+      console.error('Confirmation error:', error);
     }
   };
 
-  const styles = getVariantStyles();
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'error':
+        return 'btn-error';
+      case 'warning':
+        return 'btn-warning';
+      case 'success':
+        return 'btn-success';
+      default:
+        return 'btn-primary';
+    }
+  };
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title={title} {...props}>
+    <BaseModal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <div className="space-y-6">
-        <div className="flex items-start gap-4">
-          <div className={`flex-shrink-0 ${styles.iconColor}`}>
-            {icon || getIconComponent(styles.defaultIcon, 24)}
-          </div>
-          <Typography variant="body1" className="flex-1">
+        {/* Icon and Message */}
+        <div className="text-center space-y-4">
+          {icon && (
+            <div className="flex justify-center">
+              <div className={`p-3 rounded-full ${
+                variant === 'error' ? 'bg-error/10 text-error' :
+                variant === 'warning' ? 'bg-warning/10 text-warning' :
+                variant === 'success' ? 'bg-success/10 text-success' :
+                'bg-primary/10 text-primary'
+              }`}>
+                {icon}
+              </div>
+            </div>
+          )}
+          <Typography variant="body1" className="text-center">
             {message}
           </Typography>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            disabled={loading}
+          >
             {cancelText}
           </Button>
-          <Button variant={styles.buttonVariant} onClick={handleConfirm}>
-            {confirmText}
+          <Button
+            className={getVariantClasses()}
+            onClick={handleConfirm}
+            loading={loading}
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : confirmText}
           </Button>
         </div>
       </div>

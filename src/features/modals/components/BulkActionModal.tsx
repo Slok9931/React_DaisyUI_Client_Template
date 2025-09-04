@@ -1,8 +1,19 @@
 import React from 'react';
-import { Typography, Button } from '@/components';
-import { getIconComponent } from '@/utils';
 import { BaseModal } from './BaseModal';
-import { BulkActionModalProps } from '../types';
+import { Button, Typography, Badge } from '@/components';
+import { getIconComponent } from '@/utils';
+
+interface BulkActionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  count: number;
+  action: string;
+  onConfirm: () => Promise<void> | void;
+  variant?: 'primary' | 'error' | 'warning' | 'success';
+  loading?: boolean;
+  itemType?: string;
+}
 
 export const BulkActionModal: React.FC<BulkActionModalProps> = ({
   isOpen,
@@ -11,74 +22,97 @@ export const BulkActionModal: React.FC<BulkActionModalProps> = ({
   count,
   action,
   onConfirm,
-  variant = 'error',
-  icon,
-  ...props
+  variant = 'primary',
+  loading = false,
+  itemType = 'items',
 }) => {
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
-  };
-
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'error':
-        return {
-          iconColor: 'text-error',
-          buttonVariant: 'error' as const,
-          defaultIcon: 'Trash2'
-        };
-      case 'warning':
-        return {
-          iconColor: 'text-warning',
-          buttonVariant: 'warning' as const,
-          defaultIcon: 'AlertTriangle'
-        };
-      case 'info':
-        return {
-          iconColor: 'text-info',
-          buttonVariant: 'info' as const,
-          defaultIcon: 'Info'
-        };
-      default:
-        return {
-          iconColor: 'text-error',
-          buttonVariant: 'error' as const,
-          defaultIcon: 'Trash2'
-        };
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+      onClose();
+    } catch (error) {
+      console.error('Bulk action error:', error);
     }
   };
 
-  const styles = getVariantStyles();
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'error':
+        return 'btn-error';
+      case 'warning':
+        return 'btn-warning';
+      case 'success':
+        return 'btn-success';
+      default:
+        return 'btn-primary';
+    }
+  };
+
+  const getIcon = () => {
+    switch (variant) {
+      case 'error':
+        return getIconComponent('AlertTriangle', 24);
+      case 'warning':
+        return getIconComponent('AlertCircle', 24);
+      case 'success':
+        return getIconComponent('CheckCircle', 24);
+      default:
+        return getIconComponent('Info', 24);
+    }
+  };
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title={title} {...props}>
+    <BaseModal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <div className="space-y-6">
-        <div className="flex items-start gap-4">
-          <div className={`flex-shrink-0 ${styles.iconColor}`}>
-            {icon || getIconComponent(styles.defaultIcon, 24)}
+        {/* Icon and Message */}
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className={`p-3 rounded-full ${
+              variant === 'error' ? 'bg-error/10 text-error' :
+              variant === 'warning' ? 'bg-warning/10 text-warning' :
+              variant === 'success' ? 'bg-success/10 text-success' :
+              'bg-primary/10 text-primary'
+            }`}>
+              {getIcon()}
+            </div>
           </div>
-          <div className="flex-1">
-            <Typography variant="body1">
-              Are you sure you want to {action.toLowerCase()} <strong>{count}</strong> item(s)?
+          
+          <div className="space-y-2">
+            <Typography variant="body1" className="text-center">
+              Are you sure you want to {action.toLowerCase()} 
             </Typography>
-            <Typography variant="body2" className="text-base-content/60 mt-1">
+            
+            <div className="flex items-center justify-center gap-2">
+              <Badge 
+                variant={variant === 'error' ? 'error' : 'primary'} 
+                size="lg"
+              >
+                {count} {itemType}
+              </Badge>
+            </div>
+            
+            <Typography variant="body2" className="text-base-content/60 text-center">
               This action cannot be undone.
             </Typography>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button 
-            variant={styles.buttonVariant} 
+          <Button
+            className={getVariantClasses()}
             onClick={handleConfirm}
-            className="gap-2"
+            loading={loading}
+            disabled={loading}
           >
-            {icon || getIconComponent(styles.defaultIcon, 16)}
-            {action}
+            {loading ? 'Processing...' : `${action} Selected`}
           </Button>
         </div>
       </div>

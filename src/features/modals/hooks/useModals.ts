@@ -1,60 +1,58 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import type { ModalState, ModalData, UseModalsReturn } from '../types';
 
-export interface ModalState {
-  create: boolean;
-  edit: boolean;
-  delete: boolean;
-  bulkDelete: boolean;
-}
+const initialModalState: ModalState = {
+  create: false,
+  edit: false,
+  delete: false,
+  createChild: false,
+  bulkDelete: false,
+};
 
-export const useModals = () => {
-  const [modals, setModals] = useState<ModalState>({
-    create: false,
-    edit: false,
-    delete: false,
-    bulkDelete: false,
-  });
-
+export const useModals = (): UseModalsReturn => {
+  const [modals, setModals] = useState<ModalState>(initialModalState);
+  const [data, setData] = useState<ModalData | null>(null);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deletingItem, setDeletingItem] = useState<any>(null);
 
-  const openModal = (modalType: keyof ModalState, item?: any) => {
-    setModals(prev => ({ ...prev, [modalType]: true }));
+  const openModal = useCallback((type: string, item?: any) => {
+    setModals(prev => ({ ...prev, [type]: true }));
     
-    if (modalType === 'edit' && item) {
+    if (type === 'edit') {
       setEditingItem(item);
-    }
-    
-    if (modalType === 'delete' && item) {
+    } else if (type === 'delete') {
       setDeletingItem(item);
+    } else if (type === 'createChild') {
+      setData(item);
+    } else if (type === 'create') {
+      setData(item);
+    } else {
+      setData(item || null);
     }
-  };
+  }, []);
 
-  const closeModal = (modalType: keyof ModalState) => {
-    setModals(prev => ({ ...prev, [modalType]: false }));
+  const closeModal = useCallback((type: string) => {
+    setModals(prev => ({ ...prev, [type]: false }));
     
-    if (modalType === 'edit') {
+    if (type === 'edit') {
       setEditingItem(null);
-    }
-    
-    if (modalType === 'delete') {
+    } else if (type === 'delete') {
       setDeletingItem(null);
+    } else if (type === 'createChild' || type === 'create') {
+      setData(null);
     }
-  };
+  }, []);
 
-  const closeAllModals = () => {
-    setModals({
-      create: false,
-      edit: false,
-      delete: false,
-      bulkDelete: false,
-    });
+  const closeAllModals = useCallback(() => {
+    setModals(initialModalState);
+    setData(null);
     setEditingItem(null);
     setDeletingItem(null);
-  };
+  }, []);
 
   return {
     modals,
+    data,
     editingItem,
     deletingItem,
     openModal,
