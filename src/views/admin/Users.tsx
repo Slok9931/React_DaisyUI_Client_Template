@@ -91,7 +91,7 @@ export const UsersView: React.FC = () => {
             customRender: (value, row) => (
                 <div>
                     <Toggle
-                        variant={row.is_active ? 'success' : 'error'}
+                        variant={row.is_active ? 'primary' : 'error'}
                         checked={row.is_active}
                         aria-label={row.is_active ? 'Active' : 'Inactive'}
                         onChange={() => updateUser(row.id, { is_active: !row.is_active })}
