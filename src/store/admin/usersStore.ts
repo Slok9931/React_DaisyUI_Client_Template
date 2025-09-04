@@ -43,7 +43,6 @@ interface UsersActions {
   updateUser: (id: number, userData: UpdateUserRequest) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
   bulkDeleteUsers: (ids: number[]) => Promise<void>;
-  toggleUserStatus: (id: number, is_active: boolean) => Promise<void>;
 
   // UI actions
   setCurrentPage: (page: number) => void;
@@ -198,21 +197,6 @@ export const useUsersStore = create<UsersState & UsersActions>((set, get) => ({
         error: error.message || "Failed to delete users",
         loading: false,
       });
-      throw error;
-    }
-  },
-
-  toggleUserStatus: async (id: number, is_active: boolean) => {
-    try {
-      const updatedUser = await usersApi.toggleUserStatus(id, is_active);
-
-      set((state) => ({
-        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
-        selectedUser:
-          state.selectedUser?.id === id ? updatedUser : state.selectedUser,
-      }));
-    } catch (error: any) {
-      set({ error: error.message || "Failed to update user status" });
       throw error;
     }
   },

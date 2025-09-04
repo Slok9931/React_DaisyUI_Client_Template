@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { InfinityTable, InfinityForm, Button, Badge, Modal, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
+import React, { useEffect } from 'react'
+import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
+import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { useUsersStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Users, CreateUserRequest, Roles } from '@/types'
@@ -20,7 +21,6 @@ export const UsersView: React.FC = () => {
         updateUser,
         deleteUser,
         bulkDeleteUsers,
-        toggleUserStatus,
         setCurrentPage,
         setPageSize,
         setFilters,
@@ -29,11 +29,13 @@ export const UsersView: React.FC = () => {
         clearError,
     } = useUsersStore()
 
-    const [showCreateModal, setShowCreateModal] = useState(false)
-    const [showEditModal, setShowEditModal] = useState(false)
-    const [editingUser, setEditingUser] = useState<Users | null>(null)
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [deletingUser, setDeletingUser] = useState<Users | null>(null)
+    const {
+        modals,
+        editingItem: editingUser,
+        deletingItem: deletingUser,
+        openModal,
+        closeModal,
+    } = useModals()
 
     useEffect(() => {
         fetchUsers()
@@ -81,7 +83,6 @@ export const UsersView: React.FC = () => {
                     ))}
                 </div>
             ),
-            align: 'left',
         },
         {
             key: 'is_active',
@@ -89,21 +90,27 @@ export const UsersView: React.FC = () => {
             sortable: true,
             customRender: (value, row) => (
                 <div>
-                    <Toggle variant={row.is_active ? 'primary' : 'error'} checked={row.is_active} aria-label={row.is_active ? 'Active' : 'Inactive'} />
+                    <Toggle
+                        variant={row.is_active ? 'success' : 'error'}
+                        checked={row.is_active}
+                        aria-label={row.is_active ? 'Active' : 'Inactive'}
+                        onChange={() => updateUser(row.id, { is_active: !row.is_active })}
+                    />
                 </div>
             ),
         },
         {
             key: 'actions',
             header: 'Actions',
+            align: 'center',
             width: '120px',
             customRender: (value, row) => (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-1">
                     <Tooltip tip="Edit user">
                         <Button
                             size="xs"
                             variant="ghost"
-                            onClick={() => handleEdit(row)}
+                            onClick={() => openModal('edit', row)}
                         >
                             {getIconComponent('Edit', 16)}
                         </Button>
@@ -112,7 +119,7 @@ export const UsersView: React.FC = () => {
                         <Button
                             size="xs"
                             variant="ghost"
-                            onClick={() => handleDelete(row)}
+                            onClick={() => openModal('delete', row)}
                             className="text-error hover:bg-error/10"
                         >
                             {getIconComponent('Trash2', 16)}
@@ -208,80 +215,37 @@ export const UsersView: React.FC = () => {
     ]
 
     // Event handlers
-    const handleCreate = () => {
-        setShowCreateModal(true)
-    }
-
-    const handleEdit = (user: Users) => {
-        setEditingUser(user)
-        setShowEditModal(true)
-    }
-
-    const handleDelete = (user: Users) => {
-        setDeletingUser(user)
-        setShowDeleteModal(true)
-    }
-
-    const handleBulkDelete = async () => {
-        if (selectedUserIds.length === 0) return
-
-        const confirmed = window.confirm(
-            `Are you sure you want to delete ${selectedUserIds.length} user(s)?`
-        )
-
-        if (confirmed) {
-            try {
-                await bulkDeleteUsers(selectedUserIds.map(id => parseInt(id)))
-            } catch (error) {
-                console.error('Failed to delete users:', error)
-            }
-        }
-    }
-
     const handleCreateSubmit = async (data: any) => {
-        try {
-            const userData: CreateUserRequest = {
-                username: data.username,
-                email: data.email,
-                password: data.password,
-                is_active: data.is_active ?? true,
-                role_ids: data.role_ids?.map((id: string) => parseInt(id)),
-            }
-
-            await createUser(userData)
-            setShowCreateModal(false)
-        } catch (error) {
-            console.error('Failed to create user:', error)
+        const userData: CreateUserRequest = {
+            username: data.username,
+            email: data.email,
+            password: data.password,
+            is_active: data.is_active ?? true,
+            role_ids: data.role_ids?.map((id: string) => parseInt(id)),
         }
+        await createUser(userData)
     }
 
     const handleEditSubmit = async (data: any) => {
         if (!editingUser) return
-
-        try {
-            await updateUser(editingUser.id, {
-                username: data.username,
-                email: data.email,
-                is_active: data.is_active,
-                role_ids: data.role_ids?.map((id: string) => parseInt(id)),
-            })
-            setShowEditModal(false)
-            setEditingUser(null)
-        } catch (error) {
-            console.error('Failed to update user:', error)
-        }
+        await updateUser(editingUser.id, {
+            username: data.username,
+            email: data.email,
+            is_active: data.is_active,
+            role_ids: data.role_ids?.map((id: string) => parseInt(id)),
+        })
     }
 
     const handleDeleteConfirm = async () => {
         if (!deletingUser) return
+        await deleteUser(deletingUser.id)
+    }
 
-        try {
-            await deleteUser(deletingUser.id)
-            setShowDeleteModal(false)
-            setDeletingUser(null)
-        } catch (error) {
-            console.error('Failed to delete user:', error)
-        }
+    const handleBulkDeleteConfirm = async () => {
+        if (selectedUserIds.length === 0) return
+        const ids = selectedUserIds.map(id => parseInt(id))
+        await bulkDeleteUsers(ids)
+        setSelectedUserIds([])
     }
 
     return (
@@ -372,7 +336,7 @@ export const UsersView: React.FC = () => {
                         <Button
                             variant="primary"
                             size="sm"
-                            onClick={handleCreate}
+                            onClick={() => openModal('create')}
                             className="gap-2"
                         >
                             {getIconComponent('Plus', 16)}
@@ -384,7 +348,7 @@ export const UsersView: React.FC = () => {
                     {
                         label: 'Delete Selected',
                         icon: getIconComponent('Trash2', 16),
-                        onClick: handleBulkDelete,
+                        onClick: () => openModal('bulkDelete'),
                         variant: 'error',
                     },
                 ]}
@@ -394,118 +358,56 @@ export const UsersView: React.FC = () => {
             />
 
             {/* Create User Modal */}
-            <Modal
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-            >
-                <div className="p-6">
-                    <Typography variant="h5" className="mb-4">Create New User</Typography>
-                    <InfinityForm
-                        fields={getUserFormFields(false)}
-                        onSubmit={handleCreateSubmit}
-                        actions={[
-                            {
-                                type: 'button',
-                                label: 'Cancel',
-                                variant: 'ghost',
-                                onClick: () => setShowCreateModal(false),
-                            },
-                            {
-                                type: 'submit',
-                                label: 'Create User',
-                                variant: 'primary',
-                                icon: getIconComponent('Plus', 16),
-                            },
-                        ]}
-                        initialValues={{
-                            is_active: true,
-                        }}
-                    />
-                </div>
-            </Modal>
+            <FormModal
+                isOpen={modals.create}
+                onClose={() => closeModal('create')}
+                title="Create New User"
+                fields={getUserFormFields(false)}
+                onSubmit={handleCreateSubmit}
+                submitText="Create User"
+                initialValues={{ is_active: true }}
+                loading={loading}
+            />
 
             {/* Edit User Modal */}
-            <Modal
-                isOpen={showEditModal}
-                onClose={() => {
-                    setShowEditModal(false)
-                    setEditingUser(null)
-                }}
-            >
-                <div className="p-6">
-                    <Typography variant="h5" className="mb-4">Edit User</Typography>
-                    {editingUser && (
-                        <InfinityForm
-                            fields={getUserFormFields(true)}
-                            onSubmit={handleEditSubmit}
-                            actions={[
-                                {
-                                    type: 'button',
-                                    label: 'Cancel',
-                                    variant: 'ghost',
-                                    onClick: () => {
-                                        setShowEditModal(false)
-                                        setEditingUser(null)
-                                    },
-                                },
-                                {
-                                    type: 'submit',
-                                    label: 'Update User',
-                                    variant: 'primary',
-                                    icon: getIconComponent('Save', 16),
-                                },
-                            ]}
-                            initialValues={{
-                                username: editingUser.username,
-                                email: editingUser.email,
-                                is_active: editingUser.is_active,
-                                role_ids: editingUser.roles?.map(role => role.id.toString()) || [],
-                            }}
-                        />
-                    )}
-                </div>
-            </Modal>
+            <FormModal
+                isOpen={modals.edit}
+                onClose={() => closeModal('edit')}
+                title="Edit User"
+                fields={getUserFormFields(true)}
+                onSubmit={handleEditSubmit}
+                submitText="Update User"
+                initialValues={editingUser ? {
+                    username: editingUser.username,
+                    email: editingUser.email,
+                    is_active: editingUser.is_active,
+                    role_ids: editingUser.roles?.map((role: Roles) => role.id.toString()) || [],
+                } : {}}
+                loading={loading}
+            />
 
             {/* Delete Confirmation Modal */}
-            <Modal
-                isOpen={showDeleteModal}
-                onClose={() => {
-                    setShowDeleteModal(false)
-                    setDeletingUser(null)
-                }}
-            >
-                <div className="p-6">
-                    <Typography variant="h5" className="mb-4">Confirm Delete</Typography>
-                    {deletingUser && (
-                        <div className="space-y-4">
-                            <Typography variant="body1">
-                                Are you sure you want to delete the user <strong>{deletingUser.username}</strong>?
-                                This action cannot be undone.
-                            </Typography>
+            <ConfirmModal
+                isOpen={modals.delete}
+                onClose={() => closeModal('delete')}
+                title="Confirm Delete"
+                message={`Are you sure you want to delete the user "${deletingUser?.username}"?`}
+                confirmText="Delete User"
+                onConfirm={handleDeleteConfirm}
+                variant="error"
+                icon={getIconComponent('Trash2', 24)}
+            />
 
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => {
-                                        setShowDeleteModal(false)
-                                        setDeletingUser(null)
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    variant="error"
-                                    onClick={handleDeleteConfirm}
-                                    className="gap-2"
-                                >
-                                    {getIconComponent('Trash2', 16)}
-                                    Delete User
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </Modal>
+            {/* Bulk Delete Modal */}
+            <BulkActionModal
+                isOpen={modals.bulkDelete}
+                onClose={() => closeModal('bulkDelete')}
+                title="Bulk Delete Users"
+                count={selectedUserIds.length}
+                action="Delete"
+                onConfirm={handleBulkDeleteConfirm}
+                variant="error"
+            />
         </div>
     )
 }

@@ -503,8 +503,8 @@ export const InfinityForm: React.FC<InfinityFormProps> = ({
       )}
 
       {/* Form */}
-      <Card>
-        <CardBody>
+      <div>
+        <div>
           <form onSubmit={handleSubmit} className={formClassName}>
             <div className={`grid ${columnsClass} ${gapClass} ${contentClassName}`}>
               {fields.map((field, index) => (
@@ -539,8 +539,8 @@ export const InfinityForm: React.FC<InfinityFormProps> = ({
               </div>
             )}
           </form>
-        </CardBody>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

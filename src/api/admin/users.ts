@@ -1,4 +1,4 @@
-import { apiClient } from "@/core/apiClient";
+import { apiClient } from "@/core";
 import type {
   Users,
   UsersListResponse,
@@ -38,7 +38,7 @@ export const usersApi = {
 
   // Get user by ID
   getUserById: async (id: number): Promise<Users> => {
-    const response = await apiClient.get(`/api/v1/users/${id}/`);
+    const response = await apiClient.get(`/api/v1/users/get-one/${id}`);
     return response.data;
   },
 
@@ -53,25 +53,17 @@ export const usersApi = {
     id: number,
     userData: UpdateUserRequest
   ): Promise<Users> => {
-    const response = await apiClient.put(`/api/v1/users/${id}/`, userData);
+    const response = await apiClient.put(`/api/v1/users/get-one/${id}`, userData);
     return response.data;
   },
 
   // Delete user
   deleteUser: async (id: number): Promise<void> => {
-    await apiClient.delete(`/api/v1/users/${id}/`);
+    await apiClient.delete(`/api/v1/users/${id}`);
   },
 
   // Bulk delete users
   bulkDeleteUsers: async (ids: number[]): Promise<void> => {
-    await apiClient.post("/api/v1/users/bulk-delete/", { ids });
-  },
-
-  // Toggle user status
-  toggleUserStatus: async (id: number, is_active: boolean): Promise<Users> => {
-    const response = await apiClient.patch(`/api/v1/users/${id}/`, {
-      is_active,
-    });
-    return response.data;
+    await apiClient.post("/api/v1/users/bulk-delete", { user_ids: ids });
   },
 };
