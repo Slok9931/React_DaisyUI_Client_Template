@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { permissionsApi } from "@/api";
 import type {
-  Permissions,
+  Permission,
   PermissionsQueryParams,
   CreatePermissionRequest,
   UpdatePermissionRequest,
@@ -9,8 +9,8 @@ import type {
 
 interface PermissionsState {
   // Data
-  permissions: Permissions[];
-  selectedPermission: Permissions | null;
+  permissions: Permission[];
+  selectedPermission: Permission | null;
   categories: string[];
 
   // UI State

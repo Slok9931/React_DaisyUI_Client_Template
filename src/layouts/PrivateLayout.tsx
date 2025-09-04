@@ -281,7 +281,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           isOpen={!rightSidebarCollapsed}
           onClose={() => setRightSidebarCollapsed(true)}
           side="right"
-          width={600}
+          size="md"
           headerTitle={tabHeader[activeTab]}
           footer={tabFooter[activeTab]}
           showResizeHandle={true}

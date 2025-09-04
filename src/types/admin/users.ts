@@ -1,17 +1,4 @@
-export interface Permission {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-}
-
-export interface Roles {
-  id: number;
-  name: string;
-  description: string;
-  is_system_role: boolean;
-  permissions: Permission[];
-}
+import { Role } from "@/types"
 
 export interface Users {
   id: number;
@@ -20,7 +7,7 @@ export interface Users {
   is_active: boolean;
   created_at: string;
   updated_at: string | null;
-  roles: Roles[];
+  roles: Role[];
 }
 
 export interface UsersListResponse {

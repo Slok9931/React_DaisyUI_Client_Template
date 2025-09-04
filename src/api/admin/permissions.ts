@@ -1,6 +1,6 @@
 import { apiClient } from "@/core";
 import type {
-  Permissions,
+  Permission,
   PermissionsListResponse,
   PermissionsQueryParams,
   CreatePermissionRequest,
@@ -35,7 +35,7 @@ export const permissionsApi = {
   },
 
   // Get permission by ID
-  getPermissionById: async (id: number): Promise<Permissions> => {
+  getPermissionById: async (id: number): Promise<Permission> => {
     const response = await apiClient.get(`/api/v1/permissions/get-one/${id}`);
     return response.data;
   },
@@ -43,7 +43,7 @@ export const permissionsApi = {
   // Create new permission
   createPermission: async (
     permissionData: CreatePermissionRequest
-  ): Promise<Permissions> => {
+  ): Promise<Permission> => {
     const response = await apiClient.post(
       "/api/v1/permissions/",
       permissionData
@@ -55,7 +55,7 @@ export const permissionsApi = {
   updatePermission: async (
     id: number,
     permissionData: UpdatePermissionRequest
-  ): Promise<Permissions> => {
+  ): Promise<Permission> => {
     const response = await apiClient.put(
       `/api/v1/permissions/get-one/${id}`,
       permissionData

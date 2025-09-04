@@ -4,3 +4,4 @@ export * from './TypographyStore'
 
 export * from './admin/usersStore'
 export * from './admin/permissionsStore'
+export * from './admin/rolesStore'

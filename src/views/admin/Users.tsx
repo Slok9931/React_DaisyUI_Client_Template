@@ -3,7 +3,7 @@ import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, Filter
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { useUsersStore } from '@/store'
 import { getIconComponent } from '@/utils'
-import type { Users, CreateUserRequest, Roles } from '@/types'
+import type { Users, CreateUserRequest, Role } from '@/types'
 
 export const UsersView: React.FC = () => {
     const {
@@ -71,10 +71,10 @@ export const UsersView: React.FC = () => {
             header: 'Roles',
             customRender: (value, row) => (
                 <div className="flex flex-wrap gap-1">
-                    {row.roles && row.roles.map((role: Roles) => (
+                    {row.roles && row.roles.map((role: Role) => (
                         <Badge
                             key={role.id}
-                            variant={role.is_system_role ? 'primary' : 'secondary'}
+                            variant={role.is_system_role ? 'warning' : 'secondary'}
                             size="sm"
                             className='capitalize'
                         >
@@ -381,7 +381,7 @@ export const UsersView: React.FC = () => {
                     username: editingUser.username,
                     email: editingUser.email,
                     is_active: editingUser.is_active,
-                    role_ids: editingUser.roles?.map((role: Roles) => role.id.toString()) || [],
+                    role_ids: editingUser.roles?.map((role: Role) => role.id.toString()) || [],
                 } : {}}
                 loading={loading}
             />

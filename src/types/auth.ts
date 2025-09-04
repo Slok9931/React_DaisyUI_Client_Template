@@ -1,3 +1,5 @@
+import { Role } from "@/types"
+
 export interface User {
   id: string;
   username: string;
@@ -9,12 +11,6 @@ export interface User {
   created_at: string;
   updated_at: string;
   roles?: Role[];
-}
-
-export interface Role {
-  id: string;
-  name: string;
-  description?: string;
 }
 
 export interface PublicUserCreate {

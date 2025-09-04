@@ -65,9 +65,9 @@ export const InfinitySheet: React.FC<InfinitySheetProps> = ({
   // Size presets
   const sizePresets = {
     sm: { width: 320, height: 320 },
-    md: { width: 400, height: 400 },
-    lg: { width: 600, height: 600 },
-    xl: { width: 800, height: 800 },
+    md: { width: 500, height: 500 },
+    lg: { width: 700, height: 700 },
+    xl: { width: 1000, height: 1000 },
     full: { width: window?.innerWidth * 0.9 || 800, height: window?.innerHeight * 0.9 || 600 }
   };
 

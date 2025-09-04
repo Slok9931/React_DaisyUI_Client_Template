@@ -1,4 +1,4 @@
-export interface Permissions {
+export interface Permission {
   id: number;
   name: string;
   description: string;
@@ -6,7 +6,7 @@ export interface Permissions {
 }
 
 export interface PermissionsListResponse {
-  permissions: Permissions[];
+  permissions: Permission[];
   total: number;
   skip: number;
   limit: number;

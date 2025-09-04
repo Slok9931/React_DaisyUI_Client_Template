@@ -3,7 +3,7 @@ import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, Filter
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { usePermissionsStore } from '@/store'
 import { getIconComponent } from '@/utils'
-import type { Permissions, CreatePermissionRequest } from '@/types'
+import type { Permission, CreatePermissionRequest } from '@/types'
 
 export const PermissionsView: React.FC = () => {
     const {
@@ -45,7 +45,7 @@ export const PermissionsView: React.FC = () => {
     }, [fetchPermissions, fetchCategories])
 
     // Table columns configuration
-    const columns: ColumnConfig<Permissions>[] = [
+    const columns: ColumnConfig<Permission>[] = [
         {
             key: 'id',
             header: 'ID',
@@ -75,7 +75,7 @@ export const PermissionsView: React.FC = () => {
             sortable: true,
             customRender: (value, row) => (
                 <Badge
-                    variant="primary"
+                    variant="warning"
                     size="sm"
                     className="capitalize"
                 >
