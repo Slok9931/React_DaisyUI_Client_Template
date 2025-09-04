@@ -13,6 +13,7 @@ import {
   InfinityDashboardLanding,
   InfinitePage,
   UsersView,
+  PermissionsView,
 } from "@/views";
 
 
@@ -44,6 +45,16 @@ export const AppRoutes: React.FC = () => {
             <PrivateRoute>
               <PrivateLayout>
                 <UsersView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/infinity/administration/accessControls/permissions"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <PermissionsView />
               </PrivateLayout>
             </PrivateRoute>
           }
