@@ -158,26 +158,7 @@ export const ModulesView: React.FC = () => {
         },
     ]
 
-    // Common icon options for forms
-    const iconOptions = [
-        { value: 'LayoutDashboard', label: 'Dashboard' },
-        { value: 'ShieldUser', label: 'Administration' },
-        { value: 'Users', label: 'Users' },
-        { value: 'Shield', label: 'Roles' },
-        { value: 'Key', label: 'Permissions' },
-        { value: 'Settings', label: 'Settings' },
-        { value: 'Database', label: 'Database' },
-        { value: 'FileText', label: 'Documents' },
-        { value: 'BarChart3', label: 'Analytics' },
-        { value: 'Mail', label: 'Messages' },
-        { value: 'Calendar', label: 'Calendar' },
-        { value: 'Package', label: 'Package' },
-        { value: 'Globe', label: 'Website' },
-        { value: 'Zap', label: 'API' },
-        { value: 'Code', label: 'Development' },
-    ]
-
-    // Form fields for create/edit module
+    // Form fields for create/edit module - Updated to use iconPicker
     const getModuleFormFields = () => [
         {
             type: 'input' as const,
@@ -194,12 +175,12 @@ export const ModulesView: React.FC = () => {
             required: true,
         },
         {
-            type: 'select' as const,
+            type: 'iconPicker' as const,
             name: 'icon',
-            label: 'Icon',
-            placeholder: 'Select an icon',
+            label: 'Module Icon',
             required: true,
-            options: iconOptions,
+            iconSize: 20,
+            showPreview: true,
         },
         {
             type: 'input' as const,

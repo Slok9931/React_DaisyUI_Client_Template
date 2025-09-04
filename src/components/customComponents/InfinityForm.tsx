@@ -16,7 +16,10 @@ import {
   FileInput,
   Rating,
   Range,
+  Modal,
+  InfinityIcons,
 } from '@/components'
+import { getIconComponent } from '@/utils'
 
 // Types (keeping all the same interfaces)
 interface BaseFieldConfig {
@@ -169,6 +172,15 @@ interface SpacerConfig {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
+// Add the new IconPicker field interface
+interface IconPickerFieldConfig extends BaseFieldConfig {
+  type: 'iconPicker'
+  value?: string
+  onChange?: (value: string) => void
+  iconSize?: number
+  showPreview?: boolean
+}
+
 type FieldConfig =
   | InputFieldConfig
   | TextareaFieldConfig
@@ -182,6 +194,7 @@ type FieldConfig =
   | FileInputFieldConfig
   | RangeFieldConfig
   | RatingFieldConfig
+  | IconPickerFieldConfig  // Add this line
   | CustomFieldConfig
   | DividerConfig
   | HeadingConfig
@@ -1002,6 +1015,22 @@ const FieldRenderer: React.FC<{
           error: fieldError
         })
 
+      case 'iconPicker':
+        return (
+          <IconPicker
+            label={field.label}
+            value={getControlledValue(fieldValue, 'input')}
+            onChange={handleChange}
+            iconSize={field.iconSize}
+            showPreview={field.showPreview}
+            required={field.required}
+            disabled={field.disabled}
+            error={fieldError}
+            helperText={field.helperText}
+            className={field.className}
+          />
+        )
+
       default:
         return null
     }
@@ -1013,6 +1042,217 @@ const FieldRenderer: React.FC<{
     </div>
   )
 }
+
+// Updated IconPicker component that uses InfinityIcons
+const IconPicker: React.FC<{
+  label?: string
+  value?: string
+  onChange: (value: string) => void
+  error?: string
+  helperText?: string
+  required?: boolean
+  disabled?: boolean
+  iconSize?: number
+  showPreview?: boolean
+  className?: string
+}> = ({
+  label,
+  value,
+  onChange,
+  error,
+  helperText,
+  disabled,
+  iconSize = 20,
+  showPreview = true,
+  className = ''
+}) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedIcon, setSelectedIcon] = useState(value || '')
+
+  useEffect(() => {
+    setSelectedIcon(value || '')
+  }, [value])
+
+  const handleIconSelect = (iconName: string) => {
+    setSelectedIcon(iconName)
+    onChange(iconName)
+    setIsOpen(false)
+  }
+
+  const handleClear = () => {
+    setSelectedIcon('')
+    onChange('')
+  }
+
+  return (
+    <div className={`form-control ${className}`}>
+      {label && (
+        <label className="label">
+          <Typography variant="body2" className="label-text">
+            {label}
+          </Typography>
+        </label>
+      )}
+
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => !disabled && setIsOpen(true)}
+          disabled={disabled}
+          className={`btn btn-outline w-full justify-start gap-3 ${
+            error ? 'btn-error' : ''
+          } ${disabled ? 'btn-disabled' : ''}`}
+        >
+          {selectedIcon ? (
+            <>
+              {showPreview && (
+                <div className="flex items-center justify-center w-5 h-5">
+                  {getIconComponent(selectedIcon, iconSize)}
+                </div>
+              )}
+              <span className="flex-1 text-left truncate font-mono text-sm">
+                {selectedIcon}
+              </span>
+            </>
+          ) : (
+            <span className="flex-1 text-left text-base-content/50">
+              Select an icon...
+            </span>
+          )}
+          
+          <div className="flex items-center gap-1">
+            {selectedIcon && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleClear()
+                }}
+                className="btn btn-ghost btn-xs"
+                disabled={disabled}
+              >
+                {getIconComponent('X', 12)}
+              </button>
+            )}
+            {getIconComponent('ChevronDown', 16)}
+          </div>
+        </button>
+      </div>
+
+      {(error || helperText) && (
+        <label className="label">
+          <span className={`label-text-alt ${error ? 'text-error' : ''}`}>
+            {error || helperText}
+          </span>
+        </label>
+      )}
+
+      {/* Icon Selection Modal using InfinityIcons */}
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Typography variant="h5" className="font-semibold">
+                Select an Icon
+              </Typography>
+              <Typography variant="body2" className="text-base-content/60">
+                Choose an icon from the available collection
+              </Typography>
+            </div>
+          </div>
+
+          {/* Selected Icon Preview */}
+          {selectedIcon && (
+            <div className="bg-base-200 rounded-lg p-4">
+              <Typography variant="caption" className="text-base-content/60">
+                Selected Icon:
+              </Typography>
+              <div className="flex items-center gap-3 mt-2">
+                <div className="flex items-center justify-center w-8 h-8 bg-base-100 rounded">
+                  {getIconComponent(selectedIcon, 24)}
+                </div>
+                <Typography variant="body2" className="font-mono">
+                  {selectedIcon}
+                </Typography>
+              </div>
+            </div>
+          )}
+
+          {/* Use InfinityIcons component with click handlers */}
+          <div className="max-h-96 overflow-y-auto">
+            <IconSelectionWrapper 
+              onSelect={handleIconSelect}
+              selectedIcon={selectedIcon}
+              iconSize={iconSize}
+            />
+          </div>
+        </div>
+      </Modal>
+    </div>
+  )
+}
+
+// Wrapper component to handle click events on InfinityIcons
+const IconSelectionWrapper: React.FC<{
+  onSelect: (iconName: string) => void
+  selectedIcon?: string
+  iconSize?: number
+}> = ({ onSelect, selectedIcon, iconSize = 20 }) => {
+  const handleIconClick = useCallback((event: React.MouseEvent) => {
+    // Find the clicked icon button
+    const target = event.target as HTMLElement
+    const iconButton = target.closest('[data-icon-name]') || target.closest('.card')
+    
+    if (iconButton) {
+      // Try to get icon name from data attribute first
+      let iconName = iconButton.getAttribute('data-icon-name')
+      
+      // If no data attribute, try to extract from tooltip or other means
+      if (!iconName) {
+        const tooltip = iconButton.getAttribute('title')
+        if (tooltip) {
+          iconName = tooltip
+        }
+      }
+      
+      // If still no icon name, try to find SVG and extract from class or other attributes
+      if (!iconName) {
+        const svg = iconButton.querySelector('svg')
+        if (svg) {
+          // Extract icon name from SVG classes or data attributes
+          const classes = svg.className.baseVal || svg.getAttribute('class') || ''
+          const match = classes.match(/lucide-([a-z-]+)/i)
+          if (match) {
+            // Convert kebab-case to PascalCase
+            iconName = match[1].replace(/-([a-z])/g, (_:any, letter:any) => letter.toUpperCase())
+            if (iconName) {
+              iconName = iconName.charAt(0).toUpperCase() + iconName.slice(1)
+            }
+          }
+        }
+      }
+      
+      if (iconName) {
+        onSelect(iconName)
+      }
+    }
+  }, [onSelect])
+
+  return (
+    <div onClick={handleIconClick} className="cursor-pointer">
+      <InfinityIcons 
+        iconSize={iconSize}
+        className="w-full"
+        cardClassName={`transition-all hover:ring-2 hover:ring-primary ${
+          selectedIcon ? 'ring-2 ring-primary' : ''
+        }`}
+      />
+    </div>
+  )
+}
+
+// Remove the InfinityIconSelector component since we're now using InfinityIcons
+// ... (keep the rest of the component unchanged)
 
 // FormShimmer component remains the same
 const FormShimmer: React.FC<{ fields: number }> = ({ fields }) => {
