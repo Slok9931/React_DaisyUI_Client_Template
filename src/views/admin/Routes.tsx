@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
+import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig, Divider } from '@/components'
 import { FormModal, ConfirmModal, useModals } from '@/features'
 import { useRoutesStore, useModulesStore } from '@/store'
 import { getIconComponent } from '@/utils'
@@ -175,7 +175,6 @@ const RecursiveChildRoutesTable: React.FC<{
 // Main Routes View Component
 export const RoutesView: React.FC = () => {
   const {
-    selectedRouteIds,
     moduleFilters,
     loading,
     error,
@@ -186,7 +185,6 @@ export const RoutesView: React.FC = () => {
     deleteRoute,
     setModuleFilters,
     clearModuleFilters,
-    setSelectedRouteIds,
     clearError,
   } = useRoutesStore()
 
@@ -563,10 +561,10 @@ export const RoutesView: React.FC = () => {
       {/* Routes Tables by Module */}
       {activeModules.map((module: Module) => {
         const parentRoutes = getFilteredParentRoutes(module.id)
-        const moduleSelectedIds = selectedRouteIds[module.id] || []
 
         return (
           <div key={module.id} className="space-y-4">
+            <Divider />
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 {getIconComponent(module.icon, 24)}
@@ -589,16 +587,13 @@ export const RoutesView: React.FC = () => {
               title={`${module.label} Routes`}
               subtitle={`Parent routes for ${module.label} module`}
               filters={getModuleFilterConfigs(module.id)}
-              selectedRows={moduleSelectedIds}
-              onRowSelect={(ids) => setSelectedRouteIds(module.id, ids)}
-              rowIdKey="id"
               expandable={true}
               expandedContent={(row) => (
                 <RecursiveChildRoutesTable
                   parentRoute={row}
                   moduleId={module.id}
                   level={1}
-                  openModal={openModal} // Pass down the modal function
+                  openModal={openModal}
                 />
               )}
               headerActions={
@@ -623,14 +618,6 @@ export const RoutesView: React.FC = () => {
                   </Button>
                 </div>
               }
-              bulkActions={[
-                {
-                  label: 'Delete Selected',
-                  icon: getIconComponent('Trash2', 16),
-                  onClick: () => openModal('bulkDelete', { moduleId: module.id }),
-                  variant: 'error',
-                },
-              ]}
               zebra={true}
               hoverable={true}
               bordered={true}
