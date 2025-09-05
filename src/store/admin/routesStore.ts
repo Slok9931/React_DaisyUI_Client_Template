@@ -42,7 +42,7 @@ interface RoutesActions {
   createRoute: (routeData: CreateRouteRequest) => Promise<void>;
   updateRoute: (id: number, routeData: UpdateRouteRequest) => Promise<void>;
   deleteRoute: (id: number) => Promise<void>;
-  bulkDeleteRoutes: (ids: number[]) => Promise<void>;
+
 
   // UI actions
   setModuleFilters: (moduleId: number, filters: Partial<RoutesState["moduleFilters"][0]>) => void;
@@ -130,7 +130,9 @@ export const useRoutesStore = create<RoutesState & RoutesActions>((set, get) => 
 
   fetchChildRoutes: async (parentId: number) => {
     try {
-      const childRoutes = await routesApi.getChildRoutes(parentId);
+      // Fetch child routes from API with parent_id filter
+      const response = await routesApi.getRoutes({ parent_id: parentId, limit: 1000 });
+      const childRoutes = response.routes;
       const sortedChildRoutes = childRoutes.sort((a, b) => a.priority - b.priority);
 
       set((state) => ({
@@ -247,39 +249,6 @@ export const useRoutesStore = create<RoutesState & RoutesActions>((set, get) => 
     }
   },
 
-  bulkDeleteRoutes: async (ids: number[]) => {
-    set({ loading: true, error: null });
-
-    try {
-      await routesApi.bulkDeleteRoutes(ids);
-
-      set((state) => {
-        const updatedAllRoutes = state.allRoutes.filter((route) => !ids.includes(route.id));
-        const updatedRoutesByModule = { ...state.routesByModule };
-        
-        // Remove from all modules
-        Object.keys(updatedRoutesByModule).forEach(moduleId => {
-          updatedRoutesByModule[parseInt(moduleId)] = updatedRoutesByModule[parseInt(moduleId)].filter(
-            route => !ids.includes(route.id)
-          );
-        });
-
-        return {
-          allRoutes: updatedAllRoutes,
-          routesByModule: updatedRoutesByModule,
-          selectedRouteIds: {},
-          loading: false,
-        };
-      });
-    } catch (error: any) {
-      set({
-        error: error.message || "Failed to delete routes",
-        loading: false,
-      });
-      throw error;
-    }
-  },
-
   setModuleFilters: (moduleId: number, newFilters: Partial<RoutesState["moduleFilters"][0]>) => {
     set((state) => ({
       moduleFilters: {
@@ -340,6 +309,27 @@ export const useRoutesStore = create<RoutesState & RoutesActions>((set, get) => 
 
   getChildRoutesByParent: (parentId: number) => {
     const state = get();
-    return state.childRoutes[parentId] || [];
+    // First check if we have cached child routes for this parent
+    if (state.childRoutes[parentId]) {
+      return state.childRoutes[parentId];
+    }
+    
+    // If not cached, find children from all routes
+    const allRoutes = state.allRoutes;
+    const childRoutes = allRoutes.filter(route => route.parent_id === parentId);
+    
+    // Also check in routesByModule for the child routes
+    const moduleRoutes = Object.values(state.routesByModule).flat();
+    const additionalChildren = moduleRoutes.filter(route => route.parent_id === parentId);
+    
+    // Combine and deduplicate
+    const combinedChildren = [...childRoutes];
+    additionalChildren.forEach(child => {
+      if (!combinedChildren.find(existing => existing.id === child.id)) {
+        combinedChildren.push(child);
+      }
+    });
+    
+    return combinedChildren.sort((a, b) => a.priority - b.priority);
   },
 }));

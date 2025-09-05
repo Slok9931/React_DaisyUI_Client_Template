@@ -42,7 +42,7 @@ export const routesApi = {
 
   // Get route by ID
   getRouteById: async (id: number): Promise<Route> => {
-    const response = await apiClient.get(`/api/v1/routes/get-one/${id}`);
+    const response = await apiClient.get(`/api/v1/routes/${id}`);
     return response.data;
   },
 
@@ -69,17 +69,12 @@ export const routesApi = {
     id: number,
     routeData: UpdateRouteRequest
   ): Promise<Route> => {
-    const response = await apiClient.put(`/api/v1/routes/get-one/${id}`, routeData);
+    const response = await apiClient.put(`/api/v1/routes/${id}`, routeData);
     return response.data;
   },
 
   // Delete route
   deleteRoute: async (id: number): Promise<void> => {
     await apiClient.delete(`/api/v1/routes/${id}`);
-  },
-
-  // Bulk delete routes
-  bulkDeleteRoutes: async (ids: number[]): Promise<void> => {
-    await apiClient.post("/api/v1/routes/bulk-delete", { route_ids: ids });
-  },
+  }
 };

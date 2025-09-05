@@ -1,25 +1,23 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
-import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
+import { FormModal, ConfirmModal, useModals } from '@/features'
 import { useRoutesStore, useModulesStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Route, CreateRouteRequest, Module } from '@/types'
 
-// Child Routes Table Component
-const ChildRoutesTable: React.FC<{
+const RecursiveChildRoutesTable: React.FC<{
   parentRoute: Route
   moduleId: number
-}> = ({ parentRoute, moduleId }) => {
+  level?: number
+  // Pass modal functions down from parent
+  openModal: (type: string, data?: any) => void
+}> = ({ parentRoute, moduleId, level = 1, openModal }) => {
   const {
     getChildRoutesByParent,
     fetchChildRoutes,
     updateRoute,
     loading,
   } = useRoutesStore()
-
-  const {
-    openModal,
-  } = useModals()
 
   const childRoutes = useMemo(() => {
     return getChildRoutesByParent(parentRoute.id)
@@ -28,6 +26,17 @@ const ChildRoutesTable: React.FC<{
   useEffect(() => {
     fetchChildRoutes(parentRoute.id)
   }, [fetchChildRoutes, parentRoute.id])
+
+  // Don't render if no child routes
+  if (childRoutes.length === 0) {
+    return (
+      <div className="bg-base-200/50 rounded-lg p-4">
+        <Typography variant="caption" className="text-base-content/60">
+          No child routes found for {parentRoute.label}
+        </Typography>
+      </div>
+    )
+  }
 
   const childColumns: ColumnConfig<Route>[] = [
     {
@@ -45,9 +54,11 @@ const ChildRoutesTable: React.FC<{
       header: 'Route',
       customRender: (value, row) => (
         <div className="space-y-1">
-          <Typography variant="body2" className="font-medium">
-            {row.label}
-          </Typography>
+          <div className="flex items-center gap-2">
+            <Typography variant="body2" className="font-medium">
+              {row.label}
+            </Typography>
+          </div>
           <Typography variant="caption" className="text-base-content/60 font-mono">
             {row.route}
           </Typography>
@@ -135,21 +146,30 @@ const ChildRoutesTable: React.FC<{
   ]
 
   return (
-    <div className="bg-base-200/50 rounded-lg p-4">
+    <div 
+      className="bg-base-200/50 rounded-lg p-4 space-y-2"
+      style={{ marginLeft: `${level * 16}px` }} // Indent based on level
+    >
       <InfinityTable
         data={childRoutes}
         columns={childColumns}
         loading={loading}
-        title={`${parentRoute.label} - Child Routes`}
+        title={`${parentRoute.label} - Level ${level} Children`}
         subtitle={`${childRoutes.length} child routes`}
         zebra={false}
         hoverable={true}
         bordered={false}
-        headerActions={
-          <Typography variant="caption" className="text-base-content/60">
-            Nested routes under {parentRoute.label}
-          </Typography>
-        }
+        expandable={true}
+        rowIdKey="id"
+        // RECURSIVE: Each child route can have its own children
+        expandedContent={(childRow) => (
+          <RecursiveChildRoutesTable
+            parentRoute={childRow}
+            moduleId={moduleId}
+            level={level + 1}
+            openModal={openModal} // Pass down the modal function
+          />
+        )}
       />
     </div>
   )
@@ -167,11 +187,9 @@ export const RoutesView: React.FC = () => {
     createRoute,
     updateRoute,
     deleteRoute,
-    bulkDeleteRoutes,
     setModuleFilters,
     clearModuleFilters,
     setSelectedRouteIds,
-    setExpandedRows,
     clearError,
   } = useRoutesStore()
 
@@ -199,7 +217,7 @@ export const RoutesView: React.FC = () => {
     return modules.filter(module => module.is_active)
   }, [modules])
 
-  // Generate columns for parent routes
+  // Generate columns for parent routes (Level 0)
   const getParentRouteColumns = (moduleId: number): ColumnConfig<Route>[] => [
     {
       key: 'icon',
@@ -220,11 +238,6 @@ export const RoutesView: React.FC = () => {
             <Typography variant="body2" className="font-medium">
               {row.label}
             </Typography>
-            {row.children_count > 0 && (
-              <Badge variant="info" size="xs">
-                {row.children_count} children
-              </Badge>
-            )}
           </div>
           <Typography variant="caption" className="text-base-content/60 font-mono">
             {row.route}
@@ -383,19 +396,16 @@ export const RoutesView: React.FC = () => {
     return filtered
   }
 
-  // Form fields for create/edit route
+  // Updated form fields - use input instead of select for module
   const getRouteFormFields = (isChild = false) => [
     {
-      type: 'select' as const,
+      type: 'input' as const,
       name: 'module_id',
-      label: 'Module',
-      placeholder: 'Select module',
+      label: 'Module ID',
+      placeholder: 'Module ID',
       required: true,
-      options: modules.map(module => ({
-        value: module.id.toString(),
-        label: module.label
-      })),
-      disabled: isChild,
+      disabled: true, // Always disabled
+      helperText: 'Module is pre-selected based on context',
     },
     ...(isChild ? [{
       type: 'input' as const,
@@ -448,44 +458,81 @@ export const RoutesView: React.FC = () => {
 
   // Event handlers
   const handleCreateSubmit = async (data: any) => {
-    const routeData: CreateRouteRequest = {
-      route: data.route,
-      label: data.label,
-      icon: data.icon,
-      module_id: parseInt(data.module_id),
-      parent_id: data.parent_id ? parseInt(data.parent_id) : null,
-      priority: parseInt(data.priority),
-      is_sidebar: data.is_sidebar ?? true,
-      is_active: data.is_active ?? true,
+    console.log('Component: handleCreateSubmit called with:', data);
+    console.log('Component: modalData:', modalData);
+    
+    try {
+      const routeData: CreateRouteRequest = {
+        route: data.route,
+        label: data.label,
+        icon: data.icon,
+        module_id: parseInt(data.module_id),
+        parent_id: data.parent_id ? parseInt(data.parent_id) : null,
+        priority: parseInt(data.priority) || 0,
+        is_sidebar: data.is_sidebar ?? true,
+        is_active: data.is_active ?? true,
+      }
+      
+      console.log('Component: Prepared route data:', routeData);
+      await createRoute(routeData);
+      console.log('Component: Route created successfully');
+      
+      // Close the appropriate modal
+      if (modals.createChild) {
+        closeModal('createChild');
+      } else {
+        closeModal('create');
+      }
+      
+    } catch (error) {
+      console.error('Component: Failed to create route:', error);
+      throw error; // Let FormModal handle the error
     }
-    await createRoute(routeData)
   }
 
   const handleEditSubmit = async (data: any) => {
     if (!editingRoute) return
-    await updateRoute(editingRoute.id, {
-      route: data.route,
-      label: data.label,
-      icon: data.icon,
-      module_id: parseInt(data.module_id),
-      parent_id: data.parent_id ? parseInt(data.parent_id) : null,
-      priority: parseInt(data.priority),
-      is_sidebar: data.is_sidebar,
-      is_active: data.is_active,
-    })
+    
+    try {
+      const updateData = {
+        route: data.route,
+        label: data.label,
+        icon: data.icon,
+        module_id: parseInt(data.module_id),
+        parent_id: data.parent_id ? parseInt(data.parent_id) : null,
+        priority: parseInt(data.priority) || 0,
+        is_sidebar: data.is_sidebar,
+        is_active: data.is_active,
+      };
+      
+      console.log('Component: Prepared update data:', updateData);
+      await updateRoute(editingRoute.id, updateData);
+      console.log('Component: Route updated successfully');
+      
+      closeModal('edit');
+    } catch (error) {
+      console.error('Component: Failed to update route:', error);
+      throw error; // Let FormModal handle the error
+    }
   }
 
   const handleDeleteConfirm = async () => {
-    if (!deletingRoute) return
-    await deleteRoute(deletingRoute.id)
-  }
-
-  const handleBulkDeleteConfirm = async (moduleId: number) => {
-    const ids = selectedRouteIds[moduleId] || []
-    if (ids.length === 0) return
-    const numericIds = ids.map(id => parseInt(id))
-    await bulkDeleteRoutes(numericIds)
-    setSelectedRouteIds(moduleId, [])
+    console.log('Component: handleDeleteConfirm called');
+    console.log('Component: deletingRoute:', deletingRoute);
+    
+    if (!deletingRoute) {
+      console.error('Component: No deleting route found');
+      return;
+    }
+    
+    try {
+      await deleteRoute(deletingRoute.id);
+      console.log('Component: Route deleted successfully');
+      closeModal('delete');
+    } catch (error) {
+      console.error('Component: Failed to delete route:', error);
+      closeModal('delete'); // Close modal even on error for delete
+    }
   }
 
   return (
@@ -547,15 +594,16 @@ export const RoutesView: React.FC = () => {
               title={`${module.label} Routes`}
               subtitle={`Parent routes for ${module.label} module`}
               filters={getModuleFilterConfigs(module.id)}
-              selectable={true}
               selectedRows={moduleSelectedIds}
               onRowSelect={(ids) => setSelectedRouteIds(module.id, ids)}
               rowIdKey="id"
               expandable={true}
               expandedContent={(row) => (
-                <ChildRoutesTable
+                <RecursiveChildRoutesTable
                   parentRoute={row}
                   moduleId={module.id}
+                  level={1}
+                  openModal={openModal} // Pass down the modal function
                 />
               )}
               headerActions={
@@ -613,11 +661,11 @@ export const RoutesView: React.FC = () => {
         isOpen={modals.create}
         onClose={() => closeModal('create')}
         title="Create New Route"
-        fields={getRouteFormFields()}
+        fields={getRouteFormFields(false)}
         onSubmit={handleCreateSubmit}
         submitText="Create Route"
         initialValues={{
-          module_id: modalData?.moduleId?.toString(),
+          module_id: modalData?.moduleId?.toString() || '',
           is_active: true,
           is_sidebar: true,
           priority: 0,
@@ -634,11 +682,11 @@ export const RoutesView: React.FC = () => {
         onSubmit={handleCreateSubmit}
         submitText="Create Child Route"
         initialValues={{
-          module_id: modalData?.moduleId?.toString(),
-          parent_id: modalData?.parentRoute?.id?.toString(),
+          module_id: modalData?.parentRoute?.module_id?.toString() || modalData?.moduleId?.toString() || '',
+          parent_id: modalData?.parentRoute?.id?.toString() || '',
           is_active: true,
           is_sidebar: true,
-          priority: 0,
+          priority: (modalData?.parentRoute?.children_count || 0) + 1,
         }}
         loading={loading}
       />
@@ -648,7 +696,7 @@ export const RoutesView: React.FC = () => {
         isOpen={modals.edit}
         onClose={() => closeModal('edit')}
         title="Edit Route"
-        fields={getRouteFormFields()}
+        fields={getRouteFormFields(!!editingRoute?.parent_id)}
         onSubmit={handleEditSubmit}
         submitText="Update Route"
         initialValues={editingRoute ? {
@@ -657,7 +705,7 @@ export const RoutesView: React.FC = () => {
           icon: editingRoute.icon,
           module_id: editingRoute.module_id.toString(),
           parent_id: editingRoute.parent_id?.toString() || '',
-          priority: editingRoute.priority,
+          priority: editingRoute.priority.toString(),
           is_sidebar: editingRoute.is_sidebar,
           is_active: editingRoute.is_active,
         } : {}}
@@ -669,27 +717,11 @@ export const RoutesView: React.FC = () => {
         isOpen={modals.delete}
         onClose={() => closeModal('delete')}
         title="Confirm Delete"
-        message={`Are you sure you want to delete the route "${deletingRoute?.label}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete the route "${deletingRoute?.label}"? This action cannot be undone and will also delete all child routes.`}
         confirmText="Delete Route"
         onConfirm={handleDeleteConfirm}
         variant="error"
         icon={getIconComponent('Trash2', 24)}
-      />
-
-      {/* Bulk Delete Modal */}
-      <BulkActionModal
-        isOpen={modals.bulkDelete}
-        onClose={() => closeModal('bulkDelete')}
-        title="Bulk Delete Routes"
-        count={modalData?.moduleId ? (selectedRouteIds[modalData.moduleId] || []).length : 0}
-        action="Delete"
-        onConfirm={() => {
-          if (modalData?.moduleId) {
-            return handleBulkDeleteConfirm(modalData.moduleId)
-          }
-        }}
-        variant="error"
-        itemType="routes"
       />
     </div>
   )
