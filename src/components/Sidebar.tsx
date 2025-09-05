@@ -73,6 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<string | undefined>(
     () => localStorage.getItem('activeTab') || "Dashboard"
   );
+  const [hasExpanded, setHasExpanded] = useState(false);
 
   const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : uncontrolledActiveTab;
   const setActiveTab = controlledSetActiveTab !== undefined ? controlledSetActiveTab : setUncontrolledActiveTab;
@@ -284,6 +285,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
     </div>
   );
+
+  const findAncestorIds = (items: SidebarItem[], targetLabel: string, path: string[] = []): string[] | null => {
+    for (const item of items) {
+      const newPath = [...path, item.id];
+      if (item.label === targetLabel) {
+        return path;
+      }
+      if (item.children) {
+        const found = findAncestorIds(item.children, targetLabel, newPath);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (!sidebarItems.length || !activeTab || hasExpanded) return;
+    const ancestorIds = findAncestorIds(sidebarItems, activeTab);
+    if (ancestorIds && ancestorIds.length > 0) {
+      setExpandedItems(prev => Array.from(new Set([...prev, ...ancestorIds])));
+    }
+    setHasExpanded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sidebarItems]);
 
   return sidebarContent;
 };
