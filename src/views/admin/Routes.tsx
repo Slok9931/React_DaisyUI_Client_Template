@@ -69,7 +69,6 @@ const RecursiveChildRoutesTable: React.FC<{
       key: 'priority',
       header: 'Priority',
       width: '80px',
-      align: 'center',
       customRender: (value, row) => (
         <Badge variant="secondary" size="sm">
           {row.priority}
@@ -107,10 +106,9 @@ const RecursiveChildRoutesTable: React.FC<{
     {
       key: 'actions',
       header: 'Actions',
-      align: 'center',
       width: '140px',
       customRender: (value, row) => (
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center gap-1">
           <Tooltip tip="Create child route">
             <Button
               size="xs"
@@ -161,13 +159,12 @@ const RecursiveChildRoutesTable: React.FC<{
         bordered={false}
         expandable={true}
         rowIdKey="id"
-        // RECURSIVE: Each child route can have its own children
         expandedContent={(childRow) => (
           <RecursiveChildRoutesTable
             parentRoute={childRow}
             moduleId={moduleId}
             level={level + 1}
-            openModal={openModal} // Pass down the modal function
+            openModal={openModal}
           />
         )}
       />
@@ -249,7 +246,6 @@ export const RoutesView: React.FC = () => {
       key: 'priority',
       header: 'Priority',
       width: '80px',
-      align: 'center',
       sortable: true,
       customRender: (value, row) => (
         <Badge variant="secondary" size="sm">
@@ -286,10 +282,9 @@ export const RoutesView: React.FC = () => {
     {
       key: 'actions',
       header: 'Actions',
-      align: 'center',
       width: '140px',
       customRender: (value, row) => (
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center gap-1">
           <Tooltip tip="Create child route">
             <Button
               size="xs"
