@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
     InfinityTable,
     InfinitySheet,
@@ -25,12 +25,12 @@ export const RolesView: React.FC = () => {
         currentPage,
         pageSize,
         totalRoles,
-        totalPages,
         selectedRoleIds,
         sheetOpen,
         fetchRoles,
         fetchRoleById,
         fetchAllPermissions,
+        fetchTotalRoles, // Add this
         createRole,
         togglePermission,
         setCurrentPage,
@@ -57,10 +57,27 @@ export const RolesView: React.FC = () => {
         pageSize: 10
     })
 
+    // Calculate skip value for API
+    const skip = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
+
+    // Update the useEffect
     useEffect(() => {
-        fetchRoles()
-        fetchAllPermissions()
-    }, [fetchRoles, fetchAllPermissions])
+        const fetchData = async () => {
+            // Fetch total count first
+            await fetchTotalRoles();
+            
+            // Then fetch paginated data
+            await fetchRoles({
+                skip,
+                limit: pageSize,
+            });
+            
+            // Fetch all permissions
+            await fetchAllPermissions();
+        };
+        
+        fetchData();
+    }, [currentPage, pageSize]);
 
     // Main table columns
     const columns: ColumnConfig<Role>[] = [
@@ -343,6 +360,21 @@ export const RolesView: React.FC = () => {
         setMatrixPagination({ currentPage: 1, pageSize: size })
     }
 
+    // Custom handlers for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (size: number) => {
+        setPageSize(size);
+    };
+
+    // Calculate total pages
+    const totalPages = useMemo(() => {
+        const pages = Math.max(1, Math.ceil(totalRoles / pageSize));
+        return pages;
+    }, [totalRoles, pageSize]);
+
     return (
         <div className="p-6">
             {/* Error Alert */}
@@ -410,10 +442,10 @@ export const RolesView: React.FC = () => {
                     totalPages,
                     pageSize,
                     totalItems: totalRoles,
-                    onPageChange: setCurrentPage,
+                    onPageChange: handlePageChange,
                     showPageSize: true,
-                    pageSizeOptions: [10, 20, 50, 100],
-                    onPageSizeChange: setPageSize,
+                    pageSizeOptions: [5, 10, 20, 50, 100],
+                    onPageSizeChange: handlePageSizeChange,
                 }}
                 headerActions={
                     <div className="flex items-center gap-2">

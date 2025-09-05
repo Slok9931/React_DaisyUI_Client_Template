@@ -267,7 +267,7 @@ export const PermissionsView: React.FC = () => {
                     totalItems: totalPermissions,
                     onPageChange: handlePageChange,
                     showPageSize: true,
-                    pageSizeOptions: [10, 20, 50, 100],
+                    pageSizeOptions: [5, 10, 20, 50, 100],
                     onPageSizeChange: handlePageSizeChange,
                 }}
                 headerActions={

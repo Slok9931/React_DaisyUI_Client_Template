@@ -76,7 +76,7 @@ export const useRoutesStore = create<RoutesState & RoutesActions>((set, get) => 
     set({ loading: true, error: null });
 
     try {
-      const response = await routesApi.getRoutes({ limit: 1000 });
+      const response = await routesApi.getRoutes();
       const routes = response.routes;
 
       // Group routes by module

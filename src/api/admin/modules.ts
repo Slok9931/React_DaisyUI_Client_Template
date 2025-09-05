@@ -51,7 +51,10 @@ export const modulesApi = {
     id: number,
     moduleData: UpdateModuleRequest
   ): Promise<Module> => {
-    const response = await apiClient.put(`/api/v1/modules/get-one/${id}`, moduleData);
+    const response = await apiClient.put(
+      `/api/v1/modules/get-one/${id}`,
+      moduleData
+    );
     return response.data;
   },
 
@@ -63,5 +66,11 @@ export const modulesApi = {
   // Bulk delete modules
   bulkDeleteModules: async (ids: number[]): Promise<void> => {
     await apiClient.post("/api/v1/modules/bulk-delete", { module_ids: ids });
+  },
+
+  //Get total number of modules
+  getTotalModules: async (): Promise<number> => {
+    const response = await apiClient.get("/api/v1/modules/count");
+    return response.data;
   },
 };

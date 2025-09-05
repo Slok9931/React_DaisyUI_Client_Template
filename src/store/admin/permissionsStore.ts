@@ -66,7 +66,7 @@ const initialState: PermissionsState = {
   loading: false,
   error: null,
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 10,
   totalPermissions: 0,
   totalPages: 0,
   filters: {

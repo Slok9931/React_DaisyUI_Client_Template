@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { useUsersStore, useRolesStore } from '@/store'
@@ -13,10 +13,10 @@ export const UsersView: React.FC = () => {
         currentPage,
         pageSize,
         totalUsers,
-        totalPages,
         filters,
         selectedUserIds,
         fetchUsers,
+        fetchTotalUsers, // Add this
         createUser,
         updateUser,
         deleteUser,
@@ -43,10 +43,45 @@ export const UsersView: React.FC = () => {
         closeModal,
     } = useModals()
 
+    // Calculate skip value for API
+    const skip = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
+
+    // Update the useEffect to follow permissions pattern
     useEffect(() => {
-        fetchUsers()
-        fetchRoles() // Fetch roles when component mounts
-    }, [fetchUsers, fetchRoles])
+        const fetchData = async () => {
+            // Fetch roles (only needed once on mount)
+            if (roles.length === 0) {
+                await fetchRoles();
+            }
+            
+            // Fetch total count first
+            await fetchTotalUsers();
+            
+            // Then fetch paginated data
+            await fetchUsers({
+                skip,
+                limit: pageSize,
+                ...filters
+            });
+        };
+        
+        fetchData();
+    }, [currentPage, pageSize, filters.search, filters.is_active, filters.role]);
+
+    // Custom handlers for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (size: number) => {
+        setPageSize(size);
+    };
+
+    // Calculate total pages
+    const totalPages = useMemo(() => {
+        const pages = Math.max(1, Math.ceil(totalUsers / pageSize));
+        return pages;
+    }, [totalUsers, pageSize]);
 
     // Get unique role options for filters and forms
     const getRoleOptions = () => {
@@ -337,10 +372,10 @@ export const UsersView: React.FC = () => {
                     totalPages,
                     pageSize,
                     totalItems: totalUsers,
-                    onPageChange: setCurrentPage,
+                    onPageChange: handlePageChange,
                     showPageSize: true,
-                    pageSizeOptions: [10, 20, 50, 100],
-                    onPageSizeChange: setPageSize,
+                    pageSizeOptions: [5, 10, 20, 50, 100],
+                    onPageSizeChange: handlePageSizeChange,
                 }}
                 headerActions={
                     <div className="flex items-center gap-2">

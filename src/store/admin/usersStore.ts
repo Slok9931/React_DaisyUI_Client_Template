@@ -37,6 +37,7 @@ interface UsersActions {
   // Data fetching
   fetchUsers: (params?: UsersQueryParams) => Promise<void>;
   fetchUserById: (id: number) => Promise<void>;
+  fetchTotalUsers: () => Promise<void>; // Add this
 
   // CRUD operations
   createUser: (userData: CreateUserRequest) => Promise<void>;
@@ -60,7 +61,7 @@ const initialState: UsersState = {
   loading: false,
   error: null,
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 10,
   totalUsers: 0,
   totalPages: 0,
   filters: {
@@ -92,8 +93,7 @@ export const useUsersStore = create<UsersState & UsersActions>((set, get) => ({
 
       set({
         users: response.users,
-        totalUsers: response.total,
-        totalPages: Math.ceil(response.total / state.pageSize),
+        // DON'T update totalUsers here - it should only be updated by fetchTotalUsers
         loading: false,
       });
     } catch (error: any) {
@@ -201,14 +201,28 @@ export const useUsersStore = create<UsersState & UsersActions>((set, get) => ({
     }
   },
 
+  fetchTotalUsers: async () => {
+    try {
+      const state = get();
+      const total = await usersApi.getTotalUsers();
+      
+      set({
+        totalUsers: total,
+        totalPages: Math.ceil(total / state.pageSize),
+      });
+    } catch (error: any) {
+      console.error("Failed to fetch total users:", error);
+    }
+  },
+
   setCurrentPage: (page: number) => {
     set({ currentPage: page });
-    get().fetchUsers();
+    // Don't call fetchUsers here - let the component handle it
   },
 
   setPageSize: (size: number) => {
     set({ pageSize: size, currentPage: 1 });
-    get().fetchUsers();
+    // Don't call fetchUsers here - let the component handle it
   },
 
   setFilters: (newFilters: Partial<UsersState["filters"]>) => {
@@ -216,7 +230,7 @@ export const useUsersStore = create<UsersState & UsersActions>((set, get) => ({
       filters: { ...state.filters, ...newFilters },
       currentPage: 1,
     }));
-    get().fetchUsers();
+    // Don't call fetchUsers here - let the component handle it
   },
 
   clearFilters: () => {

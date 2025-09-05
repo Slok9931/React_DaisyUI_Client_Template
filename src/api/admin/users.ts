@@ -53,7 +53,10 @@ export const usersApi = {
     id: number,
     userData: UpdateUserRequest
   ): Promise<Users> => {
-    const response = await apiClient.put(`/api/v1/users/get-one/${id}`, userData);
+    const response = await apiClient.put(
+      `/api/v1/users/get-one/${id}`,
+      userData
+    );
     return response.data;
   },
 
@@ -66,4 +69,10 @@ export const usersApi = {
   bulkDeleteUsers: async (ids: number[]): Promise<void> => {
     await apiClient.post("/api/v1/users/bulk-delete", { user_ids: ids });
   },
+
+  //Get total number of users
+  getTotalUsers: async (): Promise<number> => {
+    const response = await apiClient.get("/api/v1/users/count");
+    return response.data;
+  }
 };

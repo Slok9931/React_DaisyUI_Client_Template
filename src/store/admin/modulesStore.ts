@@ -36,6 +36,7 @@ interface ModulesActions {
   // Data fetching
   fetchModules: (params?: ModulesQueryParams) => Promise<void>;
   fetchModuleById: (id: number) => Promise<void>;
+  fetchTotalModules: () => Promise<void>; // Add this
 
   // CRUD operations
   createModule: (moduleData: CreateModuleRequest) => Promise<void>;
@@ -59,7 +60,7 @@ const initialState: ModulesState = {
   loading: false,
   error: null,
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 10,
   totalModules: 0,
   totalPages: 0,
   filters: {
@@ -89,8 +90,7 @@ export const useModulesStore = create<ModulesState & ModulesActions>((set, get) 
 
       set({
         modules: response.modules,
-        totalModules: response.total,
-        totalPages: Math.ceil(response.total / state.pageSize),
+        // DON'T update totalModules here - it should only be updated by fetchTotalModules
         loading: false,
       });
     } catch (error: any) {
@@ -197,14 +197,28 @@ export const useModulesStore = create<ModulesState & ModulesActions>((set, get) 
     }
   },
 
+  fetchTotalModules: async () => {
+    try {
+      const state = get();
+      const total = await modulesApi.getTotalModules();
+      
+      set({
+        totalModules: total,
+        totalPages: Math.ceil(total / state.pageSize),
+      });
+    } catch (error: any) {
+      console.error("Failed to fetch total modules:", error);
+    }
+  },
+
   setCurrentPage: (page: number) => {
     set({ currentPage: page });
-    get().fetchModules();
+    // Don't call fetchModules here - let the component handle it
   },
 
   setPageSize: (size: number) => {
     set({ pageSize: size, currentPage: 1 });
-    get().fetchModules();
+    // Don't call fetchModules here - let the component handle it
   },
 
   setFilters: (newFilters: Partial<ModulesState["filters"]>) => {
@@ -212,7 +226,7 @@ export const useModulesStore = create<ModulesState & ModulesActions>((set, get) 
       filters: { ...state.filters, ...newFilters },
       currentPage: 1,
     }));
-    get().fetchModules();
+    // Don't call fetchModules here - let the component handle it
   },
 
   clearFilters: () => {

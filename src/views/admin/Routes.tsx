@@ -451,8 +451,6 @@ export const RoutesView: React.FC = () => {
 
   // Event handlers
   const handleCreateSubmit = async (data: any) => {
-    console.log('Component: handleCreateSubmit called with:', data);
-    console.log('Component: modalData:', modalData);
     
     try {
       const routeData: CreateRouteRequest = {
@@ -466,9 +464,7 @@ export const RoutesView: React.FC = () => {
         is_active: data.is_active ?? true,
       }
       
-      console.log('Component: Prepared route data:', routeData);
       await createRoute(routeData);
-      console.log('Component: Route created successfully');
       
       // Close the appropriate modal
       if (modals.createChild) {
@@ -498,20 +494,15 @@ export const RoutesView: React.FC = () => {
         is_active: data.is_active,
       };
       
-      console.log('Component: Prepared update data:', updateData);
       await updateRoute(editingRoute.id, updateData);
-      console.log('Component: Route updated successfully');
       
       closeModal('edit');
     } catch (error) {
-      console.error('Component: Failed to update route:', error);
       throw error; // Let FormModal handle the error
     }
   }
 
   const handleDeleteConfirm = async () => {
-    console.log('Component: handleDeleteConfirm called');
-    console.log('Component: deletingRoute:', deletingRoute);
     
     if (!deletingRoute) {
       console.error('Component: No deleting route found');
@@ -520,7 +511,6 @@ export const RoutesView: React.FC = () => {
     
     try {
       await deleteRoute(deletingRoute.id);
-      console.log('Component: Route deleted successfully');
       closeModal('delete');
     } catch (error) {
       console.error('Component: Failed to delete route:', error);

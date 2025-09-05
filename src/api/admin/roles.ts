@@ -8,7 +8,9 @@ import type {
 
 export const rolesApi = {
   // Get all roles with pagination and filters
-  getRoles: async (params: RolesQueryParams = {}): Promise<RolesListResponse> => {
+  getRoles: async (
+    params: RolesQueryParams = {}
+  ): Promise<RolesListResponse> => {
     const searchParams = new URLSearchParams();
 
     if (params.skip !== undefined)
@@ -44,12 +46,26 @@ export const rolesApi = {
   },
 
   // Add permission to role
-  addPermissionToRole: async (roleId: number, permissionId: number): Promise<void> => {
+  addPermissionToRole: async (
+    roleId: number,
+    permissionId: number
+  ): Promise<void> => {
     await apiClient.post(`/api/v1/roles/${roleId}/permissions/${permissionId}`);
   },
 
   // Remove permission from role
-  removePermissionFromRole: async (roleId: number, permissionId: number): Promise<void> => {
-    await apiClient.delete(`/api/v1/roles/${roleId}/permissions/${permissionId}`);
-  }
+  removePermissionFromRole: async (
+    roleId: number,
+    permissionId: number
+  ): Promise<void> => {
+    await apiClient.delete(
+      `/api/v1/roles/${roleId}/permissions/${permissionId}`
+    );
+  },
+
+  //Get total number of roles
+  getTotalRoles: async (): Promise<number> => {
+    const response = await apiClient.get("/api/v1/roles/count");
+    return response.data;
+  },
 };

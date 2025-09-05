@@ -41,6 +41,7 @@ interface RolesActions {
   fetchRoles: (params?: RolesQueryParams) => Promise<void>;
   fetchRoleById: (id: number) => Promise<void>;
   fetchAllPermissions: () => Promise<void>;
+  fetchTotalRoles: () => Promise<void>; // Add this
   buildPermissionMatrix: (role: Role) => void;
 
   // CRUD operations
@@ -73,7 +74,7 @@ const initialState: RolesState = {
   error: null,
   sheetOpen: false,
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 10,
   totalRoles: 0,
   totalPages: 0,
   filters: {
@@ -103,8 +104,7 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
 
       set({
         roles: response.roles,
-        totalRoles: response.total,
-        totalPages: Math.ceil(response.total / state.pageSize),
+        // DON'T update totalRoles here - it should only be updated by fetchTotalRoles
         loading: false,
       });
     } catch (error: any) {
@@ -136,6 +136,20 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
       set({ allPermissions: permissionsResponse.permissions });
     } catch (error: any) {
       console.error("Failed to fetch permissions:", error);
+    }
+  },
+
+  fetchTotalRoles: async () => {
+    try {
+      const state = get();
+      const total = await rolesApi.getTotalRoles();
+
+      set({
+        totalRoles: total,
+        totalPages: Math.ceil(total / state.pageSize),
+      });
+    } catch (error: any) {
+      console.error("Failed to fetch total roles:", error);
     }
   },
 
@@ -232,12 +246,12 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
 
   setCurrentPage: (page: number) => {
     set({ currentPage: page });
-    get().fetchRoles();
+    // Don't call fetchRoles here - let the component handle it
   },
 
   setPageSize: (size: number) => {
     set({ pageSize: size, currentPage: 1 });
-    get().fetchRoles();
+    // Don't call fetchRoles here - let the component handle it
   },
 
   setFilters: (newFilters: Partial<RolesState["filters"]>) => {
@@ -245,7 +259,7 @@ export const useRolesStore = create<RolesState & RolesActions>((set, get) => ({
       filters: { ...state.filters, ...newFilters },
       currentPage: 1,
     }));
-    get().fetchRoles();
+    // Don't call fetchRoles here - let the component handle it
   },
 
   clearFilters: () => {

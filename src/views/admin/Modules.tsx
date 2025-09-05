@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { useModulesStore } from '@/store'
@@ -13,10 +13,10 @@ export const ModulesView: React.FC = () => {
         currentPage,
         pageSize,
         totalModules,
-        totalPages,
         filters,
         selectedModuleIds,
         fetchModules,
+        fetchTotalModules, // Add this
         createModule,
         updateModule,
         deleteModule,
@@ -37,9 +37,25 @@ export const ModulesView: React.FC = () => {
         closeModal,
     } = useModals()
 
+    // Calculate skip value for API
+    const skip = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
+
+    // Update the useEffect
     useEffect(() => {
-        fetchModules()
-    }, [fetchModules])
+        const fetchData = async () => {
+            // Fetch total count first
+            await fetchTotalModules();
+            
+            // Then fetch paginated data
+            await fetchModules({
+                skip,
+                limit: pageSize,
+                ...filters
+            });
+        };
+        
+        fetchData();
+    }, [currentPage, pageSize, filters.search, filters.is_active]);
 
     // Table columns configuration
     const columns: ColumnConfig<Module>[] = [
@@ -241,6 +257,21 @@ export const ModulesView: React.FC = () => {
         setSelectedModuleIds([])
     }
 
+    // Custom handlers for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (size: number) => {
+        setPageSize(size);
+    };
+
+    // Calculate total pages
+    const totalPages = useMemo(() => {
+        const pages = Math.max(1, Math.ceil(totalModules / pageSize));
+        return pages;
+    }, [totalModules, pageSize]);
+
     return (
         <div className="p-6">
             {/* Error Alert */}
@@ -342,10 +373,10 @@ export const ModulesView: React.FC = () => {
                     totalPages,
                     pageSize,
                     totalItems: totalModules,
-                    onPageChange: setCurrentPage,
+                    onPageChange: handlePageChange,
                     showPageSize: true,
-                    pageSizeOptions: [10, 20, 50, 100],
-                    onPageSizeChange: setPageSize,
+                    pageSizeOptions: [5, 10, 20, 50, 100],
+                    onPageSizeChange: handlePageSizeChange,
                 }}
                 headerActions={
                     <div className="flex items-center gap-2">
