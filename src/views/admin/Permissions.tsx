@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
 import { usePermissionsStore } from '@/store'
@@ -14,11 +14,11 @@ export const PermissionsView: React.FC = () => {
         currentPage,
         pageSize,
         totalPermissions,
-        totalPages,
         filters,
         selectedPermissionIds,
         fetchPermissions,
         fetchCategories,
+        fetchTotalPermissions,
         createPermission,
         updatePermission,
         deletePermission,
@@ -30,7 +30,7 @@ export const PermissionsView: React.FC = () => {
         setSelectedPermissionIds,
         clearError,
     } = usePermissionsStore()
-
+    
     const {
         modals,
         editingItem: editingPermission,
@@ -39,10 +39,29 @@ export const PermissionsView: React.FC = () => {
         closeModal,
     } = useModals()
 
+    // Calculate skip value for API
+    const skip = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
+
+    // Fetch data on mount and when dependencies change
     useEffect(() => {
-        fetchPermissions()
-        fetchCategories()
-    }, [fetchPermissions, fetchCategories])
+        
+        const fetchData = async () => {
+            // Fetch categories (only needed once)
+            await fetchCategories()
+            
+            // Fetch total count first
+            await fetchTotalPermissions()
+            
+            // Then fetch paginated data
+            await fetchPermissions({
+                skip,
+                limit: pageSize,
+                ...filters
+            })
+        }
+        
+        fetchData()
+    }, [currentPage, pageSize, filters.search, filters.category]) // Only depend on actual filter values
 
     // Table columns configuration
     const columns: ColumnConfig<Permission>[] = [
@@ -172,6 +191,7 @@ export const PermissionsView: React.FC = () => {
             category: data.category,
         }
         await createPermission(permissionData)
+        closeModal('create')
     }
 
     const handleEditSubmit = async (data: any) => {
@@ -181,11 +201,13 @@ export const PermissionsView: React.FC = () => {
             description: data.description,
             category: data.category,
         })
+        closeModal('edit')
     }
 
     const handleDeleteConfirm = async () => {
         if (!deletingPermission) return
         await deletePermission(deletingPermission.id)
+        closeModal('delete')
     }
 
     const handleBulkDeleteConfirm = async () => {
@@ -193,7 +215,23 @@ export const PermissionsView: React.FC = () => {
         const ids = selectedPermissionIds.map(id => parseInt(id))
         await bulkDeletePermissions(ids)
         setSelectedPermissionIds([])
+        closeModal('bulkDelete')
     }
+
+    // Custom handlers for pagination to ensure proper data fetching
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+    }
+
+    const handlePageSizeChange = (size: number) => {
+        setPageSize(size)
+    }
+
+    // Calculate total pages
+    const totalPages = useMemo(() => {
+        const pages = Math.max(1, Math.ceil(totalPermissions / pageSize))
+        return pages
+    }, [totalPermissions, pageSize])
 
     return (
         <div className="p-6">
@@ -227,10 +265,10 @@ export const PermissionsView: React.FC = () => {
                     totalPages,
                     pageSize,
                     totalItems: totalPermissions,
-                    onPageChange: setCurrentPage,
+                    onPageChange: handlePageChange,
                     showPageSize: true,
                     pageSizeOptions: [10, 20, 50, 100],
-                    onPageSizeChange: setPageSize,
+                    onPageSizeChange: handlePageSizeChange,
                 }}
                 headerActions={
                     <div className="flex items-center gap-2">

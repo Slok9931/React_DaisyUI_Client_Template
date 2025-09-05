@@ -38,10 +38,14 @@ interface PermissionsActions {
   fetchPermissions: (params?: PermissionsQueryParams) => Promise<void>;
   fetchPermissionById: (id: number) => Promise<void>;
   fetchCategories: () => Promise<void>;
+  fetchTotalPermissions: () => Promise<void>;
 
   // CRUD operations
   createPermission: (permissionData: CreatePermissionRequest) => Promise<void>;
-  updatePermission: (id: number, permissionData: UpdatePermissionRequest) => Promise<void>;
+  updatePermission: (
+    id: number,
+    permissionData: UpdatePermissionRequest
+  ) => Promise<void>;
   deletePermission: (id: number) => Promise<void>;
   bulkDeletePermissions: (ids: number[]) => Promise<void>;
 
@@ -72,7 +76,9 @@ const initialState: PermissionsState = {
   selectedPermissionIds: [],
 };
 
-export const usePermissionsStore = create<PermissionsState & PermissionsActions>((set, get) => ({
+export const usePermissionsStore = create<
+  PermissionsState & PermissionsActions
+>((set, get) => ({
   ...initialState,
 
   fetchPermissions: async (params = {}) => {
@@ -92,8 +98,8 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
 
       set({
         permissions: response.permissions,
-        totalPermissions: response.total,
-        totalPages: Math.ceil(response.total / state.pageSize),
+        // DON'T update totalPermissions here - it should only be updated by fetchTotalPermissions
+        // totalPermissions: response.total, // REMOVE THIS LINE
         loading: false,
       });
     } catch (error: any) {
@@ -128,6 +134,20 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
     }
   },
 
+  fetchTotalPermissions: async () => {
+    try {
+      const state = get();
+      const total = await permissionsApi.getTotalPermissions();
+      
+      set({
+        totalPermissions: total,
+        totalPages: Math.ceil(total / state.pageSize),
+      });
+    } catch (error: any) {
+      console.error("Failed to fetch total permissions:", error);
+    }
+  },
+
   createPermission: async (permissionData: CreatePermissionRequest) => {
     set({ loading: true, error: null });
 
@@ -146,18 +166,26 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
     }
   },
 
-  updatePermission: async (id: number, permissionData: UpdatePermissionRequest) => {
+  updatePermission: async (
+    id: number,
+    permissionData: UpdatePermissionRequest
+  ) => {
     set({ loading: true, error: null });
 
     try {
-      const updatedPermission = await permissionsApi.updatePermission(id, permissionData);
+      const updatedPermission = await permissionsApi.updatePermission(
+        id,
+        permissionData
+      );
 
       set((state) => ({
         permissions: state.permissions.map((permission) =>
           permission.id === id ? updatedPermission : permission
         ),
         selectedPermission:
-          state.selectedPermission?.id === id ? updatedPermission : state.selectedPermission,
+          state.selectedPermission?.id === id
+            ? updatedPermission
+            : state.selectedPermission,
         loading: false,
       }));
 
@@ -179,7 +207,9 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
       await permissionsApi.deletePermission(id);
 
       set((state) => ({
-        permissions: state.permissions.filter((permission) => permission.id !== id),
+        permissions: state.permissions.filter(
+          (permission) => permission.id !== id
+        ),
         selectedPermission:
           state.selectedPermission?.id === id ? null : state.selectedPermission,
         selectedPermissionIds: state.selectedPermissionIds.filter(
@@ -207,7 +237,9 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
       await permissionsApi.bulkDeletePermissions(ids);
 
       set((state) => ({
-        permissions: state.permissions.filter((permission) => !ids.includes(permission.id)),
+        permissions: state.permissions.filter(
+          (permission) => !ids.includes(permission.id)
+        ),
         selectedPermissionIds: [],
         totalPermissions: state.totalPermissions - ids.length,
         loading: false,
@@ -226,12 +258,12 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
 
   setCurrentPage: (page: number) => {
     set({ currentPage: page });
-    get().fetchPermissions();
+    // Don't call fetchPermissions here - let the component handle it
   },
 
   setPageSize: (size: number) => {
     set({ pageSize: size, currentPage: 1 });
-    get().fetchPermissions();
+    // Don't call fetchPermissions here - let the component handle it
   },
 
   setFilters: (newFilters: Partial<PermissionsState["filters"]>) => {
@@ -239,7 +271,7 @@ export const usePermissionsStore = create<PermissionsState & PermissionsActions>
       filters: { ...state.filters, ...newFilters },
       currentPage: 1,
     }));
-    get().fetchPermissions();
+    // Don't call fetchPermissions here - let the component handle it
   },
 
   clearFilters: () => {

@@ -80,4 +80,10 @@ export const permissionsApi = {
     const response = await apiClient.get("/api/v1/permissions/categories");
     return response.data;
   },
+
+  //Get total number of permissions
+  getTotalPermissions: async (): Promise<number> => {
+    const response = await apiClient.get("/api/v1/permissions/count");
+    return response.data;
+  },
 };

@@ -394,9 +394,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         const eyeDropper = new (window as any).EyeDropper();
         const result = await eyeDropper.open();
         handlePresetClick(result.sRGBHex);
-      } catch (error) {
-        console.log("Eye dropper was cancelled or failed");
-      }
+      } catch (error) {}
     } else {
       alert("Eye Dropper API is not supported in this browser");
     }
