@@ -262,9 +262,7 @@ export const RoutesView: React.FC = () => {
     moduleFilters,
     loading,
     error,
-    allRoles,
     fetchAllRoutes,
-    fetchAllRoles,
     getParentRoutes,
     createRoute,
     updateRoute,
@@ -280,7 +278,7 @@ export const RoutesView: React.FC = () => {
   } = useModulesStore()
 
   // Get roles from roles store as backup
-  const { roles: rolesStoreRoles, fetchRoles } = useRolesStore()
+  const { roles, fetchRoles } = useRolesStore()
 
   const {
     modals,
@@ -294,11 +292,7 @@ export const RoutesView: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       // Fetch roles first
-      await fetchAllRoles();
-      // Fallback to roles store if routes store doesn't have roles
-      if (allRoles.length === 0) {
-        await fetchRoles();
-      }
+      await fetchRoles();
       
       // Fetch modules and routes
       await fetchModules();
@@ -306,12 +300,10 @@ export const RoutesView: React.FC = () => {
     };
     
     fetchData();
-  }, [fetchModules, fetchAllRoutes, fetchAllRoles, fetchRoles, allRoles.length])
+  }, [fetchModules, fetchAllRoutes, fetchRoles])
 
   // Get available roles (prefer routes store, fallback to roles store)
-  const availableRoles = useMemo(() => {
-    return allRoles.length > 0 ? allRoles : rolesStoreRoles;
-  }, [allRoles, rolesStoreRoles]);
+  const availableRoles = roles.length > 0 ? roles : [];
 
   // Get active modules only
   const activeModules = useMemo(() => {
