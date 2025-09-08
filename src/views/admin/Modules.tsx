@@ -15,10 +15,8 @@ export const ModulesView: React.FC = () => {
         totalModules,
         filters,
         selectedModuleIds,
-        allRoles,
         fetchModules,
         fetchTotalModules,
-        fetchAllRoles,
         createModule,
         updateModule,
         deleteModule,
@@ -32,7 +30,7 @@ export const ModulesView: React.FC = () => {
     } = useModulesStore()
 
     // Get roles from roles store as backup
-    const { roles: rolesStoreRoles, fetchRoles } = useRolesStore()
+    const { roles, fetchRoles } = useRolesStore()
 
     const {
         modals,
@@ -49,11 +47,7 @@ export const ModulesView: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             // Fetch roles first
-            await fetchAllRoles();
-            // Fallback to roles store if modules store doesn't have roles
-            if (allRoles.length === 0) {
-                await fetchRoles();
-            }
+            await fetchRoles();
             
             // Fetch total count first
             await fetchTotalModules();
@@ -70,9 +64,7 @@ export const ModulesView: React.FC = () => {
     }, [currentPage, pageSize, filters.search, filters.is_active]);
 
     // Get available roles (prefer module store, fallback to roles store)
-    const availableRoles = useMemo(() => {
-        return allRoles.length > 0 ? allRoles : rolesStoreRoles;
-    }, [allRoles, rolesStoreRoles]);
+    const availableRoles = roles.length > 0 ? roles : [];
 
     // Table columns configuration
     const columns: ColumnConfig<Module>[] = [

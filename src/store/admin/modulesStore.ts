@@ -1,19 +1,16 @@
 import { create } from "zustand";
 import { modulesApi } from "@/api";
-import { useRolesStore } from "@/store"
 import type {
   Module,
   ModulesQueryParams,
   CreateModuleRequest,
   UpdateModuleRequest,
-  Role,
 } from "@/types";
 
 interface ModulesState {
   // Data
   modules: Module[];
   selectedModule: Module | null;
-  allRoles: Role[]; // Add all roles for dropdowns
 
   // UI State
   loading: boolean;
@@ -40,7 +37,6 @@ interface ModulesActions {
   fetchModules: (params?: ModulesQueryParams) => Promise<void>;
   fetchModuleById: (id: number) => Promise<void>;
   fetchTotalModules: () => Promise<void>;
-  fetchAllRoles: () => Promise<void>; // Add this
 
   // CRUD operations
   createModule: (moduleData: CreateModuleRequest) => Promise<void>;
@@ -61,7 +57,6 @@ interface ModulesActions {
 const initialState: ModulesState = {
   modules: [],
   selectedModule: null,
-  allRoles: [], // Initialize empty roles array
   loading: false,
   error: null,
   currentPage: 1,
@@ -213,21 +208,6 @@ export const useModulesStore = create<ModulesState & ModulesActions>((set, get) 
       });
     } catch (error: any) {
       console.error("Failed to fetch total modules:", error);
-    }
-  },
-
-  fetchAllRoles: async () => {
-    try {
-      // Use the roles store to get all roles
-      const rolesStore = useRolesStore.getState();
-      await rolesStore.fetchAllPermissions(); // This might fetch roles too
-      
-      // If roles store has a method to get all roles, use that
-      // Otherwise, fetch from roles API directly
-      const roles = rolesStore.roles || [];
-      set({ allRoles: roles });
-    } catch (error: any) {
-      console.error("Failed to fetch roles:", error);
     }
   },
 
