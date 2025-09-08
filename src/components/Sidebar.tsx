@@ -3,34 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { InfinityLogo, Typography, Tooltip, useToast, Loading } from '@/components';
 import { useSidebar } from '@/hooks';
-import { SidebarModule, SidebarRoute } from '@/types';
+import { SidebarItem, SidebarModule, SidebarProps, SidebarRoute } from '@/types';
 import { getIconComponent } from '@/utils';
-
-interface SidebarItem {
-  id: string;
-  label: string;
-  href?: string;
-  onClick?: () => void;
-  icon: React.ReactNode;
-  children?: SidebarItem[];
-  badge?: string | number;
-  active?: boolean;
-}
-
-interface SidebarProps {
-  items?: SidebarItem[];
-  className?: string;
-  collapsed?: boolean;
-  onToggleCollapse?: () => void;
-  authLogout?: boolean;
-  side?: 'left' | 'right';
-  isOpen?: boolean;
-  onClose?: () => void;
-  showHeader?: boolean;
-  showToggle?: boolean;
-  activeTab?: string;
-  setActiveTab?: (id: string) => void;
-}
 
 const convertRouteToSidebarItem = (route: SidebarRoute): SidebarItem => {
   return {
@@ -98,11 +72,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const toggleExpanded = (itemId: string) => {
+  const toggleExpanded = (itemLabel: string) => {
     setExpandedItems(prev =>
-      prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
+      prev.includes(itemLabel)
+        ? prev.filter(label => label !== itemLabel)
+        : [...prev, itemLabel]
     );
   };
 
@@ -111,7 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (collapsed) {
       if (hasChildren) {
         onToggleCollapse?.();
-        setTimeout(() => toggleExpanded(item.id), 300);
+        setTimeout(() => toggleExpanded(item.label), 300);
       } else {
         setActiveTab(item.label);
         localStorage.setItem('pageName', `${item.label}`)
@@ -127,7 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
     } else {
       if (hasChildren) {
-        toggleExpanded(item.id);
+        toggleExpanded(item.label);
       } else {
         setActiveTab(item.label);
         localStorage.setItem('pageName', `${item.label}`)
@@ -150,7 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const renderSidebarItem = (item: SidebarItem, level = 0) => {
     const hasChildren = item.children && item.children.length > 0;
-    const isExpanded = expandedItems.includes(item.id);
+    const isExpanded = expandedItems.includes(item.label);
     const itemIsActive = isActive(item);
 
     return (
@@ -286,14 +260,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </div>
   );
 
-  const findAncestorIds = (items: SidebarItem[], targetLabel: string, path: string[] = []): string[] | null => {
+  const findAncestorLabels = (items: SidebarItem[], targetLabel: string, path: string[] = []): string[] | null => {
     for (const item of items) {
-      const newPath = [...path, item.id];
+      const newPath = [...path, item.label];
       if (item.label === targetLabel) {
         return path;
       }
       if (item.children) {
-        const found = findAncestorIds(item.children, targetLabel, newPath);
+        const found = findAncestorLabels(item.children, targetLabel, newPath);
         if (found) return found;
       }
     }
@@ -302,9 +276,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   useEffect(() => {
     if (!sidebarItems.length || !activeTab || hasExpanded) return;
-    const ancestorIds = findAncestorIds(sidebarItems, activeTab);
-    if (ancestorIds && ancestorIds.length > 0) {
-      setExpandedItems(prev => Array.from(new Set([...prev, ...ancestorIds])));
+    const ancestorLabels = findAncestorLabels(sidebarItems, activeTab);
+    if (ancestorLabels && ancestorLabels.length > 0) {
+      setExpandedItems(prev => Array.from(new Set([...prev, ...ancestorLabels])));
     }
     setHasExpanded(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps

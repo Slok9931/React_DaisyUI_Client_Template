@@ -22,3 +22,29 @@ export interface SidebarApiResponse {
   data: SidebarModule[];
   message?: string;
 }
+
+export interface SidebarItem {
+  id: string;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+  icon: React.ReactNode;
+  children?: SidebarItem[];
+  badge?: string | number;
+  active?: boolean;
+}
+
+export interface SidebarProps {
+  items?: SidebarItem[];
+  className?: string;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
+  authLogout?: boolean;
+  side?: "left" | "right";
+  isOpen?: boolean;
+  onClose?: () => void;
+  showHeader?: boolean;
+  showToggle?: boolean;
+  activeTab?: string;
+  setActiveTab?: (id: string) => void;
+}
