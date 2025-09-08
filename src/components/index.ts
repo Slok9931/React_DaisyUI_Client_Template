@@ -63,4 +63,7 @@ export * from './ui/Skeleton';
 export * from './customComponents/InfinitySheet';
 export * from './customComponents/InfinityIcons';
 export * from './customComponents/InfinityTable'
-export * from './customComponents/InfinityForm';
+export * from './customComponents/InfinityForm'
+
+// Chart Components
+export * from './charts/AnimatedTextChart';
