@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { routesApi } from "@/api";
+import { useRolesStore } from "@/store"; // Import roles store
 import type {
   Route,
   CreateRouteRequest,
   UpdateRouteRequest,
+  Role,
 } from "@/types";
 
 interface RoutesState {
@@ -12,6 +14,7 @@ interface RoutesState {
   routesByModule: Record<number, Route[]>;
   childRoutes: Record<number, Route[]>;
   selectedRoute: Route | null;
+  allRoles: Role[]; // Add all roles for dropdowns
 
   // UI State
   loading: boolean;
@@ -37,12 +40,12 @@ interface RoutesActions {
   fetchRoutesByModule: (moduleId: number) => Promise<void>;
   fetchChildRoutes: (parentId: number) => Promise<void>;
   fetchRouteById: (id: number) => Promise<void>;
+  fetchAllRoles: () => Promise<void>; // Add this
 
   // CRUD operations
   createRoute: (routeData: CreateRouteRequest) => Promise<void>;
   updateRoute: (id: number, routeData: UpdateRouteRequest) => Promise<void>;
   deleteRoute: (id: number) => Promise<void>;
-
 
   // UI actions
   setModuleFilters: (moduleId: number, filters: Partial<RoutesState["moduleFilters"][0]>) => void;
@@ -62,6 +65,7 @@ const initialState: RoutesState = {
   routesByModule: {},
   childRoutes: {},
   selectedRoute: null,
+  allRoles: [], // Initialize empty roles array
   loading: false,
   error: null,
   moduleFilters: {},
@@ -71,6 +75,20 @@ const initialState: RoutesState = {
 
 export const useRoutesStore = create<RoutesState & RoutesActions>((set, get) => ({
   ...initialState,
+
+  fetchAllRoles: async () => {
+    try {
+      // Use the roles store to get all roles
+      const rolesStore = useRolesStore.getState();
+      await rolesStore.fetchAllPermissions(); // This might fetch roles too
+      
+      // If roles store has a method to get all roles, use that
+      const roles = rolesStore.roles || [];
+      set({ allRoles: roles });
+    } catch (error: any) {
+      console.error("Failed to fetch roles:", error);
+    }
+  },
 
   fetchAllRoutes: async () => {
     set({ loading: true, error: null });

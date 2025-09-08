@@ -1,3 +1,5 @@
+import { Role } from "@/types"
+
 export interface Route {
   id: number;
   route: string;
@@ -13,6 +15,7 @@ export interface Route {
   module_name: string;
   parent_route: string | null;
   children_count: number;
+  roles: Role[];
 }
 
 export interface RoutesListResponse {
@@ -41,6 +44,7 @@ export interface CreateRouteRequest {
   module_id: number;
   parent_id?: number | null;
   priority: number;
+  role_ids: number[];
 }
 
 export interface UpdateRouteRequest {
@@ -52,4 +56,5 @@ export interface UpdateRouteRequest {
   module_id?: number;
   parent_id?: number | null;
   priority?: number;
+  role_ids?: number[];
 }

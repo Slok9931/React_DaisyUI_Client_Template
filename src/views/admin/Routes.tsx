@@ -1,17 +1,18 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig, Divider } from '@/components'
 import { FormModal, ConfirmModal, useModals } from '@/features'
-import { useRoutesStore, useModulesStore } from '@/store'
+import { useRoutesStore, useModulesStore, useRolesStore } from '@/store'
 import { getIconComponent } from '@/utils'
-import type { Route, CreateRouteRequest, Module } from '@/types'
+import type { Route, CreateRouteRequest, Module, Role } from '@/types'
 
 const RecursiveChildRoutesTable: React.FC<{
   parentRoute: Route
   moduleId: number
   level?: number
+  availableRoles: any[]
   // Pass modal functions down from parent
   openModal: (type: string, data?: any) => void
-}> = ({ parentRoute, moduleId, level = 1, openModal }) => {
+}> = ({ parentRoute, moduleId, level = 1, availableRoles, openModal }) => {
   const {
     getChildRoutesByParent,
     fetchChildRoutes,
@@ -62,6 +63,30 @@ const RecursiveChildRoutesTable: React.FC<{
           <Typography variant="caption" className="text-base-content/60 font-mono">
             {row.route}
           </Typography>
+        </div>
+      ),
+    },
+    {
+      key: 'roles',
+      header: 'Roles',
+      customRender: (value, row) => (
+        <div className="flex flex-wrap gap-1">
+          {row.roles && row.roles.length > 0 ? (
+            row.roles.slice(0, 2).map((role) => (
+              <Badge key={role.id} variant="info" size="xs">
+                {role.name}
+              </Badge>
+            ))
+          ) : (
+            <Badge variant="ghost" size="xs">
+              No roles
+            </Badge>
+          )}
+          {row.roles && row.roles.length > 2 && (
+            <Badge variant="neutral" size="xs">
+              +{row.roles.length - 2}
+            </Badge>
+          )}
         </div>
       ),
     },
@@ -160,12 +185,71 @@ const RecursiveChildRoutesTable: React.FC<{
         expandable={true}
         rowIdKey="id"
         expandedContent={(childRow) => (
-          <RecursiveChildRoutesTable
-            parentRoute={childRow}
-            moduleId={moduleId}
-            level={level + 1}
-            openModal={openModal}
-          />
+          <div className="space-y-3">
+            <Typography variant="h6">Route Details</Typography>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Typography variant="caption" className="text-base-content/60">
+                  Module
+                </Typography>
+                <Typography variant="body2">
+                  {childRow.module_name}
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="caption" className="text-base-content/60">
+                  Parent Route
+                </Typography>
+                <Typography variant="body2">
+                  {childRow.parent_route || 'No parent'}
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="caption" className="text-base-content/60">
+                  Children Count
+                </Typography>
+                <Typography variant="body2">
+                  {childRow.children_count} children
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="caption" className="text-base-content/60">
+                  Created At
+                </Typography>
+                <Typography variant="body2">
+                  {new Date(childRow.created_at).toLocaleString()}
+                </Typography>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="caption" className="text-base-content/60">
+                Assigned Roles
+              </Typography>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {childRow.roles && childRow.roles.length > 0 ? (
+                  childRow.roles.map((role) => (
+                    <Badge key={role.id} variant="info" size="sm">
+                      {role.name}
+                    </Badge>
+                  ))
+                ) : (
+                  <Badge variant="ghost" size="sm">
+                    No roles assigned
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Recursive child routes */}
+            <RecursiveChildRoutesTable
+              parentRoute={childRow}
+              moduleId={moduleId}
+              level={level + 1}
+              availableRoles={availableRoles}
+              openModal={openModal}
+            />
+          </div>
         )}
       />
     </div>
@@ -178,7 +262,9 @@ export const RoutesView: React.FC = () => {
     moduleFilters,
     loading,
     error,
+    allRoles,
     fetchAllRoutes,
+    fetchAllRoles,
     getParentRoutes,
     createRoute,
     updateRoute,
@@ -193,6 +279,9 @@ export const RoutesView: React.FC = () => {
     fetchModules,
   } = useModulesStore()
 
+  // Get roles from roles store as backup
+  const { roles: rolesStoreRoles, fetchRoles } = useRolesStore()
+
   const {
     modals,
     data: modalData,
@@ -203,9 +292,26 @@ export const RoutesView: React.FC = () => {
   } = useModals()
 
   useEffect(() => {
-    fetchModules()
-    fetchAllRoutes()
-  }, [fetchModules, fetchAllRoutes])
+    const fetchData = async () => {
+      // Fetch roles first
+      await fetchAllRoles();
+      // Fallback to roles store if routes store doesn't have roles
+      if (allRoles.length === 0) {
+        await fetchRoles();
+      }
+      
+      // Fetch modules and routes
+      await fetchModules();
+      await fetchAllRoutes();
+    };
+    
+    fetchData();
+  }, [fetchModules, fetchAllRoutes, fetchAllRoles, fetchRoles, allRoles.length])
+
+  // Get available roles (prefer routes store, fallback to roles store)
+  const availableRoles = useMemo(() => {
+    return allRoles.length > 0 ? allRoles : rolesStoreRoles;
+  }, [allRoles, rolesStoreRoles]);
 
   // Get active modules only
   const activeModules = useMemo(() => {
@@ -237,6 +343,30 @@ export const RoutesView: React.FC = () => {
           <Typography variant="caption" className="text-base-content/60 font-mono">
             {row.route}
           </Typography>
+        </div>
+      ),
+    },
+    {
+      key: 'roles',
+      header: 'Roles',
+      customRender: (value, row) => (
+        <div className="flex flex-wrap gap-1">
+          {row.roles && row.roles.length > 0 ? (
+            row.roles.slice(0, 2).map((role) => (
+              <Badge key={role.id} variant="info" size="xs">
+                {role.name}
+              </Badge>
+            ))
+          ) : (
+            <Badge variant="ghost" size="xs">
+              No roles
+            </Badge>
+          )}
+          {row.roles && row.roles.length > 2 && (
+            <Badge variant="neutral" size="xs">
+              +{row.roles.length - 2}
+            </Badge>
+          )}
         </div>
       ),
     },
@@ -438,6 +568,17 @@ export const RoutesView: React.FC = () => {
       required: true,
     },
     {
+      type: 'multiSelect' as const,
+      name: 'role_ids',
+      label: 'Assigned Roles',
+      placeholder: 'Select roles...',
+      options: availableRoles.map(role => ({
+        value: role.id.toString(),
+        label: role.name
+      })),
+      required: true,
+    },
+    {
       type: 'toggle' as const,
       name: 'is_sidebar',
       label: 'Show in Sidebar',
@@ -451,7 +592,6 @@ export const RoutesView: React.FC = () => {
 
   // Event handlers
   const handleCreateSubmit = async (data: any) => {
-    
     try {
       const routeData: CreateRouteRequest = {
         route: data.route,
@@ -462,6 +602,7 @@ export const RoutesView: React.FC = () => {
         priority: parseInt(data.priority) || 0,
         is_sidebar: data.is_sidebar ?? true,
         is_active: data.is_active ?? true,
+        role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
       }
       
       await createRoute(routeData);
@@ -492,6 +633,7 @@ export const RoutesView: React.FC = () => {
         priority: parseInt(data.priority) || 0,
         is_sidebar: data.is_sidebar,
         is_active: data.is_active,
+        role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
       };
       
       await updateRoute(editingRoute.id, updateData);
@@ -503,7 +645,6 @@ export const RoutesView: React.FC = () => {
   }
 
   const handleDeleteConfirm = async () => {
-    
     if (!deletingRoute) {
       console.error('Component: No deleting route found');
       return;
@@ -579,12 +720,71 @@ export const RoutesView: React.FC = () => {
               filters={getModuleFilterConfigs(module.id)}
               expandable={true}
               expandedContent={(row) => (
-                <RecursiveChildRoutesTable
-                  parentRoute={row}
-                  moduleId={module.id}
-                  level={1}
-                  openModal={openModal}
-                />
+                <div className="space-y-3">
+                  <Typography variant="h6">Route Details</Typography>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Typography variant="caption" className="text-base-content/60">
+                        Module
+                      </Typography>
+                      <Typography variant="body2">
+                        {row.module_name}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="caption" className="text-base-content/60">
+                        Parent Route
+                      </Typography>
+                      <Typography variant="body2">
+                        {row.parent_route || 'No parent'}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="caption" className="text-base-content/60">
+                        Children Count
+                      </Typography>
+                      <Typography variant="body2">
+                        {row.children_count} children
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="caption" className="text-base-content/60">
+                        Created At
+                      </Typography>
+                      <Typography variant="body2">
+                        {new Date(row.created_at).toLocaleString()}
+                      </Typography>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Typography variant="caption" className="text-base-content/60">
+                      Assigned Roles
+                    </Typography>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {row.roles && row.roles.length > 0 ? (
+                        row.roles.map((role) => (
+                          <Badge key={role.id} variant="info" size="sm">
+                            {role.name}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge variant="ghost" size="sm">
+                          No roles assigned
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Recursive child routes */}
+                  <RecursiveChildRoutesTable
+                    parentRoute={row}
+                    moduleId={module.id}
+                    level={1}
+                    availableRoles={availableRoles}
+                    openModal={openModal}
+                  />
+                </div>
               )}
               headerActions={
                 <div className="flex items-center gap-2">
@@ -641,6 +841,7 @@ export const RoutesView: React.FC = () => {
           is_active: true,
           is_sidebar: true,
           priority: 0,
+          role_ids: [],
         }}
         loading={loading}
       />
@@ -659,6 +860,7 @@ export const RoutesView: React.FC = () => {
           is_active: true,
           is_sidebar: true,
           priority: (modalData?.parentRoute?.children_count || 0) + 1,
+          role_ids: modalData?.parentRoute?.roles?.map((role: any) => role.id.toString()) || [],
         }}
         loading={loading}
       />
@@ -680,6 +882,7 @@ export const RoutesView: React.FC = () => {
           priority: editingRoute.priority.toString(),
           is_sidebar: editingRoute.is_sidebar,
           is_active: editingRoute.is_active,
+          role_ids: editingRoute.roles?.map((role:Role) => role.id.toString()) || [],
         } : {}}
         loading={loading}
       />
