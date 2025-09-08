@@ -1,3 +1,5 @@
+import { Role } from "@/types"
+
 export interface Module {
   id: number;
   name: string;
@@ -8,6 +10,7 @@ export interface Module {
   is_active: boolean;
   created_at: string;
   route_count: number;
+  roles: Role[];
 }
 
 export interface ModulesListResponse {
@@ -31,6 +34,7 @@ export interface CreateModuleRequest {
   route: string;
   priority: number;
   is_active?: boolean;
+  role_ids: number[];
 }
 
 export interface UpdateModuleRequest {
@@ -40,4 +44,5 @@ export interface UpdateModuleRequest {
   route?: string;
   priority?: number;
   is_active?: boolean;
+  role_ids?: number[];
 }

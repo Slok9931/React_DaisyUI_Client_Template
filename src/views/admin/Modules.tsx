@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
-import { useModulesStore } from '@/store'
+import { useModulesStore, useRolesStore } from '@/store'
 import { getIconComponent } from '@/utils'
-import type { Module, CreateModuleRequest } from '@/types'
+import type { Module, CreateModuleRequest, Role } from '@/types'
 
 export const ModulesView: React.FC = () => {
     const {
@@ -15,8 +15,10 @@ export const ModulesView: React.FC = () => {
         totalModules,
         filters,
         selectedModuleIds,
+        allRoles,
         fetchModules,
-        fetchTotalModules, // Add this
+        fetchTotalModules,
+        fetchAllRoles,
         createModule,
         updateModule,
         deleteModule,
@@ -29,6 +31,9 @@ export const ModulesView: React.FC = () => {
         clearError,
     } = useModulesStore()
 
+    // Get roles from roles store as backup
+    const { roles: rolesStoreRoles, fetchRoles } = useRolesStore()
+
     const {
         modals,
         editingItem: editingModule,
@@ -40,9 +45,16 @@ export const ModulesView: React.FC = () => {
     // Calculate skip value for API
     const skip = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
 
-    // Update the useEffect
+    // Fetch data on component mount and when dependencies change
     useEffect(() => {
         const fetchData = async () => {
+            // Fetch roles first
+            await fetchAllRoles();
+            // Fallback to roles store if modules store doesn't have roles
+            if (allRoles.length === 0) {
+                await fetchRoles();
+            }
+            
             // Fetch total count first
             await fetchTotalModules();
             
@@ -56,6 +68,11 @@ export const ModulesView: React.FC = () => {
         
         fetchData();
     }, [currentPage, pageSize, filters.search, filters.is_active]);
+
+    // Get available roles (prefer module store, fallback to roles store)
+    const availableRoles = useMemo(() => {
+        return allRoles.length > 0 ? allRoles : rolesStoreRoles;
+    }, [allRoles, rolesStoreRoles]);
 
     // Table columns configuration
     const columns: ColumnConfig<Module>[] = [
@@ -98,6 +115,30 @@ export const ModulesView: React.FC = () => {
             customRender: (value, row) => (
                 <div className="font-mono text-sm bg-warning/10 px-2 py-1 rounded">
                     {row.route}
+                </div>
+            ),
+        },
+        {
+            key: 'roles',
+            header: 'Roles',
+            customRender: (value, row) => (
+                <div className="flex flex-wrap gap-1">
+                    {row.roles && row.roles.length > 0 ? (
+                        row.roles.slice(0, 2).map((role) => (
+                            <Badge key={role.id} variant="info" size="xs">
+                                {role.name}
+                            </Badge>
+                        ))
+                    ) : (
+                        <Badge variant="ghost" size="xs">
+                            No roles
+                        </Badge>
+                    )}
+                    {row.roles && row.roles.length > 2 && (
+                        <Badge variant="neutral" size="xs">
+                            +{row.roles.length - 2}
+                        </Badge>
+                    )}
                 </div>
             ),
         },
@@ -174,7 +215,7 @@ export const ModulesView: React.FC = () => {
         },
     ]
 
-    // Form fields for create/edit module - Updated to use iconPicker
+    // Form fields for create/edit module
     const getModuleFormFields = () => [
         {
             type: 'input' as const,
@@ -214,6 +255,17 @@ export const ModulesView: React.FC = () => {
             required: true,
         },
         {
+            type: 'multiSelect' as const,
+            name: 'role_ids',
+            label: 'Assigned Roles',
+            placeholder: 'Select roles...',
+            options: availableRoles.map(role => ({
+                value: role.id.toString(),
+                label: role.name
+            })),
+            required: true,
+        },
+        {
             type: 'toggle' as const,
             name: 'is_active',
             label: 'Active Status',
@@ -229,6 +281,7 @@ export const ModulesView: React.FC = () => {
             route: data.route,
             priority: parseInt(data.priority),
             is_active: data.is_active ?? true,
+            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
         }
         await createModule(moduleData)
     }
@@ -242,6 +295,7 @@ export const ModulesView: React.FC = () => {
             route: data.route,
             priority: parseInt(data.priority),
             is_active: data.is_active,
+            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
         })
     }
 
@@ -343,15 +397,35 @@ export const ModulesView: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <Typography variant="caption" className="text-base-content/60">
+                                    Assigned Roles
+                                </Typography>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {row.roles && row.roles.length > 0 ? (
+                                        row.roles.map((role) => (
+                                            <Badge key={role.id} variant="info" size="sm">
+                                                {role.name}
+                                            </Badge>
+                                        ))
+                                    ) : (
+                                        <Badge variant="ghost" size="sm">
+                                            No roles assigned
+                                        </Badge>
+                                    )}
+                                </div>
+                            </div>
+                            
                             <div>
                                 <Typography variant="caption" className="text-base-content/60">
                                     Full Route Path
                                 </Typography>
-                                <div className="font-mono text-sm bg-base-200 py-2 rounded mt-1">
+                                <div className="font-mono text-sm bg-base-200 py-2 px-3 rounded mt-1">
                                     {row.route}
                                 </div>
                             </div>
+                            
                             <div className="flex items-center gap-4">
                                 <div>
                                     <Typography variant="caption" className="text-base-content/60">
@@ -421,7 +495,7 @@ export const ModulesView: React.FC = () => {
                 fields={getModuleFormFields()}
                 onSubmit={handleCreateSubmit}
                 submitText="Create Module"
-                initialValues={{ is_active: true, priority: 0 }}
+                initialValues={{ is_active: true, priority: 0, role_ids: [] }}
                 loading={loading}
             />
 
@@ -440,6 +514,7 @@ export const ModulesView: React.FC = () => {
                     route: editingModule.route,
                     priority: editingModule.priority,
                     is_active: editingModule.is_active,
+                    role_ids: editingModule.roles?.map((role:Role) => role.id.toString()) || [],
                 } : {}}
                 loading={loading}
             />
