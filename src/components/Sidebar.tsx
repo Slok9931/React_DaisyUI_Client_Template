@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
-import { InfinityLogo, Typography, Tooltip, useToast, Loading } from '@/components';
+import { InfinityLogo, Typography, Tooltip, useToast, Loading, Divider } from '@/components';
 import { useSidebar } from '@/hooks';
 import { SidebarItem, SidebarModule, SidebarProps, SidebarRoute } from '@/types';
 import { getIconComponent } from '@/utils';
@@ -234,7 +234,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Typography variant="body2">Failed to load menu</Typography>
           </div>
         ) : (
-          sidebarItems.map(item => renderSidebarItem(item))
+          sidebarItems.map((item, idx) => (
+            <React.Fragment key={item.id}>
+              {renderSidebarItem(item)}
+              {idx !== sidebarItems.length - 1 && <Divider className="my-0 mx-2" />}
+            </React.Fragment>
+          ))
         )}
       </div>
 
