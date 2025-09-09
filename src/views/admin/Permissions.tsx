@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
-import { usePermissionsStore } from '@/store'
+import { usePermissionsStore, useToastStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Permission, CreatePermissionRequest } from '@/types'
 
@@ -10,7 +10,6 @@ export const PermissionsView: React.FC = () => {
         permissions,
         categories,
         loading,
-        error,
         currentPage,
         pageSize,
         totalPermissions,
@@ -28,8 +27,9 @@ export const PermissionsView: React.FC = () => {
         setFilters,
         clearFilters,
         setSelectedPermissionIds,
-        clearError,
     } = usePermissionsStore()
+
+    const { addToast } = useToastStore()
     
     const {
         modals,
@@ -44,7 +44,6 @@ export const PermissionsView: React.FC = () => {
 
     // Fetch data on mount and when dependencies change
     useEffect(() => {
-        
         const fetchData = async () => {
             // Fetch categories (only needed once)
             await fetchCategories()
@@ -61,7 +60,7 @@ export const PermissionsView: React.FC = () => {
         }
         
         fetchData()
-    }, [currentPage, pageSize, filters.search, filters.category]) // Only depend on actual filter values
+    }, [currentPage, pageSize, filters.search, filters.category])
 
     // Table columns configuration
     const columns: ColumnConfig<Permission>[] = [
@@ -185,37 +184,81 @@ export const PermissionsView: React.FC = () => {
 
     // Event handlers
     const handleCreateSubmit = async (data: any) => {
-        const permissionData: CreatePermissionRequest = {
-            name: data.name,
-            description: data.description,
-            category: data.category,
+        try {
+            const permissionData: CreatePermissionRequest = {
+                name: data.name,
+                description: data.description,
+                category: data.category,
+            }
+            await createPermission(permissionData)
+            closeModal('create')
+            addToast({
+                message: `Permission "${data.name}" created successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to create permission. Please try again.",
+                variant: "error",
+            });
         }
-        await createPermission(permissionData)
-        closeModal('create')
     }
 
     const handleEditSubmit = async (data: any) => {
         if (!editingPermission) return
-        await updatePermission(editingPermission.id, {
-            name: data.name,
-            description: data.description,
-            category: data.category,
-        })
-        closeModal('edit')
+        try {
+            await updatePermission(editingPermission.id, {
+                name: data.name,
+                description: data.description,
+                category: data.category,
+            })
+            closeModal('edit')
+            addToast({
+                message: `Permission "${data.name}" updated successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update permission. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleDeleteConfirm = async () => {
         if (!deletingPermission) return
-        await deletePermission(deletingPermission.id)
-        closeModal('delete')
+        try {
+            await deletePermission(deletingPermission.id)
+            closeModal('delete')
+            addToast({
+                message: `Permission "${deletingPermission.name}" deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete permission. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleBulkDeleteConfirm = async () => {
         if (selectedPermissionIds.length === 0) return
-        const ids = selectedPermissionIds.map(id => parseInt(id))
-        await bulkDeletePermissions(ids)
-        setSelectedPermissionIds([])
-        closeModal('bulkDelete')
+        try {
+            const ids = selectedPermissionIds.map(id => parseInt(id))
+            await bulkDeletePermissions(ids)
+            setSelectedPermissionIds([])
+            closeModal('bulkDelete')
+            addToast({
+                message: `${selectedPermissionIds.length} permissions deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete permissions. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     // Custom handlers for pagination to ensure proper data fetching

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig, Divider } from '@/components'
 import { FormModal, ConfirmModal, useModals } from '@/features'
-import { useRoutesStore, useModulesStore, useRolesStore } from '@/store'
+import { useRoutesStore, useModulesStore, useRolesStore, useToastStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Route, CreateRouteRequest, Module, Role } from '@/types'
 
@@ -20,6 +20,8 @@ const RecursiveChildRoutesTable: React.FC<{
     loading,
   } = useRoutesStore()
 
+  const { addToast } = useToastStore()
+
   const childRoutes = useMemo(() => {
     return getChildRoutesByParent(parentRoute.id)
   }, [getChildRoutesByParent, parentRoute.id])
@@ -27,6 +29,21 @@ const RecursiveChildRoutesTable: React.FC<{
   useEffect(() => {
     fetchChildRoutes(parentRoute.id)
   }, [fetchChildRoutes, parentRoute.id])
+
+  const handleRouteUpdate = async (routeId: number, updateData: any) => {
+    try {
+      await updateRoute(routeId, updateData);
+      addToast({
+        message: "Route updated successfully",
+        variant: "success",
+      });
+    } catch (error) {
+      addToast({
+        message: "Failed to update route. Please try again.",
+        variant: "error",
+      });
+    }
+  }
 
   // Don't render if no child routes
   if (childRoutes.length === 0) {
@@ -110,7 +127,7 @@ const RecursiveChildRoutesTable: React.FC<{
           checked={row.is_sidebar}
           size="sm"
           aria-label={row.is_sidebar ? 'In Sidebar' : 'Not in Sidebar'}
-          onChange={() => updateRoute(row.id, { is_sidebar: !row.is_sidebar })}
+          onChange={() => handleRouteUpdate(row.id, { is_sidebar: !row.is_sidebar })}
         />
       ),
     },
@@ -124,7 +141,7 @@ const RecursiveChildRoutesTable: React.FC<{
           checked={row.is_active}
           size="sm"
           aria-label={row.is_active ? 'Active' : 'Inactive'}
-          onChange={() => updateRoute(row.id, { is_active: !row.is_active })}
+          onChange={() => handleRouteUpdate(row.id, { is_active: !row.is_active })}
         />
       ),
     },
@@ -261,7 +278,6 @@ export const RoutesView: React.FC = () => {
   const {
     moduleFilters,
     loading,
-    error,
     fetchAllRoutes,
     getParentRoutes,
     createRoute,
@@ -269,7 +285,6 @@ export const RoutesView: React.FC = () => {
     deleteRoute,
     setModuleFilters,
     clearModuleFilters,
-    clearError,
   } = useRoutesStore()
 
   const {
@@ -277,8 +292,8 @@ export const RoutesView: React.FC = () => {
     fetchModules,
   } = useModulesStore()
 
-  // Get roles from roles store as backup
   const { roles, fetchRoles } = useRolesStore()
+  const { addToast } = useToastStore()
 
   const {
     modals,
@@ -291,16 +306,35 @@ export const RoutesView: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch roles first
-      await fetchRoles();
-      
-      // Fetch modules and routes
-      await fetchModules();
-      await fetchAllRoutes();
+      try {
+        await fetchRoles();
+        await fetchModules();
+        await fetchAllRoutes();
+      } catch (error) {
+        addToast({
+          message: "Failed to load routes data. Please refresh the page.",
+          variant: "error",
+        });
+      }
     };
     
     fetchData();
-  }, [fetchModules, fetchAllRoutes, fetchRoles])
+  }, [fetchModules, fetchAllRoutes, fetchRoles, addToast])
+
+  const handleRouteToggle = async (routeId: number, updateData: any) => {
+    try {
+      await updateRoute(routeId, updateData);
+      addToast({
+        message: "Route updated successfully",
+        variant: "success",
+      });
+    } catch (error) {
+      addToast({
+        message: "Failed to update route. Please try again.",
+        variant: "error",
+      });
+    }
+  }
 
   // Get available roles (prefer routes store, fallback to roles store)
   const availableRoles = roles.length > 0 ? roles : [];
@@ -382,7 +416,7 @@ export const RoutesView: React.FC = () => {
           variant={row.is_sidebar ? 'primary' : 'error'}
           checked={row.is_sidebar}
           aria-label={row.is_sidebar ? 'In Sidebar' : 'Not in Sidebar'}
-          onChange={() => updateRoute(row.id, { is_sidebar: !row.is_sidebar })}
+          onChange={() => handleRouteToggle(row.id, { is_sidebar: !row.is_sidebar })}
         />
       ),
     },
@@ -395,7 +429,7 @@ export const RoutesView: React.FC = () => {
           variant={row.is_active ? 'primary' : 'error'}
           checked={row.is_active}
           aria-label={row.is_active ? 'Active' : 'Inactive'}
-          onChange={() => updateRoute(row.id, { is_active: !row.is_active })}
+          onChange={() => handleRouteToggle(row.id, { is_active: !row.is_active })}
         />
       ),
     },
@@ -599,6 +633,11 @@ export const RoutesView: React.FC = () => {
       
       await createRoute(routeData);
       
+      addToast({
+        message: "Route created successfully!",
+        variant: "success",
+      });
+      
       // Close the appropriate modal
       if (modals.createChild) {
         closeModal('createChild');
@@ -607,7 +646,10 @@ export const RoutesView: React.FC = () => {
       }
       
     } catch (error) {
-      console.error('Component: Failed to create route:', error);
+      addToast({
+        message: "Failed to create route. Please try again.",
+        variant: "error",
+      });
       throw error; // Let FormModal handle the error
     }
   }
@@ -630,23 +672,42 @@ export const RoutesView: React.FC = () => {
       
       await updateRoute(editingRoute.id, updateData);
       
+      addToast({
+        message: "Route updated successfully!",
+        variant: "success",
+      });
+      
       closeModal('edit');
     } catch (error) {
+      addToast({
+        message: "Failed to update route. Please try again.",
+        variant: "error",
+      });
       throw error; // Let FormModal handle the error
     }
   }
 
   const handleDeleteConfirm = async () => {
     if (!deletingRoute) {
-      console.error('Component: No deleting route found');
+      addToast({
+        message: "No route selected for deletion.",
+        variant: "error",
+      });
       return;
     }
     
     try {
       await deleteRoute(deletingRoute.id);
+      addToast({
+        message: `Route "${deletingRoute.label}" deleted successfully!`,
+        variant: "success",
+      });
       closeModal('delete');
     } catch (error) {
-      console.error('Component: Failed to delete route:', error);
+      addToast({
+        message: "Failed to delete route. Please try again.",
+        variant: "error",
+      });
       closeModal('delete'); // Close modal even on error for delete
     }
   }
@@ -858,15 +919,15 @@ export const RoutesView: React.FC = () => {
           icon: editingRoute.icon,
           module_id: editingRoute.module_id.toString(),
           parent_id: editingRoute.parent_id?.toString() || '',
-          priority: editingRoute.priority.toString(),
+          priority: editingRoute.priority,
           is_sidebar: editingRoute.is_sidebar,
           is_active: editingRoute.is_active,
-          role_ids: editingRoute.roles?.map((role:Role) => role.id.toString()) || [],
-        } : {}}
+          role_ids: editingRoute.role_ids?.map((id: number) => id.toString()) || [],
+        } : undefined}
         loading={loading}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Route Confirmation Modal */}
       <ConfirmModal
         isOpen={modals.delete}
         onClose={() => closeModal('delete')}

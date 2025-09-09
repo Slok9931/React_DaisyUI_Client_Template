@@ -37,7 +37,6 @@ export const ThemeTabContent = () => {
       : themes;
     const randomTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
     handleThemeSelect(randomTheme.name);
-    addToast({ message: `Random theme: ${randomTheme.displayName}`, variant: "info" });
   };
 
   const ColorSwatch = ({ theme }: { theme: any }) => (
@@ -428,7 +427,6 @@ export const ProfileTabContent = () => {
       username: user?.username || '',
       email: user?.email || '',
     });
-    addToast({ message: "Profile edit cancelled", variant: "info" });
     setIsEditing(false);
   };
 

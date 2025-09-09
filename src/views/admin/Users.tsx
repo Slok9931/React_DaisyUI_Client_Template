@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, ColumnConfig, FilterConfig, Toggle } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
-import { useUsersStore, useRolesStore } from '@/store'
+import { useUsersStore, useRolesStore, useToastStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Users, CreateUserRequest, Role } from '@/types'
 
@@ -9,14 +9,13 @@ export const UsersView: React.FC = () => {
     const {
         users,
         loading,
-        error,
         currentPage,
         pageSize,
         totalUsers,
         filters,
         selectedUserIds,
         fetchUsers,
-        fetchTotalUsers, // Add this
+        fetchTotalUsers,
         createUser,
         updateUser,
         deleteUser,
@@ -26,7 +25,6 @@ export const UsersView: React.FC = () => {
         setFilters,
         clearFilters,
         setSelectedUserIds,
-        clearError,
     } = useUsersStore()
 
     // Fetch roles for dropdowns
@@ -34,6 +32,8 @@ export const UsersView: React.FC = () => {
         roles,
         fetchRoles,
     } = useRolesStore()
+
+    const { addToast } = useToastStore()
 
     const {
         modals,
@@ -156,7 +156,7 @@ export const UsersView: React.FC = () => {
                         variant={row.is_active ? 'primary' : 'error'}
                         checked={row.is_active}
                         aria-label={row.is_active ? 'Active' : 'Inactive'}
-                        onChange={() => updateUser(row.id, { is_active: !row.is_active })}
+                        onChange={() => handleStatusToggle(row)}
                     />
                 </div>
             ),
@@ -271,36 +271,95 @@ export const UsersView: React.FC = () => {
 
     // Event handlers
     const handleCreateSubmit = async (data: any) => {
-        const userData: CreateUserRequest = {
-            username: data.username,
-            email: data.email,
-            password: data.password,
-            is_active: data.is_active ?? true,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+        try {
+            const userData: CreateUserRequest = {
+                username: data.username,
+                email: data.email,
+                password: data.password,
+                is_active: data.is_active ?? true,
+                role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+            }
+            await createUser(userData)
+            addToast({
+                message: `User "${data.username}" created successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to create user. Please try again.",
+                variant: "error",
+            });
         }
-        await createUser(userData)
     }
 
     const handleEditSubmit = async (data: any) => {
         if (!editingUser) return
-        await updateUser(editingUser.id, {
-            username: data.username,
-            email: data.email,
-            is_active: data.is_active,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
-        })
+        try {
+            await updateUser(editingUser.id, {
+                username: data.username,
+                email: data.email,
+                is_active: data.is_active,
+                role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+            })
+            addToast({
+                message: `User "${data.username}" updated successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update user. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleDeleteConfirm = async () => {
         if (!deletingUser) return
-        await deleteUser(deletingUser.id)
+        try {
+            await deleteUser(deletingUser.id)
+            addToast({
+                message: `User "${deletingUser.username}" deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete user. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleBulkDeleteConfirm = async () => {
         if (selectedUserIds.length === 0) return
-        const ids = selectedUserIds.map(id => parseInt(id))
-        await bulkDeleteUsers(ids)
-        setSelectedUserIds([])
+        try {
+            const ids = selectedUserIds.map(id => parseInt(id))
+            await bulkDeleteUsers(ids)
+            setSelectedUserIds([])
+            addToast({
+                message: `${selectedUserIds.length} users deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete users. Please try again.",
+                variant: "error",
+            });
+        }
+    }
+
+    const handleStatusToggle = async (user: Users) => {
+        try {
+            await updateUser(user.id, { is_active: !user.is_active })
+            addToast({
+                message: `User "${user.username}" ${!user.is_active ? 'activated' : 'deactivated'} successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update user status. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     return (

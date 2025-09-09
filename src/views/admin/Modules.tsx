@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { InfinityTable, Button, Badge, Typography, Tooltip, Toggle, ColumnConfig, FilterConfig } from '@/components'
 import { FormModal, ConfirmModal, BulkActionModal, useModals } from '@/features'
-import { useModulesStore, useRolesStore } from '@/store'
+import { useModulesStore, useRolesStore, useToastStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Module, CreateModuleRequest, Role } from '@/types'
 
@@ -9,7 +9,6 @@ export const ModulesView: React.FC = () => {
     const {
         modules,
         loading,
-        error,
         currentPage,
         pageSize,
         totalModules,
@@ -26,11 +25,11 @@ export const ModulesView: React.FC = () => {
         setFilters,
         clearFilters,
         setSelectedModuleIds,
-        clearError,
     } = useModulesStore()
 
     // Get roles from roles store as backup
     const { roles, fetchRoles } = useRolesStore()
+    const { addToast } = useToastStore()
 
     const {
         modals,
@@ -145,7 +144,7 @@ export const ModulesView: React.FC = () => {
                         variant={row.is_active ? 'primary' : 'error'}
                         checked={row.is_active}
                         aria-label={row.is_active ? 'Active' : 'Inactive'}
-                        onChange={() => updateModule(row.id, { is_active: !row.is_active })}
+                        onChange={() => handleStatusToggle(row)}
                     />
                 </div>
             ),
@@ -266,41 +265,100 @@ export const ModulesView: React.FC = () => {
 
     // Event handlers
     const handleCreateSubmit = async (data: any) => {
-        const moduleData: CreateModuleRequest = {
-            name: data.name,
-            label: data.label,
-            icon: data.icon,
-            route: data.route,
-            priority: parseInt(data.priority),
-            is_active: data.is_active ?? true,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+        try {
+            const moduleData: CreateModuleRequest = {
+                name: data.name,
+                label: data.label,
+                icon: data.icon,
+                route: data.route,
+                priority: parseInt(data.priority),
+                is_active: data.is_active ?? true,
+                role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+            }
+            await createModule(moduleData)
+            addToast({
+                message: `Module "${data.label}" created successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to create module. Please try again.",
+                variant: "error",
+            });
         }
-        await createModule(moduleData)
     }
 
     const handleEditSubmit = async (data: any) => {
         if (!editingModule) return
-        await updateModule(editingModule.id, {
-            name: data.name,
-            label: data.label,
-            icon: data.icon,
-            route: data.route,
-            priority: parseInt(data.priority),
-            is_active: data.is_active,
-            role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
-        })
+        try {
+            await updateModule(editingModule.id, {
+                name: data.name,
+                label: data.label,
+                icon: data.icon,
+                route: data.route,
+                priority: parseInt(data.priority),
+                is_active: data.is_active,
+                role_ids: data.role_ids?.map((id: string) => parseInt(id)) || [],
+            })
+            addToast({
+                message: `Module "${data.label}" updated successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update module. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleDeleteConfirm = async () => {
         if (!deletingModule) return
-        await deleteModule(deletingModule.id)
+        try {
+            await deleteModule(deletingModule.id)
+            addToast({
+                message: `Module "${deletingModule.label}" deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete module. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleBulkDeleteConfirm = async () => {
         if (selectedModuleIds.length === 0) return
-        const ids = selectedModuleIds.map(id => parseInt(id))
-        await bulkDeleteModules(ids)
-        setSelectedModuleIds([])
+        try {
+            const ids = selectedModuleIds.map(id => parseInt(id))
+            await bulkDeleteModules(ids)
+            setSelectedModuleIds([])
+            addToast({
+                message: `${selectedModuleIds.length} modules deleted successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to delete modules. Please try again.",
+                variant: "error",
+            });
+        }
+    }
+
+    const handleStatusToggle = async (module: Module) => {
+        try {
+            await updateModule(module.id, { is_active: !module.is_active })
+            addToast({
+                message: `Module "${module.label}" ${!module.is_active ? 'activated' : 'deactivated'} successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update module status. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     // Custom handlers for pagination

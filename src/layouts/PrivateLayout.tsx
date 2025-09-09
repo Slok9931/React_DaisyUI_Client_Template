@@ -84,7 +84,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
     setMobileSettingsOpen(false)
     setTimeout(() => {
       setMobileTabOpen(true)
-      addToast({ message: `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} tab opened`, variant: 'info' })
     }, 250)
   }
 
@@ -102,7 +101,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           } else {
             setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Profile tab opened', variant: 'info' })
         } else {
           // Mobile/tablet behavior - use the correct handler
           handleMobileFloatingMenuClick('profile')
@@ -122,7 +120,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           } else {
             setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Themes tab opened', variant: 'info' })
         } else {
           handleMobileFloatingMenuClick('themes')
         }
@@ -141,7 +138,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           } else {
             setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Font Family tab opened', variant: 'info' })
         } else {
           handleMobileFloatingMenuClick('fonts')
         }
@@ -160,7 +156,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           } else {
             setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Typography tab opened', variant: 'info' })
         } else {
           handleMobileFloatingMenuClick('typography')
         }
@@ -182,7 +177,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
     } else {
       setLeftSidebarCollapsed(false)
     }
-    addToast({ message: leftSidebarCollapsed ? 'Sidebar opened' : 'Sidebar collapsed', variant: 'info' })
   }
 
   const leftSidebarWidth = leftSidebarCollapsed ? 'w-16' : 'w-64'

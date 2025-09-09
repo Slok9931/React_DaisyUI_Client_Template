@@ -92,11 +92,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         if (item.href) {
           setActiveTab(item.label);
           navigate(item.href);
-          addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
         } else {
           item.onClick?.();
           setActiveTab(item.label);
-          addToast({ message: `${item.label} clicked`, variant: 'info' });
         }
       }
     } else {
@@ -108,11 +106,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         if (item.href) {
           setActiveTab(item.label);
           navigate(item.href);
-          addToast({ message: `Navigated to ${item.label}`, variant: 'info' });
         } else {
           item.onClick?.();
           setActiveTab(item.label);
-          addToast({ message: `${item.label} clicked`, variant: 'info' });
         }
       }
     }

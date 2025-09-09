@@ -11,7 +11,7 @@ import {
     FilterConfig
 } from '@/components'
 import { FormModal, useModals } from '@/features'
-import { useRolesStore } from '@/store'
+import { useRolesStore, useToastStore } from '@/store'
 import { getIconComponent } from '@/utils'
 import type { Role, CreateRoleRequest, PermissionMatrixItem } from '@/types'
 
@@ -21,7 +21,6 @@ export const RolesView: React.FC = () => {
         selectedRole,
         permissionMatrix,
         loading,
-        error,
         currentPage,
         pageSize,
         totalRoles,
@@ -30,7 +29,7 @@ export const RolesView: React.FC = () => {
         fetchRoles,
         fetchRoleById,
         fetchAllPermissions,
-        fetchTotalRoles, // Add this
+        fetchTotalRoles,
         createRole,
         togglePermission,
         setCurrentPage,
@@ -38,8 +37,9 @@ export const RolesView: React.FC = () => {
         clearFilters,
         setSelectedRoleIds,
         setSheetOpen,
-        clearError,
     } = useRolesStore()
+
+    const { addToast } = useToastStore()
 
     const {
         modals,
@@ -331,25 +331,58 @@ export const RolesView: React.FC = () => {
 
     // Event handlers
     const handleCreateSubmit = async (data: any) => {
-        const roleData: CreateRoleRequest = {
-            name: data.name,
-            description: data.description,
-            is_system_role: data.is_system_role || false,
+        try {
+            const roleData: CreateRoleRequest = {
+                name: data.name,
+                description: data.description,
+                is_system_role: data.is_system_role || false,
+            }
+            await createRole(roleData)
+            addToast({
+                message: `Role "${data.name}" created successfully!`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to create role. Please try again.",
+                variant: "error",
+            });
         }
-        await createRole(roleData)
     }
 
     const handleManagePermissions = async (role: Role) => {
-        await fetchRoleById(role.id)
-        setSheetOpen(true)
-        // Reset matrix filters when opening
-        setMatrixFilters({ search: '', category: '' })
-        setMatrixPagination({ currentPage: 1, pageSize: 10 })
+        try {
+            await fetchRoleById(role.id)
+            setSheetOpen(true)
+            // Reset matrix filters when opening
+            setMatrixFilters({ search: '', category: '' })
+            setMatrixPagination({ currentPage: 1, pageSize: 10 })
+            addToast({
+                message: `Loaded permissions for "${role.name}"`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to load role permissions. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handlePermissionToggle = async (permissionId: number | undefined, hasPermission: boolean) => {
         if (!selectedRole || !permissionId) return
-        await togglePermission(selectedRole.id, permissionId, hasPermission)
+        try {
+            await togglePermission(selectedRole.id, permissionId, hasPermission)
+            addToast({
+                message: `Permission ${hasPermission ? 'removed from' : 'granted to'} "${selectedRole.name}"`,
+                variant: "success",
+            });
+        } catch (error) {
+            addToast({
+                message: "Failed to update permission. Please try again.",
+                variant: "error",
+            });
+        }
     }
 
     const handleMatrixPageChange = (page: number) => {

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Typography, AnimatedTextChart, Progress } from '@/components'
-import { useToastStore } from '@/store';
 
 interface SplashScreenProps {
   onComplete: () => void
@@ -15,7 +14,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const [currentStep, setCurrentStep] = useState(0)
   const [fadeOut, setFadeOut] = useState(false)
   const [showSubtitle, setShowSubtitle] = useState(false)
-  const { addToast } = useToastStore()
 
   const loadingSteps = [
     "Initializing Systems...",
@@ -55,7 +53,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     loadingSteps.forEach((_, index) => {
       timeouts.push(setTimeout(() => {
         setCurrentStep(index)
-        addToast({ message: loadingSteps[index], variant: 'info' })
       }, index * stepDuration))
     })
 
