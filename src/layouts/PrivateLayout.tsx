@@ -213,7 +213,6 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           <Sidebar
             collapsed={leftSidebarCollapsed}
             onToggleCollapse={handleLeftSidebarToggle}
-            authLogout={true}
             side="left"
           />
         </div>

@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   items,
   className = '',
   collapsed = false,
-  authLogout = false,
+  authLogout = true,
   side = 'left',
   onClose,
   showHeader = true,
