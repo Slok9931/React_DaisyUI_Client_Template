@@ -104,7 +104,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       <div className="relative z-10 text-center space-y-12 max-w-2xl mx-auto px-6">
 
         {/* Animated Text Logo Section */}
-        <div className="relative">
+        <div className="relative hidden md:block">
+          {/* Main Animated Text */}
+          <div className="relative">
+            <AnimatedTextChart
+              text="Infinity"
+              fontSize={160}
+              duration={3000}
+              strokeWidth={2}
+              width="500px"
+              height="400px"
+              className="mx-auto"
+            />
+          </div>
+        </div>
+        <div className="relative block md:hidden">
           {/* Main Animated Text */}
           <div className="relative">
             <AnimatedTextChart
@@ -113,7 +127,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               duration={3000}
               strokeWidth={2}
               width="500px"
-              height="160px"
+              height="400px"
               className="mx-auto"
             />
           </div>
