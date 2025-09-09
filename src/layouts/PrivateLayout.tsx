@@ -1,90 +1,91 @@
-import React, { useState, useEffect } from 'react';
-import { Palette, Pencil, Type, User, Maximize, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react'
+import { Palette, Pencil, Type, User, Maximize, Settings } from 'lucide-react'
 import {
   ThemeTabHeader, ThemeTabContent, ThemeTabFooter,
   FontFamilyTabHeader, FontFamilyTabContent, FontFamilyTabFooter,
   TypographyTabHeader, TypographyTabContent, TypographyTabFooter,
   ProfileTabHeader, ProfileTabContent, ProfileTabFooter,
-  Tooltip, useToast,
+  Tooltip, useToast, Typography,
   PrivateNavbar, Sidebar,
   InfinitySheet
-} from '@/components';
+} from '@/components'
+import { getIconComponent } from '@/utils'
 
 interface PrivateLayoutProps {
-  children: React.ReactNode;
-  sidebarItems?: any[];
+  children: React.ReactNode
+  sidebarItems?: any[]
 }
 
 export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
   children,
 }) => {
-  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(true);
-  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'typography' | 'profile'>('profile');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
-  const [mobileTabOpen, setMobileTabOpen] = useState(false);
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(true)
+  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'typography' | 'profile'>('profile')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false)
+  const [mobileTabOpen, setMobileTabOpen] = useState(false)
 
-  const { addToast } = useToast();
+  const { addToast } = useToast()
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-        addToast({ message: 'Entered fullscreen mode', variant: 'info' });
+        setIsFullscreen(true)
+        addToast({ message: 'Entered fullscreen mode', variant: 'info' })
       }).catch(() => {
-        addToast({ message: 'Error attempting to enable fullscreen', variant: 'error' });
-      });
+        addToast({ message: 'Error attempting to enable fullscreen', variant: 'error' })
+      })
     } else {
       document.exitFullscreen().then(() => {
-        setIsFullscreen(false);
-        addToast({ message: 'Exited fullscreen mode', variant: 'info' });
+        setIsFullscreen(false)
+        addToast({ message: 'Exited fullscreen mode', variant: 'info' })
       }).catch(() => {
-        addToast({ message: 'Error attempting to exit fullscreen', variant: 'error' });
-      });
+        addToast({ message: 'Error attempting to exit fullscreen', variant: 'error' })
+      })
     }
-  };
+  }
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
-  }, []);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
 
   const tabHeader: Record<typeof activeTab, React.ReactNode> = {
     profile: <ProfileTabHeader />,
     themes: <ThemeTabHeader />,
     fonts: <FontFamilyTabHeader />,
     typography: <TypographyTabHeader />,
-  };
+  }
 
   const tabContent: Record<typeof activeTab, React.ReactNode> = {
     profile: <ProfileTabContent />,
     themes: <ThemeTabContent />,
     fonts: <FontFamilyTabContent />,
     typography: <TypographyTabContent />,
-  };
+  }
 
   const tabFooter: Record<typeof activeTab, React.ReactNode> = {
     profile: <ProfileTabFooter />,
     themes: <ThemeTabFooter />,
     fonts: <FontFamilyTabFooter />,
     typography: <TypographyTabFooter />,
-  };
+  }
 
   const handleMobileFloatingMenuClick = (tabId: typeof activeTab) => {
-    setActiveTab(tabId);
-    setMobileSettingsOpen(false);
+    setActiveTab(tabId)
+    setMobileSettingsOpen(false)
     setTimeout(() => {
-      setMobileTabOpen(true);
-      addToast({ message: `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} tab opened`, variant: 'info' });
-    }, 250);
-  };
+      setMobileTabOpen(true)
+      addToast({ message: `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} tab opened`, variant: 'info' })
+    }, 250)
+  }
 
   const rightSidebarItems = [
     {
@@ -94,16 +95,16 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: () => {
         if (window.innerWidth >= 1024) {
           // Desktop behavior
-          setActiveTab('profile');
+          setActiveTab('profile')
           if (rightSidebarCollapsed) {
-            setRightSidebarCollapsed(false);
+            setRightSidebarCollapsed(false)
           } else {
-            setRightSidebarCollapsed(true);
+            setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Profile tab opened', variant: 'info' });
+          addToast({ message: 'Profile tab opened', variant: 'info' })
         } else {
           // Mobile/tablet behavior - use the correct handler
-          handleMobileFloatingMenuClick('profile');
+          handleMobileFloatingMenuClick('profile')
         }
       },
       active: activeTab === 'profile' && !rightSidebarCollapsed,
@@ -114,15 +115,15 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       label: 'Themes',
       onClick: () => {
         if (window.innerWidth >= 1024) {
-          setActiveTab('themes');
+          setActiveTab('themes')
           if (rightSidebarCollapsed) {
-            setRightSidebarCollapsed(false);
+            setRightSidebarCollapsed(false)
           } else {
-            setRightSidebarCollapsed(true);
+            setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Themes tab opened', variant: 'info' });
+          addToast({ message: 'Themes tab opened', variant: 'info' })
         } else {
-          handleMobileFloatingMenuClick('themes');
+          handleMobileFloatingMenuClick('themes')
         }
       },
       active: activeTab === 'themes' && !rightSidebarCollapsed,
@@ -133,15 +134,15 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       label: 'Font Family',
       onClick: () => {
         if (window.innerWidth >= 1024) {
-          setActiveTab('fonts');
+          setActiveTab('fonts')
           if (rightSidebarCollapsed) {
-            setRightSidebarCollapsed(false);
+            setRightSidebarCollapsed(false)
           } else {
-            setRightSidebarCollapsed(true);
+            setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Font Family tab opened', variant: 'info' });
+          addToast({ message: 'Font Family tab opened', variant: 'info' })
         } else {
-          handleMobileFloatingMenuClick('fonts');
+          handleMobileFloatingMenuClick('fonts')
         }
       },
       active: activeTab === 'fonts' && !rightSidebarCollapsed,
@@ -152,15 +153,15 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       label: 'Typography',
       onClick: () => {
         if (window.innerWidth >= 1024) {
-          setActiveTab('typography');
+          setActiveTab('typography')
           if (rightSidebarCollapsed) {
-            setRightSidebarCollapsed(false);
+            setRightSidebarCollapsed(false)
           } else {
-            setRightSidebarCollapsed(true);
+            setRightSidebarCollapsed(true)
           }
-          addToast({ message: 'Typography tab opened', variant: 'info' });
+          addToast({ message: 'Typography tab opened', variant: 'info' })
         } else {
-          handleMobileFloatingMenuClick('typography');
+          handleMobileFloatingMenuClick('typography')
         }
       },
       active: activeTab === 'typography' && !rightSidebarCollapsed,
@@ -172,18 +173,18 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       onClick: toggleFullscreen,
       active: false,
     },
-  ];
+  ]
 
   const handleLeftSidebarToggle = () => {
     if (!leftSidebarCollapsed) {
-      setLeftSidebarCollapsed(true);
+      setLeftSidebarCollapsed(true)
     } else {
-      setLeftSidebarCollapsed(false);
+      setLeftSidebarCollapsed(false)
     }
-    addToast({ message: leftSidebarCollapsed ? 'Sidebar opened' : 'Sidebar collapsed', variant: 'info' });
-  };
+    addToast({ message: leftSidebarCollapsed ? 'Sidebar opened' : 'Sidebar collapsed', variant: 'info' })
+  }
 
-  const leftSidebarWidth = leftSidebarCollapsed ? 'w-16' : 'w-64';
+  const leftSidebarWidth = leftSidebarCollapsed ? 'w-16' : 'w-64'
 
   return (
     <div className="min-h-screen bg-base-200 z-40">
@@ -197,7 +198,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
       {mobileSettingsOpen && !mobileSidebarOpen && !mobileTabOpen && (
         <div
           className="fixed inset-0 z-40 lg:hidden pointer-events-none"
-          // No onClick here, so it doesn't block clicks!
+        // No onClick here, so it doesn't block clicks!
         />
       )}
       {mobileTabOpen && !mobileSidebarOpen && !mobileSettingsOpen && (
@@ -286,9 +287,9 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           showResizeHandle={true}
           className="hidden lg:flex"
         >
-            <div className="flex-1 overflow-y-auto p-4">
-              {tabContent[activeTab]}
-            </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            {tabContent[activeTab]}
+          </div>
         </InfinitySheet>
 
         <InfinitySheet
@@ -318,7 +319,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
           {/* Main Content */}
           <main className="flex-1 overflow-y-auto bg-base-100 relative">
             {children}
-            
+
             {/* Mobile Floating Settings Button */}
             <div className="lg:hidden">
               {/* Settings Button */}
@@ -361,8 +362,8 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
                             className={`
                               w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer
                               transition-all duration-300 hover:scale-110 border border-primary
-                              ${(activeTab === item.id && mobileTabOpen) 
-                                ? 'bg-primary text-primary-content scale-110' 
+                              ${(activeTab === item.id && mobileTabOpen)
+                                ? 'bg-primary text-primary-content scale-110'
                                 : 'bg-base-100 text-base-content hover:bg-primary hover:text-primary-content'
                               }
                             `}
@@ -377,8 +378,28 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
               )}
             </div>
           </main>
+
+          {/* Footer */}
+          <footer className="flex-shrink-0 bg-base-200 border-t border-base-300 px-6 py-[19px]">
+            <div className="flex items-center justify-between flex-col md:flex-row space-y-2 md:space-y-0">
+              <Typography variant="caption" className="text-base-content/60 text-xs text-center">
+                © 2025 Infinity Technologies • All rights reserved • Powered by Innovation
+              </Typography>
+              <div className="flex space-x-3">
+                <a href="#">
+                  {getIconComponent("Github", 16,)}
+                </a>
+                <a href="#">
+                  {getIconComponent("Star", 16,)}
+                </a>
+                <a href="#">
+                  {getIconComponent("ExternalLink", 16,)}
+                </a>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
