@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { sidebarApi } from '@/api';
 import { SidebarModule } from '@/types';
-import { useToast } from '@/components';
+import { useToastStore } from '@/store';
 
 export const useSidebar = () => {
   const [sidebarData, setSidebarData] = useState<SidebarModule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
 
   const fetchSidebarData = async () => {
     try {

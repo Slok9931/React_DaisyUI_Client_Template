@@ -8,9 +8,8 @@ import {
   Card,
   CardBody,
   InfinityLogo,
-  useToast,
 } from "@/components";
-import { useAuthStore, useLoading } from "@/store";
+import { useAuthStore, useLoading, useToastStore } from "@/store"; // Import useToast from store
 import { useTheme } from "@/hooks";
 import { themes } from "@/themes";
 import { getIconComponent } from "@/utils";
@@ -336,7 +335,7 @@ const LoginForm = ({ onNavigate }: any) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const { showLoading } = useLoading();
 
   const handleInputChange = (e: any) => {
@@ -490,7 +489,7 @@ const RegisterForm = ({ onNavigate }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading, error, clearError } = useAuthStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;

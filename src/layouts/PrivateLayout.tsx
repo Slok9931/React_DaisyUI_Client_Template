@@ -5,11 +5,12 @@ import {
   FontFamilyTabHeader, FontFamilyTabContent, FontFamilyTabFooter,
   TypographyTabHeader, TypographyTabContent, TypographyTabFooter,
   ProfileTabHeader, ProfileTabContent, ProfileTabFooter,
-  Tooltip, useToast, Typography,
+  Tooltip, Typography,
   PrivateNavbar, Sidebar,
   InfinitySheet
 } from '@/components'
 import { getIconComponent } from '@/utils'
+import { useToastStore } from '@/store';
 
 interface PrivateLayoutProps {
   children: React.ReactNode
@@ -27,7 +28,7 @@ export const PrivateLayout: React.FC<PrivateLayoutProps> = ({
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false)
   const [mobileTabOpen, setMobileTabOpen] = useState(false)
 
-  const { addToast } = useToast()
+  const { addToast } = useToastStore()
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {

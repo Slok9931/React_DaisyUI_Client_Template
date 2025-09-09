@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@/store';
-import { InfinityLogo, Typography, Tooltip, useToast, Loading, Divider } from '@/components';
+import { useAuthStore, useToastStore } from '@/store';
+import { InfinityLogo, Typography, Tooltip, Loading, Divider } from '@/components';
 import { useSidebar } from '@/hooks';
 import { SidebarItem, SidebarModule, SidebarProps, SidebarRoute } from '@/types';
 import { getIconComponent } from '@/utils';
@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const { sidebarData, loading, error } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<string | undefined>(

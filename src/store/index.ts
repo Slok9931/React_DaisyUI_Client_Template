@@ -1,5 +1,6 @@
 export * from './AuthStore'
 export * from './LoadingProvider'
+export * from './ToastProvider'
 export * from './TypographyStore'
 
 export * from './admin/usersStore'

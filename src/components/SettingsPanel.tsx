@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@/hooks";
-import { useTypographyStore, useAuthStore } from "@/store";
-import { Button, Typography, useToast, Tooltip, Input } from "@/components";
+import { useTypographyStore, useAuthStore, useToastStore } from "@/store";
+import { Button, Typography, Tooltip, Input } from "@/components";
 import { getIconComponent } from "@/utils/utilityFunction";
 
 // --- ThemeTab ---
@@ -14,7 +14,7 @@ export const ThemeTabHeader = () => (
 
 export const ThemeTabContent = () => {
   const { currentTheme, themes, changeTheme } = useTheme();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const themeListRef = React.useRef<HTMLDivElement>(null);
 
   const handleThemeSelect = (themeName: string) => {
@@ -112,7 +112,7 @@ export const ThemeTabContent = () => {
 
 export const ThemeTabFooter = () => {
   const { changeTheme } = useTheme();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const handleReset = () => {
     changeTheme('dark');
     addToast({ message: "Theme reset to dark", variant: "info" });
@@ -138,7 +138,7 @@ export const FontFamilyTabHeader = () => (
 
 export const FontFamilyTabContent = () => {
   const { customization, fontFamilies, updateCustomization } = useTypographyStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const [tempCustomization, setTempCustomization] = useState(customization);
 
   const handleFontChange = (fontFamily: string) => {
@@ -186,7 +186,7 @@ export const FontFamilyTabContent = () => {
 
 export const FontFamilyTabFooter = () => {
   const { fontFamilies, updateCustomization } = useTypographyStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const handleReset = () => {
     const defaultFont = fontFamilies[0]?.value || 'Inter, sans-serif';
     updateCustomization({ fontFamily: defaultFont });
@@ -213,7 +213,7 @@ export const TypographyTabHeader = () => (
 
 export const TypographyTabContent = () => {
   const { customization, updateCustomization } = useTypographyStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const [tempCustomization, setTempCustomization] = useState(customization);
 
   const SliderControl = ({
@@ -373,7 +373,7 @@ export const TypographyTabContent = () => {
 
 export const TypographyTabFooter = () => {
   const { customization, updateCustomization } = useTypographyStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const handleReset = () => {
     const defaultSettings = {
       fontScale: 1,
@@ -406,7 +406,7 @@ export const ProfileTabHeader = () => (
 
 export const ProfileTabContent = () => {
   const { user } = useAuthStore();
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     username: user?.username || '',
@@ -524,7 +524,7 @@ export const ProfileTabContent = () => {
 };
 
 export const ProfileTabFooter = () => {
-  const { addToast } = useToast();
+  const { addToast } = useToastStore();
 
   return (
     <Button
