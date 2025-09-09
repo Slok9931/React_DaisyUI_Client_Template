@@ -4,7 +4,6 @@ import {
   Typography,
   Input,
   Button,
-  Alert,
   Divider,
   Card,
   CardBody,
@@ -381,13 +380,6 @@ const LoginForm = ({ onNavigate }: any) => {
         </Typography>
       </div>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert variant="error" onClose={clearError}>
-          Authentication failed. Please try again.
-        </Alert>
-      )}
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
@@ -550,13 +542,6 @@ const RegisterForm = ({ onNavigate }: any) => {
           Create your professional dashboard account
         </Typography>
       </div>
-
-      {/* Error Alert */}
-      {error && (
-        <Alert variant="error" onClose={clearError}>
-          Registration failed. Please try again.
-        </Alert>
-      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -235,19 +235,6 @@ export const PermissionsView: React.FC = () => {
 
     return (
         <div className="p-6">
-            {/* Error Alert */}
-            {error && (
-                <div className="alert alert-error mb-4">
-                    <div className="flex items-center gap-2">
-                        {getIconComponent('AlertCircle', 20)}
-                        <span>{error}</span>
-                        <Button size="xs" variant="ghost" onClick={clearError}>
-                            {getIconComponent('X', 16)}
-                        </Button>
-                    </div>
-                </div>
-            )}
-
             {/* Permissions Table */}
             <InfinityTable
                 data={permissions}
