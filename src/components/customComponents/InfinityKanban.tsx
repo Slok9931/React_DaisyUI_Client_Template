@@ -57,10 +57,10 @@ interface InfinityKanbanProps {
 }
 
 const PRIORITY_COLORS = {
-  low: 'badge-info',
+  low: 'badge-secondary',
   medium: 'badge-warning',
-  high: 'badge-error',
-  urgent: 'badge-error'
+  high: 'badge-success',
+  urgent: 'badge-neutral'
 }
 
 const PRIORITY_ICONS = {
