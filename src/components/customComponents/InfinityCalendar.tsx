@@ -618,7 +618,7 @@ export const InfinityCalendar: React.FC = () => {
     )
 
     return (
-        <div className="infinity-calendar p-4 lg:p-6 max-w-7xl mx-auto">
+        <div className="infinity-calendar mx-auto">
             {renderHeader()}
 
             {view.type === 'month' && renderCalendarGrid()}

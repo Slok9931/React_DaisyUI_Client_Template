@@ -86,7 +86,7 @@ export const InfinityIcons: React.FC<InfinityIconsProps> = ({
   return (
     <div className={`w-full ${className}`} style={style}>
       {/* Search Bar with Chip */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 py-4 shadow-sm">
+      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4 shadow-sm">
         <SearchBar
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -100,7 +100,7 @@ export const InfinityIcons: React.FC<InfinityIconsProps> = ({
       </div>
 
       {/* Icons Grid */}
-      <div className="p-2 grid grid-cols-4 sm:grid-cols-8 gap-2">
+      <div className="py-2 grid grid-cols-4 sm:grid-cols-8 gap-2">
         {initialLoading ? (
           <ShimmerGrid iconSize={iconSize} count={batchSize} />
         ) : (

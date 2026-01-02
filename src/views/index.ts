@@ -7,3 +7,6 @@ export * from './admin/Permissions'
 export * from './admin/Roles'
 export * from './admin/Modules'
 export * from './admin/Routes'
+
+export * from './components/Icons'
+export * from './components/Calendar'

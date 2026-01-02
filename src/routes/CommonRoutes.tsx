@@ -17,6 +17,8 @@ import {
   RolesView,
   ModulesView,
   RoutesView,
+  IconsView,
+  CalendarView
 } from "@/views";
 
 
@@ -88,6 +90,26 @@ export const AppRoutes: React.FC = () => {
             <PrivateRoute>
               <PrivateLayout>
                 <RoutesView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/infinity/components/icons"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <IconsView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/infinity/components/calendar"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <CalendarView />
               </PrivateLayout>
             </PrivateRoute>
           }
