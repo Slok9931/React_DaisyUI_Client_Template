@@ -4,7 +4,7 @@ import { FormModal, ConfirmModal, useModals } from '@/features/modals'
 import { getIconComponent } from '@/utils'
 
 // Types
-interface CalendarEvent {
+export interface CalendarEvent {
     id: string
     title: string
     description?: string
@@ -64,10 +64,10 @@ const REMINDER_OPTIONS = [
     { value: 1440, label: '1 day before' },
 ]
 
-export const InfinityCalendar: React.FC = () => {
+export const InfinityCalendar: React.FC<{ initialEvents?: CalendarEvent[] }> = ({ initialEvents = [] }) => {
     // State management
     const [view, setView] = useState<CalendarView>({ type: 'month', date: new Date() })
-    const [events, setEvents] = useState<CalendarEvent[]>([])
+    const [events, setEvents] = useState<CalendarEvent[]>(initialEvents)
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [filterCategory, setFilterCategory] = useState<string>('all')
 
@@ -397,7 +397,7 @@ export const InfinityCalendar: React.FC = () => {
                         </div>
 
                         {/* Events for this day */}
-                        <div className="space-y-1">
+                        <div className="space-y-1 overflow-hidden">
                             {dayInfo.events.slice(0, 3).map((event) => (
                                 <Tooltip
                                     key={event.id}
@@ -405,24 +405,26 @@ export const InfinityCalendar: React.FC = () => {
                                     position="top"
                                 >
                                     <div
-                                        className="text-xs p-1 rounded truncate cursor-pointer hover:opacity-80"
+                                        className="text-xs p-1 rounded cursor-pointer hover:opacity-80 w-full overflow-hidden text-ellipsis whitespace-nowrap"
                                         style={{ backgroundColor: event.color + '20', color: event.color }}
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             openEventModal(undefined, event)
                                         }}
                                     >
-                                        {!event.allDay && (
-                                            <span className="font-medium mr-1">
-                                                {formatTime(event.startDate)}
-                                            </span>
-                                        )}
-                                        {event.title}
+                                        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                            {!event.allDay && (
+                                                <span className="font-medium mr-1">
+                                                    {formatTime(event.startDate)}
+                                                </span>
+                                            )}
+                                            <span>{event.title}</span>
+                                        </div>
                                     </div>
                                 </Tooltip>
                             ))}
                             {dayInfo.events.length > 3 && (
-                                <div className="text-xs text-base-content/60 pl-1">
+                                <div className="text-xs text-base-content/60 pl-1 truncate">
                                     +{dayInfo.events.length - 3} more
                                 </div>
                             )}
