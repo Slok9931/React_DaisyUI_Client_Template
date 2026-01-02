@@ -64,6 +64,7 @@ export * from './customComponents/InfinitySheet';
 export * from './customComponents/InfinityIcons';
 export * from './customComponents/InfinityTable'
 export * from './customComponents/InfinityForm'
+export * from './customComponents/InfinityCalendar';
 
 // Chart Components
 export * from './charts/AnimatedTextChart';

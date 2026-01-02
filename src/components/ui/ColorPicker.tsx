@@ -471,12 +471,12 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
               setAlpha(parsed.a);
             }
           }}
-          startIcon={
-            <div
-              className="w-5 h-5 rounded border border-base-300"
-              style={{ backgroundColor: rgbaColor }}
-            />
-          }
+          // startIcon={
+          //   <div
+          //     className="w-5 h-5 rounded border border-base-300"
+          //     style={{ backgroundColor: rgbaColor }}
+          //   />
+          // }
           endIcon={getIconComponent(
             "Palette",
             16,
