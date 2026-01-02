@@ -18,7 +18,8 @@ import {
   ModulesView,
   RoutesView,
   IconsView,
-  CalendarView
+  CalendarView,
+  KanbanView
 } from "@/views";
 
 
@@ -110,6 +111,16 @@ export const AppRoutes: React.FC = () => {
             <PrivateRoute>
               <PrivateLayout>
                 <CalendarView />
+              </PrivateLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/infinity/components/kanban"
+          element={
+            <PrivateRoute>
+              <PrivateLayout>
+                <KanbanView />
               </PrivateLayout>
             </PrivateRoute>
           }

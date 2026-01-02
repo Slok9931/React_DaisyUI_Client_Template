@@ -10,3 +10,4 @@ export * from './admin/Routes'
 
 export * from './components/Icons'
 export * from './components/Calendar'
+export * from './components/Kanban'

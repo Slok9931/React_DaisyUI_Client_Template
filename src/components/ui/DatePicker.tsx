@@ -317,7 +317,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     <div className="form-control w-full">
       {label && (
         <label className="label">
-          <Typography variant="body2" className="label-text">{label}</Typography>
+          <span className="label-text">{label}</span>
         </label>
       )}
       

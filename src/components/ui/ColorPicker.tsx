@@ -445,9 +445,9 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
     <div className="form-control w-full">
       {label && (
         <label className="label">
-          <Typography variant="body2" className="label-text">
+          <span className="label-text">
             {label}
-          </Typography>
+          </span>
         </label>
       )}
 

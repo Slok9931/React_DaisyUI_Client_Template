@@ -24,7 +24,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
       <div>
         {title && (
           <div className="mb-4">
-            <h3 className="text-lg font-semibold">{title}</h3>
+            <h3 className="text-sm font-semibold">{title}</h3>
           </div>
         )}
         {children}

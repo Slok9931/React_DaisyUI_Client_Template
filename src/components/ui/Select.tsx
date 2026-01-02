@@ -135,7 +135,7 @@ export const Select: React.FC<SelectProps> = ({
     <div className="form-control w-full">
       {label && (
         <label className="label">
-          <Typography variant="caption" className="label-text">{label}</Typography>
+          <span className="label-text">{label}</span>
         </label>
       )}
 

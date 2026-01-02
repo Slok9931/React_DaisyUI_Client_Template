@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react'
-import { Button, Card, ColorPicker, DatePicker, Input, Modal, Select, Textarea, TimePicker, Tooltip } from '@/components'
+import { Button, Card, Select, Tooltip } from '@/components'
+import { FormModal, ConfirmModal, useModals } from '@/features/modals'
 import { getIconComponent } from '@/utils'
 
 // Types
@@ -68,29 +69,10 @@ export const InfinityCalendar: React.FC = () => {
     const [view, setView] = useState<CalendarView>({ type: 'month', date: new Date() })
     const [events, setEvents] = useState<CalendarEvent[]>([])
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-    const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
-    const [isEventModalOpen, setIsEventModalOpen] = useState(false)
-    const [isEditMode, setIsEditMode] = useState(false)
     const [filterCategory, setFilterCategory] = useState<string>('all')
 
-    // Initial form data
-    const initialFormData: EventFormData = {
-        title: '',
-        description: '',
-        startDate: selectedDate || new Date(),
-        endDate: selectedDate || new Date(),
-        startTime: '09:00',
-        endTime: '10:00',
-        allDay: false,
-        color: EVENT_COLORS[0],
-        location: '',
-        attendees: '',
-        category: 'Personal',
-        reminder: 15,
-        recurring: 'none',
-    }
-
-    const [formData, setFormData] = useState<EventFormData>(initialFormData)
+    // Use the modal system
+    const { modals, openModal, closeModal, editingItem, deletingItem } = useModals()
 
     // Calendar utilities
     const getDaysInMonth = useCallback((date: Date) => {
@@ -198,54 +180,72 @@ export const InfinityCalendar: React.FC = () => {
 
     // Modal handlers
     const openEventModal = useCallback((date?: Date, event?: CalendarEvent) => {
+        setSelectedDate(date || null)
         if (event) {
-            setSelectedEvent(event)
-            setIsEditMode(true)
-            setFormData({
-                title: event.title,
-                description: event.description || '',
-                startDate: event.startDate,
-                endDate: event.endDate,
-                startTime: formatTime(event.startDate),
-                endTime: formatTime(event.endDate),
-                allDay: event.allDay,
-                color: event.color,
-                location: event.location || '',
-                attendees: event.attendees?.join(', ') || '',
-                category: event.category || 'Personal',
-                reminder: event.reminder || 15,
-                recurring: event.recurring || 'none',
-            })
+            openModal('edit', event)
         } else {
-            setSelectedEvent(null)
-            setIsEditMode(false)
-            setFormData({
-                ...initialFormData,
-                startDate: date || selectedDate || new Date(),
-                endDate: date || selectedDate || new Date(),
-            })
+            openModal('create', { date })
         }
-        setIsEventModalOpen(true)
-    }, [selectedDate, initialFormData, formatTime])
+    }, [openModal])
 
-    const closeEventModal = useCallback(() => {
-        setIsEventModalOpen(false)
-        setSelectedEvent(null)
-        setIsEditMode(false)
-        setFormData(initialFormData)
-    }, [initialFormData])
+    const getEventInitialValues = useCallback(() => {
+        if (editingItem) {
+            return {
+                title: editingItem.title,
+                description: editingItem.description || '',
+                startDate: editingItem.startDate,
+                endDate: editingItem.endDate,
+                startTime: formatTime(editingItem.startDate),
+                endTime: formatTime(editingItem.endDate),
+                allDay: editingItem.allDay,
+                color: editingItem.color,
+                location: editingItem.location || '',
+                attendees: editingItem.attendees?.join(', ') || '',
+                category: editingItem.category || 'Personal',
+                reminder: editingItem.reminder || 15,
+                recurring: editingItem.recurring || 'none'
+            }
+        }
+        return {
+            title: '',
+            description: '',
+            startDate: selectedDate || new Date(),
+            endDate: selectedDate || new Date(),
+            startTime: '09:00',
+            endTime: '10:00',
+            allDay: false,
+            color: EVENT_COLORS[0],
+            location: '',
+            attendees: '',
+            category: 'Personal',
+            reminder: 15,
+            recurring: 'none'
+        }
+    }, [editingItem, selectedDate, formatTime])
 
-    const handleFormSubmit = useCallback((e: React.FormEvent) => {
-        e.preventDefault()
-        if (!formData.title.trim()) return
+    const handleEventFormSubmit = useCallback((formData: any) => {
+        const eventData: EventFormData = {
+            title: formData.title,
+            description: formData.description,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            allDay: formData.allDay,
+            color: formData.color,
+            location: formData.location,
+            attendees: formData.attendees,
+            category: formData.category,
+            reminder: formData.reminder,
+            recurring: formData.recurring
+        }
 
-        if (isEditMode && selectedEvent) {
-            updateEvent(selectedEvent.id, formData)
+        if (editingItem) {
+            updateEvent(editingItem.id, eventData)
         } else {
-            createEvent(formData)
+            createEvent(eventData)
         }
-        closeEventModal()
-    }, [formData, isEditMode, selectedEvent, updateEvent, createEvent, closeEventModal])
+    }, [editingItem, updateEvent, createEvent])
 
     // Calendar grid generation
     const generateCalendarDays = useMemo(() => {
@@ -433,181 +433,6 @@ export const InfinityCalendar: React.FC = () => {
         </Card>
     )
 
-    const renderEventModal = () => (
-        <Modal
-            isOpen={isEventModalOpen}
-            onClose={closeEventModal}
-            responsive
-        >
-            <form onSubmit={handleFormSubmit}>
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold">
-                        {isEditMode ? 'Edit Event' : 'Create Event'}
-                    </h3>
-                    {isEditMode && selectedEvent && (
-                        <Button
-                            type="button"
-                            variant="error"
-                            size="sm"
-                            outline
-                            onClick={() => {
-                                deleteEvent(selectedEvent.id)
-                                closeEventModal()
-                            }}
-                            className="flex items-center gap-2"
-                        >
-                            {getIconComponent('Trash2', 16)}
-                            Delete
-                        </Button>
-                    )}
-                </div>
-
-                <div className="space-y-6">
-                    {/* Title */}
-                    <Input
-                        label="Title *"
-                        value={formData.title}
-                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="Event title"
-                        required
-                    />
-
-                    {/* Date and Time */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <DatePicker
-                            label="Start Date"
-                            value={formData.startDate}
-                            onChange={(date) => date && setFormData(prev => ({ ...prev, startDate: date }))}
-                        />
-                        <DatePicker
-                            label="End Date"
-                            value={formData.endDate}
-                            onChange={(date) => date && setFormData(prev => ({ ...prev, endDate: date }))}
-                        />
-                    </div>
-
-                    {/* All Day Toggle */}
-                    <div className="flex items-center gap-3">
-                        <input
-                            type="checkbox"
-                            id="allDay"
-                            checked={formData.allDay}
-                            onChange={(e) => setFormData(prev => ({ ...prev, allDay: e.target.checked }))}
-                            className="checkbox checkbox-primary"
-                        />
-                        <label htmlFor="allDay" className="font-medium">All day event</label>
-                    </div>
-
-                    {/* Time pickers (hidden if all day) */}
-                    {!formData.allDay && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <TimePicker
-                                label="Start Time"
-                                value={formData.startTime}
-                                onChange={(time) => time && setFormData(prev => ({ ...prev, startTime: time }))}
-                                format="12h"
-                            />
-                            <TimePicker
-                                label="End Time"
-                                value={formData.endTime}
-                                onChange={(time) => time && setFormData(prev => ({ ...prev, endTime: time }))}
-                                format="12h"
-                            />
-                        </div>
-                    )}
-
-                    {/* Color and Category */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <ColorPicker
-                            label="Event Color"
-                            value={formData.color}
-                            onChange={(color) => setFormData(prev => ({ ...prev, color: color || EVENT_COLORS[0] }))}
-                            showPresets={true}
-                            showAlpha={false}
-                            presetColors={EVENT_COLORS}
-                        />
-
-                        <Select
-                            label="Category"
-                            value={formData.category}
-                            onChange={(value) => setFormData(prev => ({ ...prev, category: Array.isArray(value) ? value[0] : value }))}
-                            options={CATEGORIES.map(cat => ({ value: cat, label: cat }))}
-                        />
-                    </div>
-
-                    {/* Location */}
-                    <Input
-                        label="Location"
-                        value={formData.location}
-                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                        placeholder="Add location"
-                    />
-
-                    {/* Description */}
-                    <Textarea
-                        label="Description"
-                        value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Add description"
-                        rows={3}
-                    />
-
-                    {/* Attendees */}
-                    <Input
-                        label="Attendees"
-                        value={formData.attendees}
-                        onChange={(e) => setFormData(prev => ({ ...prev, attendees: e.target.value }))}
-                        placeholder="Enter email addresses separated by commas"
-                    />
-
-                    {/* Reminder and Recurring */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <Select
-                            label="Reminder"
-                            value={formData.reminder.toString()}
-                            onChange={(value) => setFormData(prev => ({ ...prev, reminder: parseInt(Array.isArray(value) ? value[0] : value) }))}
-                            options={REMINDER_OPTIONS.map(option => ({
-                                value: option.value.toString(),
-                                label: option.label
-                            }))}
-                        />
-
-                        <Select
-                            label="Recurring"
-                            value={formData.recurring}
-                            onChange={(value) => setFormData(prev => ({ ...prev, recurring: Array.isArray(value) ? value[0] : value }))}
-                            options={[
-                                { value: 'none', label: 'Does not repeat' },
-                                { value: 'daily', label: 'Daily' },
-                                { value: 'weekly', label: 'Weekly' },
-                                { value: 'monthly', label: 'Monthly' },
-                                { value: 'yearly', label: 'Yearly' },
-                            ]}
-                        />
-                    </div>
-                </div>
-
-                {/* Modal Actions */}
-                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-base-300">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={closeEventModal}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        disabled={!formData.title.trim()}
-                    >
-                        {isEditMode ? 'Update Event' : 'Create Event'}
-                    </Button>
-                </div>
-            </form>
-        </Modal>
-    )
-
     return (
         <div className="infinity-calendar mx-auto">
             {renderHeader()}
@@ -627,7 +452,157 @@ export const InfinityCalendar: React.FC = () => {
                 </Button>
             </div>
 
-            {renderEventModal()}
+            {/* Event Form Modal */}
+            <FormModal
+                isOpen={modals.create || modals.edit}
+                onClose={() => closeModal(modals.edit ? 'edit' : 'create')}
+                title={editingItem ? 'Edit Event' : 'Create Event'}
+                fields={[
+                    {
+                        name: 'title',
+                        type: 'input',
+                        label: 'Title',
+                        placeholder: 'Event title',
+                        required: true,
+                        gridCols: 6
+                    },
+                    {
+                        name: 'startDate',
+                        type: 'datePicker',
+                        label: 'Start Date',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'endDate',
+                        type: 'datePicker',
+                        label: 'End Date',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'allDay',
+                        type: 'toggle',
+                        label: 'All day event',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'startTime',
+                        type: 'timePicker',
+                        label: 'Start Time',
+                        gridCols: 6,
+                        conditional: {
+                            dependsOn: 'allDay',
+                            value: false,
+                            operator: 'equals'
+                        }
+                    },
+                    {
+                        name: 'endTime',
+                        type: 'timePicker',
+                        label: 'End Time',
+                        gridCols: 6,
+                        conditional: {
+                            dependsOn: 'allDay',
+                            value: false,
+                            operator: 'equals'
+                        }
+                    },
+                    {
+                        name: 'color',
+                        type: 'colorPicker',
+                        label: 'Event Color',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'category',
+                        type: 'select',
+                        label: 'Category',
+                        options: CATEGORIES.map(cat => ({ value: cat, label: cat })),
+                        gridCols: 6
+                    },
+                    {
+                        name: 'location',
+                        type: 'input',
+                        label: 'Location',
+                        placeholder: 'Add location',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'description',
+                        type: 'textarea',
+                        label: 'Description',
+                        placeholder: 'Add description',
+                        rows: 3,
+                        gridCols: 6
+                    },
+                    {
+                        name: 'attendees',
+                        type: 'input',
+                        label: 'Attendees',
+                        placeholder: 'Enter email addresses separated by commas',
+                        gridCols: 6
+                    },
+                    {
+                        name: 'reminder',
+                        type: 'select',
+                        label: 'Reminder',
+                        options: REMINDER_OPTIONS.map(option => ({
+                            value: option.value.toString(),
+                            label: option.label
+                        })),
+                        gridCols: 6
+                    },
+                    {
+                        name: 'recurring',
+                        type: 'select',
+                        label: 'Recurring',
+                        options: [
+                            { value: 'none', label: 'Does not repeat' },
+                            { value: 'daily', label: 'Daily' },
+                            { value: 'weekly', label: 'Weekly' },
+                            { value: 'monthly', label: 'Monthly' },
+                            { value: 'yearly', label: 'Yearly' }
+                        ],
+                        gridCols: 6
+                    }
+                ]}
+                onSubmit={handleEventFormSubmit}
+                initialValues={getEventInitialValues()}
+                columns={2}
+                submitText={editingItem ? 'Update Event' : 'Create Event'}
+            />
+
+            {/* Delete Button for Edit Mode */}
+            {editingItem && (modals.edit) && (
+                <div className="fixed top-4 right-4 z-50">
+                    <Button
+                        variant="error"
+                        size="sm"
+                        outline
+                        onClick={() => openModal('delete', editingItem)}
+                        className="flex items-center gap-2"
+                    >
+                        {getIconComponent('Trash2', 16)}
+                        Delete
+                    </Button>
+                </div>
+            )}
+
+            {/* Delete Event Confirmation Modal */}
+            <ConfirmModal
+                isOpen={modals.delete}
+                onClose={() => closeModal('delete')}
+                title="Delete Event"
+                message={`Are you sure you want to delete "${deletingItem?.title}"? This action cannot be undone.`}
+                confirmText="Delete Event"
+                cancelText="Cancel"
+                onConfirm={() => {
+                    if (deletingItem) {
+                        deleteEvent(deletingItem.id)
+                    }
+                }}
+                variant="error"
+                icon={getIconComponent('Trash2', 24)}
+            />
         </div>
     )
 }

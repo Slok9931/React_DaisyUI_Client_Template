@@ -754,10 +754,10 @@ const FieldRenderer: React.FC<{
           <div className="form-control">
             {field.label && (
               <label className="label">
-                <Typography variant="body2" className="label-text">
+                <span className="label-text">
                   {field.label}
                   {field.required && <span className="text-error ml-1">*</span>}
-                </Typography>
+                </span>
               </label>
             )}
             <Radio
@@ -985,10 +985,10 @@ const FieldRenderer: React.FC<{
           <div className="form-control">
             {field.label && (
               <label className="label">
-                <Typography variant="body2" className="label-text">
+                <span className="label-text">
                   {field.label}
                   {field.required && <span className="text-error ml-1">*</span>}
-                </Typography>
+                </span>
               </label>
             )}
             <Rating
@@ -1088,9 +1088,9 @@ const IconPicker: React.FC<{
     <div className={`form-control ${className}`}>
       {label && (
         <label className="label">
-          <Typography variant="body2" className="label-text">
+          <span className="label-text">
             {label}
-          </Typography>
+          </span>
         </label>
       )}
 
@@ -1179,7 +1179,7 @@ const IconPicker: React.FC<{
           )}
 
           {/* Use InfinityIcons component with click handlers */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 px-1 overflow-y-auto">
             <IconSelectionWrapper 
               onSelect={handleIconSelect}
               selectedIcon={selectedIcon}

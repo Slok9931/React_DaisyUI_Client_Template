@@ -36,7 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className={classes}>
-      <div className="modal-box relative">
+      <div className="modal-box relative max-h-[90vh]">
         <button
           className="btn btn-sm btn-circle absolute right-2 top-2"
           onClick={onClose}
