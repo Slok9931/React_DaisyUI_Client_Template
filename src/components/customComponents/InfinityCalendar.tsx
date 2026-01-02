@@ -71,7 +71,6 @@ export const InfinityCalendar: React.FC = () => {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
     const [isEventModalOpen, setIsEventModalOpen] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
     const [filterCategory, setFilterCategory] = useState<string>('all')
 
     // Initial form data
@@ -182,12 +181,8 @@ export const InfinityCalendar: React.FC = () => {
         }).filter(event => {
             if (filterCategory === 'all') return true
             return event.category === filterCategory
-        }).filter(event => {
-            if (!searchTerm) return true
-            return event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                event.description?.toLowerCase().includes(searchTerm.toLowerCase())
         })
-    }, [events, filterCategory, searchTerm, isSameDay])
+    }, [events, filterCategory, isSameDay])
 
     // Navigation functions
     const navigateMonth = useCallback((direction: 'prev' | 'next') => {
@@ -199,10 +194,6 @@ export const InfinityCalendar: React.FC = () => {
 
     const navigateToToday = useCallback(() => {
         setView(prev => ({ ...prev, date: new Date() }))
-    }, [])
-
-    const changeView = useCallback((viewType: CalendarView['type']) => {
-        setView(prev => ({ ...prev, type: viewType }))
     }, [])
 
     // Modal handlers
